@@ -188,7 +188,7 @@ export default function App() {
                            <code className="text-blue-400 bg-slate-900 px-2 py-1 rounded mt-2 block">{activeFileUrl}</code>
                         </div>
                         <p className="text-slate-500 text-xs mt-2 max-w-xs text-center">
-                           Ensure the file exists in the <span className="font-mono">public/papers</span> folder and is named correctly.
+                                      Feel free to contact me :)<span className="font-mono">through email           </span> huzaifa.bravo@gmail.co
                         </p>
                     </div>
                  )}
