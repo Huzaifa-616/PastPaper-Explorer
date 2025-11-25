@@ -24,7 +24,7 @@ const SUBJECTS = [
   { code: '9702', name: 'Physics' },
 ];
 
-const YEARS = Array.from({ length: 15 }, (_, i) => (2024 - i).toString());
+const YEARS = Array.from({ length: 15 }, (_, i) => (2025 - i).toString());
 const SEASONS = [{ code: 'm', name: 'March' }, { code: 's', name: 'Summer' }, { code: 'w', name: 'Winter' }];
 const PAPERS = ['1', '2', '3', '4', '5', '6'];
 const VARIANTS = ['1', '2', '3'];
