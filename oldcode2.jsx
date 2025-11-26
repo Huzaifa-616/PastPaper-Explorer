@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
-// Imports are now active by default
-import { Document, Page, pdfjs } from 'react-pdf';
 import { 
   FolderOpen, FileText, CheckCircle, Search, BookOpen, ChevronDown, 
-  AlertTriangle, ZoomIn, ZoomOut, RotateCcw, RotateCw, FileUp
+  AlertTriangle, ZoomIn, ZoomOut, RotateCcw, RotateCw, FileUp, Mail
 } from 'lucide-react';
 
-// Required CSS for the PDF viewer
+/* ========================================================================
+   LOCAL MODE: CUSTOM PDF ENGINE ENABLED
+   ======================================================================== */
+
+// 1. Imports are now active
+import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// --- Worker Setup ---
+// 2. Worker setup is now active
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url,
@@ -22,16 +25,18 @@ const SUBJECTS = [
   { code: '9618', name: 'Computer Science' },
   { code: '9701', name: 'Chemistry' },
   { code: '9702', name: 'Physics' },
+  { code: '9700', name: 'Biology' },
+  { code: '9231', name: 'Further Mathematics' },
 ];
 
-const YEARS = Array.from({ length: 15 }, (_, i) => (2024 - i).toString());
+// Years start from 2025
+const YEARS = Array.from({ length: 15 }, (_, i) => (2025 - i).toString());
 const SEASONS = [{ code: 'm', name: 'March' }, { code: 's', name: 'Summer' }, { code: 'w', name: 'Winter' }];
 const PAPERS = ['1', '2', '3', '4', '5', '6'];
 const VARIANTS = ['1', '2', '3'];
 
-// Slimmer Select Component
 const Select = ({ label, value, onChange, options, minWidth = 'w-20' }) => (
-  <div className="flex flex-col group">
+  <div className="flex flex-col group flex-shrink-0">
     <label className="text-[9px] uppercase font-bold text-slate-500 mb-0.5 tracking-wider group-hover:text-blue-400 transition-colors">{label}</label>
     <div className="relative">
       <select
@@ -51,15 +56,10 @@ const Select = ({ label, value, onChange, options, minWidth = 'w-20' }) => (
 );
 
 export default function App() {
-  const [fileList, setFileList] = useState([]);
-  const [folderName, setFolderName] = useState(null);
-  const [activeFile, setActiveFile] = useState(null);
-  const [bypassFilters, setBypassFilters] = useState(false); // New state to handle single file mode
-  
   // Custom PDF State
   const [numPages, setNumPages] = useState(null);
   const [scale, setScale] = useState(1.0);
-  const [rotation, setRotation] = useState(0); // New Rotation State
+  const [rotation, setRotation] = useState(0); 
   const [pdfError, setPdfError] = useState(false);
 
   // Filters
@@ -70,92 +70,65 @@ export default function App() {
   const [variant, setVariant] = useState('2');
   const [type, setType] = useState('qp');
 
-  const targetSignature = useMemo(() => {
+  // --- SERVER MODE: Automatic URL Generator ---
+  const activeFileUrl = useMemo(() => {
     const shortYear = year.slice(2);
-    return { subject, seasonYear: `${season}${shortYear}`, type, code: `${paper}${variant}` };
+    const fileName = `${subject}_${season}${shortYear}_${type}_${paper}${variant}.pdf`;
+    return `/papers/${fileName}`;
   }, [subject, year, season, paper, variant, type]);
 
-  // Folder Scan Effect
+  // Reset state when file changes
   useEffect(() => {
-    if (bypassFilters) return; // Don't run matching logic if in Single File mode
-    if (!fileList.length) return;
-    
-    const match = fileList.find(file => {
-      const name = file.name.toLowerCase();
-      const isQP = name.includes('qp') || name.includes('question');
-      const isMS = name.includes('ms') || name.includes('mark');
-      if (targetSignature.type === 'qp' && !isQP) return false;
-      if (targetSignature.type === 'ms' && !isMS) return false;
-      return name.includes(targetSignature.subject) && 
-             name.includes(targetSignature.seasonYear) && 
-             name.includes(targetSignature.code);
-    });
-    
-    if (match !== activeFile) {
-        setActiveFile(match || null);
-        setPdfError(false);
-        setNumPages(null);
-        setRotation(0); // Reset rotation on new file
-    }
-  }, [fileList, targetSignature, activeFile, bypassFilters]);
+    setPdfError(false);
+    setNumPages(null);
+    setRotation(0);
+  }, [activeFileUrl]);
+
+  // Set Browser Title
+  useEffect(() => {
+    document.title = "PastPaper Explorer";
+  }, []);
 
   const onDocumentLoadSuccess = ({ numPages }) => setNumPages(numPages);
-
-  // Handler for "Select Folder"
-  const handleFolderSelect = (e) => {
-    const files = Array.from(e.target.files).filter(f => f.type === 'application/pdf');
-    if (files.length) {
-      setBypassFilters(false); // Enable auto-matching
-      setFileList(files);
-      const pathParts = files[0].webkitRelativePath.split('/');
-      setFolderName(pathParts[0] || "Local Folder");
-    }
-  };
-
-  // Handler for "Open Single File"
-  const handleSingleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type === 'application/pdf') {
-      setBypassFilters(true); // Disable auto-matching so this file stays open
-      setActiveFile(file);
-      setPdfError(false);
-      setNumPages(null);
-      setRotation(0);
-      setFolderName(null); // Clear folder name as we are in single mode
-      setFileList([]); // Clear list to avoid confusion
-    }
-  }
-
-  // Rotation Helper
   const rotateClockwise = () => setRotation(prev => (prev + 90) % 360);
 
   return (
     <div className="flex flex-col h-screen w-full bg-slate-900 text-slate-200 font-sans">
       
-      {/* Slim Header */}
+      {/* Header */}
       <header className="flex-shrink-0 bg-slate-900 border-b border-slate-800 shadow-xl z-20">
-        <div className="flex flex-col lg:flex-row items-center px-3 py-2 gap-3 lg:h-14">
-          <div className="flex items-center gap-2 pr-4 lg:border-r border-slate-800 mr-1 min-w-max">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/40">
-              <BookOpen className="text-white" size={16} />
+        <div className="flex flex-col lg:flex-row items-start lg:items-center px-3 py-3 gap-3 lg:h-14">
+          
+          {/* Logo & Name */}
+          <div className="flex items-center justify-between w-full lg:w-auto gap-2 pr-4 lg:border-r border-slate-800 mr-1">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/40">
+                <BookOpen className="text-white" size={16} />
+              </div>
+              <div>
+                <h1 className="font-bold text-white text-base leading-tight whitespace-nowrap">:) <span className="text-blue-500">By: Muhammad Huzaifa Imran</span></h1>
+              </div>
             </div>
-            <div>
-              <h1 className="font-bold text-white text-base leading-tight">Paper<span className="text-blue-500">Deck</span></h1>
+            
+            {/* Contact & Status (Mobile View) */}
+            <div className="flex items-center gap-2 lg:hidden">
+               <a href="mailto:huzaifa.bravo@gmail.com" className="p-2 bg-slate-800 rounded-full border border-slate-700 hover:bg-slate-700 transition-colors" title="Contact Me">
+                  <Mail size={14} className="text-slate-400" />
+               </a>
+               <div className={`w-2 h-2 rounded-full ${pdfError ? 'bg-red-500' : 'bg-green-500'} shadow-[0_0_8px_rgba(34,197,94,0.6)]`}></div>
             </div>
           </div>
 
-          {/* Filters (Disabled visually if in Single File Mode, but still visible) */}
-          <div className={`flex-1 flex flex-wrap items-center gap-x-3 gap-y-2 justify-center lg:justify-start w-full transition-opacity ${bypassFilters ? 'opacity-50 pointer-events-none grayscale' : ''}`}>
-            <Select label="Subject" value={subject} onChange={setSubject} options={SUBJECTS.map(s => ({ value: s.code, label: `${s.code} ${s.name}` }))} minWidth="w-40"/>
-            <div className="w-px h-6 bg-slate-800 hidden sm:block"></div>
-            <div className="flex gap-2">
-              <Select label="Year" value={year} onChange={setYear} options={YEARS} minWidth="w-20" />
-              <Select label="Season" value={season} onChange={setSeason} options={SEASONS.map(s => ({ value: s.code, label: s.name }))} minWidth="w-28" />
-            </div>
-            <div className="flex gap-2">
-               <Select label="Paper" value={paper} onChange={setPaper} options={PAPERS} minWidth="w-14" />
-               <Select label="Variant" value={variant} onChange={setVariant} options={VARIANTS} minWidth="w-14" />
-            </div>
+          {/* Filters Container */}
+          <div className="flex flex-wrap items-center gap-2 lg:gap-3 w-full overflow-x-auto pb-1 lg:pb-0 no-scrollbar">
+            <Select label="Subject" value={subject} onChange={setSubject} options={SUBJECTS.map(s => ({ value: s.code, label: `${s.code} ${s.name}` }))} minWidth="w-32 lg:w-40"/>
+            <div className="w-px h-6 bg-slate-800 hidden lg:block"></div>
+            <Select label="Year" value={year} onChange={setYear} options={YEARS} minWidth="w-16 lg:w-20" />
+            <Select label="Season" value={season} onChange={setSeason} options={SEASONS.map(s => ({ value: s.code, label: s.name }))} minWidth="w-24 lg:w-28" />
+            <Select label="Paper" value={paper} onChange={setPaper} options={PAPERS} minWidth="w-12 lg:w-14" />
+            <Select label="Variant" value={variant} onChange={setVariant} options={VARIANTS} minWidth="w-12 lg:w-14" />
+            
+            {/* Type Toggle */}
             <div className="flex flex-col ml-1">
               <span className="text-[9px] uppercase font-bold text-slate-500 mb-0.5 tracking-wider">Type</span>
               <div className="bg-slate-800 p-0.5 rounded-md border border-slate-700 flex shadow-sm">
@@ -164,56 +137,36 @@ export default function App() {
               </div>
             </div>
           </div>
-
-          <div className="flex items-center ml-auto pl-4 lg:border-l border-slate-800 min-w-max gap-2">
-            
-            {/* Open Single File Button */}
-            <label className="cursor-pointer group relative" title="Open a single PDF file">
-              <input type="file" accept="application/pdf" onChange={handleSingleFileSelect} className="hidden" />
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-400 transition-all">
-                <FileUp size={14} />
-                <span className="text-[10px] font-bold uppercase tracking-wide hidden sm:inline">Open File</span>
-              </div>
-            </label>
-
-            {/* Select Folder Button */}
-            <label className="cursor-pointer group relative">
-              <input type="file" webkitdirectory="" directory="" multiple onChange={handleFolderSelect} className="hidden" />
-              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${folderName ? 'bg-slate-800 border-slate-600 text-slate-300' : 'bg-blue-600 border-blue-500 text-white hover:bg-blue-500'}`}>
-                <FolderOpen size={14} />
-                <div className="flex flex-col items-start">
-                  <span className="text-[10px] font-bold uppercase tracking-wide">{folderName ? 'Switch Folder' : 'Select Folder'}</span>
-                </div>
-              </div>
-            </label>
+          
+          {/* Desktop Status & Contact (TOP RIGHT) */}
+          <div className="hidden lg:flex items-center ml-auto pl-4 lg:border-l border-slate-800 gap-3">
+             <a href="mailto:huzaifa.bravo@gmail.com" className="flex items-center gap-2 px-3 py-1 rounded-full border border-slate-700 bg-slate-800 hover:bg-slate-700 transition-colors group">
+                <Mail size={12} className="text-slate-400 group-hover:text-white" />
+                <span className="text-[10px] font-bold text-slate-400 group-hover:text-white">Contact</span>
+             </a>
+             <div className={`flex items-center gap-2 px-3 py-1 rounded-full border ${pdfError ? 'border-red-900/50 bg-red-900/20' : 'border-slate-700 bg-slate-800'}`}>
+                <div className={`w-2 h-2 rounded-full ${pdfError ? 'bg-red-500' : 'bg-green-500'} shadow-[0_0_8px_rgba(34,197,94,0.6)]`}></div>
+                <span className="text-[10px] font-mono text-slate-400">SERVER</span>
+             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="flex-1 relative bg-slate-950 flex flex-col items-center overflow-hidden">
-        {!activeFile ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
-            <div className="w-20 h-20 bg-slate-900 rounded-3xl flex items-center justify-center mb-6 border border-slate-800 shadow-2xl rotate-3">
-              <FolderOpen size={40} className="text-blue-500" />
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Ready to View</h2>
-            <p className="text-slate-400 max-w-sm text-sm">Select a Folder to browse automatically,<br/>or Open a File to view separately.</p>
-          </div>
-        ) : (
-          <div className="w-full h-full flex flex-col relative">
+        <div className="w-full h-full flex flex-col relative">
             
-            {/* Scrollable PDF Viewer */}
-            <div className="flex-1 overflow-auto flex justify-center p-8 bg-slate-900 custom-scrollbar">
-               <div className="relative shadow-2xl shadow-black pb-20">
+            {/* 2. CUSTOM PDF VIEWER (Active) */}
+            <div className="flex-1 overflow-auto flex justify-center p-8 bg-slate-900 custom-scrollbar pb-32 lg:pb-20">
+               <div className="relative shadow-2xl shadow-black">
                  <Document
-                    file={activeFile}
+                    file={activeFileUrl}
                     onLoadSuccess={onDocumentLoadSuccess}
                     onLoadError={(error) => {
                         console.error("PDF Load Error:", error);
                         setPdfError(true);
                     }}
-                    loading={<div className="text-white animate-pulse mt-10">Loading Document...</div>}
+                    loading={<div className="text-white animate-pulse mt-10">Searching for Paper...</div>}
                     className="flex flex-col gap-6"
                  >
                    {numPages && Array.from(new Array(numPages), (el, index) => (
@@ -221,13 +174,13 @@ export default function App() {
                         key={`page_${index + 1}`}
                         pageNumber={index + 1} 
                         scale={scale} 
-                        rotate={rotation} // Apply rotation here
+                        rotate={rotation}
                         renderTextLayer={false} 
                         renderAnnotationLayer={false}
                         className="shadow-xl transition-transform duration-300" 
                         canvasBackground="#ffffff"
                         loading={
-                          <div className="bg-white h-[800px] w-[600px] flex items-center justify-center text-slate-300">
+                          <div className="bg-white h-[300px] w-[200px] flex items-center justify-center text-slate-300">
                              Page {index + 1}...
                           </div>
                         }
@@ -236,42 +189,74 @@ export default function App() {
                  </Document>
                  
                  {pdfError && (
-                    <div className="flex flex-col items-center gap-4 p-10 bg-slate-800 rounded-lg border border-red-900/50">
+                    <div className="flex flex-col items-center gap-4 p-10 bg-slate-800 rounded-lg border border-red-900/50 mt-10">
                         <AlertTriangle className="text-red-500" size={32} />
-                        <div className="text-red-200">Error rendering PDF</div>
+                        <h3 className="text-xl font-bold text-white">Paper Not Found</h3>
+                        <div className="text-slate-400 text-center text-sm">
+                           We looked for: <br/>
+                           <code className="text-blue-400 bg-slate-900 px-2 py-1 rounded mt-2 block">{activeFileUrl}</code>
+                        </div>
+                        <p className="text-slate-500 text-xs mt-2 max-w-xs text-center flex flex-col items-center gap-1">
+                           <span>Feel free to contact me :)</span>
+                           <a href="mailto:huzaifa.bravo@gmail.com" className="text-blue-400 hover:text-blue-300 underline">huzaifa.bravo@gmail.com</a>
+                        </p>
                     </div>
                  )}
                </div>
             </div>
+            
 
-            {/* Vertical Left Toolbar */}
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 bg-slate-800/90 backdrop-blur text-white p-2 rounded-xl shadow-2xl border border-slate-700 flex flex-col items-center gap-3 z-30">
-              
-              {/* Zoom Controls */}
+            {/* --- RESPONSIVE TOOLBAR --- */}
+            
+            {/* Desktop Toolbar (Vertical Left - Includes Mail Icon) */}
+            <div className="hidden lg:flex absolute left-4 top-1/2 -translate-y-1/2 bg-slate-800/90 backdrop-blur text-white p-2 rounded-xl shadow-2xl border border-slate-700 flex-col items-center gap-3 z-30">
               <div className="flex flex-col items-center gap-1 bg-slate-900/50 rounded-lg p-1">
                 <button onClick={() => setScale(s => Math.min(2.5, s + 0.1))} className="p-1.5 hover:bg-slate-700 rounded-md transition-colors" title="Zoom In"><ZoomIn size={18}/></button>
                 <span className="text-[10px] font-mono py-1">{Math.round(scale * 100)}%</span>
                 <button onClick={() => setScale(s => Math.max(0.5, s - 0.1))} className="p-1.5 hover:bg-slate-700 rounded-md transition-colors" title="Zoom Out"><ZoomOut size={18}/></button>
                 <div className="h-px w-6 bg-slate-700 my-1"></div>
-                <button onClick={() => setScale(1.0)} className="p-1.5 hover:bg-slate-700 rounded-md text-slate-400 hover:text-white transition-colors" title="Reset Zoom"><RotateCcw size={16}/></button>
+                <button onClick={() => setScale(1.0)} className="p-1.5 hover:bg-slate-700 rounded-md text-slate-400 hover:text-white transition-colors" title="Reset"><RotateCcw size={16}/></button>
               </div>
-
-              {/* Rotation Control */}
               <div className="flex flex-col items-center gap-1 bg-slate-900/50 rounded-lg p-1">
-                <button onClick={rotateClockwise} className="p-1.5 hover:bg-slate-700 rounded-md transition-colors text-blue-300 hover:text-blue-100" title="Rotate 90°"><RotateCw size={18}/></button>
+                <button onClick={rotateClockwise} className="p-1.5 hover:bg-slate-700 rounded-md transition-colors text-blue-300 hover:text-blue-100" title="Rotate"><RotateCw size={18}/></button>
               </div>
-
+              {/* ADDED MAIL ICON HERE FOR DESKTOP TOOLBAR */}
+              <div className="flex flex-col items-center gap-1 bg-slate-900/50 rounded-lg p-1 mt-auto">
+                <a href="mailto:huzaifa.bravo@gmail.com" className="p-1.5 hover:bg-slate-700 rounded-md transition-colors text-slate-400 hover:text-white" title="Contact Me">
+                  <Mail size={18}/>
+                </a>
+              </div>
             </div>
 
-            {/* Bottom Info Pill */}
-             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-slate-800/90 backdrop-blur text-white px-4 py-2 rounded-full shadow-2xl border border-slate-700 flex items-center gap-3 z-30">
-                 <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
-                 <span className="text-[11px] font-mono text-slate-300 max-w-[200px] truncate">{activeFile.name}</span>
-                 {bypassFilters && <span className="text-[9px] bg-blue-600 px-1.5 py-0.5 rounded text-white font-bold">SINGLE FILE</span>}
+            {/* Mobile Toolbar (Horizontal Bottom - Unified & Compact) */}
+            <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[95%] max-w-md bg-slate-800/95 backdrop-blur-md text-white px-3 py-2 rounded-xl shadow-2xl border border-slate-700 flex items-center justify-between z-40 gap-2">
+               {/* File Info */}
+               <div className="flex flex-col flex-1 min-w-0 mr-2">
+                  <span className="text-[8px] font-bold text-slate-500 uppercase">Active</span>
+                  <span className="text-[10px] font-mono text-slate-200 truncate">{activeFileUrl.replace('/papers/', '')}</span>
+               </div>
+
+               {/* Compact Controls */}
+               <div className="flex items-center gap-2 bg-slate-900/50 rounded-lg p-1">
+                  <button onClick={() => setScale(s => Math.max(0.5, s - 0.1))} className="p-1.5 hover:bg-slate-700 rounded-md active:scale-95"><ZoomOut size={14}/></button>
+                  <button onClick={() => setScale(s => Math.min(2.5, s + 0.1))} className="p-1.5 hover:bg-slate-700 rounded-md active:scale-95"><ZoomIn size={14}/></button>
+                  <div className="w-px h-4 bg-slate-600"></div>
+                  <button onClick={rotateClockwise} className="p-1.5 hover:bg-slate-700 rounded-md active:scale-95 text-blue-400"><RotateCw size={14}/></button>
+                  <div className="w-px h-4 bg-slate-600"></div>
+                  {/* ADDED MAIL ICON HERE FOR MOBILE TOOLBAR */}
+                  <a href="mailto:huzaifa.bravo@gmail.com" className="p-1.5 hover:bg-slate-700 rounded-md active:scale-95 text-slate-400"><Mail size={14}/></a>
+               </div>
             </div>
 
-          </div>
-        )}
+            {/* Desktop Bottom Info Pill */}
+             <div className="hidden lg:flex absolute bottom-6 left-1/2 -translate-x-1/2 bg-slate-800/90 backdrop-blur text-white px-4 py-2 rounded-full shadow-2xl border border-slate-700 items-center gap-3 z-30">
+                 <div className={`w-2 h-2 rounded-full ${pdfError ? 'bg-red-500' : 'bg-green-500'} shadow-[0_0_8px_rgba(34,197,94,0.6)]`}></div>
+                 <span className="text-[11px] font-mono text-slate-300 max-w-[250px] truncate">
+                    {activeFileUrl.replace('/papers/', '')}
+                 </span>
+            </div>
+
+        </div>
       </main>
     </div>
   );
