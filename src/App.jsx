@@ -139,6 +139,9 @@ export default function App() {
   const [showZoomToast, setShowZoomToast] = useState(false);
 
   const [visiblePage, setVisiblePage] = useState(1);
+  
+  // Independent Memory for QP and MS { 'qp': 5, 'ms': 2 }
+  const pageHistoryRef = useRef({ qp: 1, ms: 1 });
   const restorePageRef = useRef(1);
   const prevContextRef = useRef(null);
 
@@ -156,23 +159,34 @@ export default function App() {
     return `/papers/${fileName}`;
   }, [subject, year, season, paper, variant, type]);
 
-  // Page Sync Logic
+  // --- SMART PAGE SYNC LOGIC ---
   useEffect(() => {
     if (!isViewing) return; 
 
-    const currentContext = { subject, year, season, paper, variant };
+    // 1. Save the position of the PREVIOUS document type
+    if (prevContextRef.current) {
+        const { type: prevType } = prevContextRef.current;
+        // We save the 'visiblePage' state (which tracks what we were just looking at)
+        pageHistoryRef.current[prevType] = visiblePage;
+    }
+
+    const currentContext = { subject, year, season, paper, variant, type };
     const prevContext = prevContextRef.current;
 
-    const isJustTypeSwitch = prevContext && 
+    // 2. Check if we are on the same paper (just switching QP/MS)
+    const isSamePaper = prevContext && 
       prevContext.subject === subject &&
       prevContext.year === year &&
       prevContext.season === season &&
       prevContext.paper === paper &&
       prevContext.variant === variant;
 
-    if (isJustTypeSwitch) {
-      restorePageRef.current = visiblePage;
+    if (isSamePaper) {
+      // Retrieve the memory for the NEW type we are switching TO
+      restorePageRef.current = pageHistoryRef.current[type] || 1;
     } else {
+      // New paper entirely -> Reset memories
+      pageHistoryRef.current = { qp: 1, ms: 1 };
       restorePageRef.current = 1;
     }
 
@@ -180,7 +194,7 @@ export default function App() {
     setPdfError(false);
     setNumPages(null);
     setRotation(0); 
-  }, [activeFileUrl, subject, year, season, paper, variant, isViewing]); 
+  }, [activeFileUrl, subject, year, season, paper, variant, type, isViewing]); 
 
   useEffect(() => {
     document.title = "PastPaper Explorer";
@@ -188,7 +202,7 @@ export default function App() {
 
   // Zoom Toast Logic
   useEffect(() => {
-    if (isViewing && scale !== 1.0) { // Show on change
+    if (isViewing && scale !== 1.0) { 
         setShowZoomToast(true);
         const timer = setTimeout(() => setShowZoomToast(false), 800);
         return () => clearTimeout(timer);
@@ -201,6 +215,7 @@ export default function App() {
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
+    // Restore page position
     setTimeout(() => {
       const targetPage = Math.min(restorePageRef.current, numPages);
       const pageEl = document.getElementById(`page_${targetPage}`);
@@ -232,19 +247,16 @@ export default function App() {
             contentRef.current.style.transform = `scale(${visualScale / scale})`;
             contentRef.current.style.transformOrigin = 'top left';
         }
-        // Show toast
         setShowZoomToast(true);
-        // We calculate percentage based on the visual scale currently being seen
-        document.getElementById('zoom-toast-val').innerText = Math.round(visualScale * 100) + '%';
+        const toastVal = document.getElementById('zoom-toast-val');
+        if(toastVal) toastVal.innerText = Math.round(visualScale * 100) + '%';
     };
 
-    // Commit logic: Debounced update to React State (Expensive)
+    // Commit logic (Expensive Redraw)
     const commitZoom = (finalScale) => {
-        // Clamp
         const clamped = Math.min(Math.max(0.5, finalScale), 3.0);
-        setScale(clamped); // This triggers PDF redraw
+        setScale(clamped); 
         
-        // Reset Visual overrides once React catches up
         setTimeout(() => {
             if(contentRef.current) contentRef.current.style.transform = 'none';
             setShowZoomToast(false);
@@ -257,11 +269,8 @@ export default function App() {
     const handleWheel = (e) => {
       if (e.ctrlKey) {
         e.preventDefault();
-        
-        // Clear pending commit
         if (wheelTimeout.current) clearTimeout(wheelTimeout.current);
 
-        // Update Visual
         const delta = -e.deltaY * 0.002;
         let newVisual = gestureState.current.currentVisualScale + delta;
         newVisual = Math.min(Math.max(0.5, newVisual), 3.0);
@@ -269,10 +278,9 @@ export default function App() {
         gestureState.current.currentVisualScale = newVisual;
         applyVisualZoom(newVisual);
 
-        // Debounce Commit
         wheelTimeout.current = setTimeout(() => {
             commitZoom(newVisual);
-        }, 300); // Wait 300ms after scroll stops to render
+        }, 300); 
       }
     };
 
@@ -312,7 +320,6 @@ export default function App() {
        }
     };
 
-    // Initialize tracking
     gestureState.current.currentVisualScale = scale;
 
     el.addEventListener('wheel', handleWheel, { passive: false });
@@ -392,7 +399,7 @@ export default function App() {
                 <Mail size={14} />
              </button>
              
-             {/* Server Indicator (Moved Right) */}
+             {/* Server Indicator */}
              <div className={`flex items-center gap-2 px-2.5 py-1 rounded-full border ${pdfError ? 'border-red-900/50 bg-red-900/20' : 'border-slate-700 bg-slate-800'}`}>
                 <div className={`w-1.5 h-1.5 rounded-full ${pdfError ? 'bg-red-500' : 'bg-green-500'} shadow-[0_0_5px_rgba(34,197,94,0.6)]`}></div>
                 <span className="text-[9px] font-mono text-slate-400">SERVER</span>
@@ -416,7 +423,7 @@ export default function App() {
                <span className="text-blue-400 font-bold"> Load</span> to begin studying.
              </p>
              <div className="flex gap-4 text-xs font-mono text-slate-600">
-                <span className="bg-slate-900 px-3 py-1 rounded border border-slate-800">Add Free</span>
+                <span className="bg-slate-900 px-3 py-1 rounded border border-slate-800">Auto-Rotation</span>
                 <span className="bg-slate-900 px-3 py-1 rounded border border-slate-800">Smart Zoom</span>
                 <span className="bg-slate-900 px-3 py-1 rounded border border-slate-800">Page Sync</span>
              </div>
