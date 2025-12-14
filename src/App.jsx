@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   FolderOpen, FileText, CheckCircle, Search, BookOpen, ChevronDown, 
-  AlertTriangle, ZoomIn, ZoomOut, RotateCcw, RotateCw, FileUp, Mail, X, Copy, Check, Play
+  AlertTriangle, ZoomIn, ZoomOut, RotateCcw, RotateCw, FileUp, Mail, X, Copy, Check, Play, Code
 } from 'lucide-react';
 
 /* ========================================================================
@@ -133,13 +133,13 @@ export default function App() {
   const [rotation, setRotation] = useState(0); 
   const [pdfError, setPdfError] = useState(false);
   const [showContact, setShowContact] = useState(false);
-  
+   
   // New State: Controls if we are viewing a paper or the welcome screen
   const [isViewing, setIsViewing] = useState(false);
   const [showZoomToast, setShowZoomToast] = useState(false);
 
   const [visiblePage, setVisiblePage] = useState(1);
-  
+   
   // Independent Memory for QP and MS { 'qp': 5, 'ms': 2 }
   const pageHistoryRef = useRef({ qp: 1, ms: 1 });
   const restorePageRef = useRef(1);
@@ -385,6 +385,20 @@ export default function App() {
                 <button onClick={() => setType('ms')} className={`px-2 py-0.5 rounded-[4px] text-[10px] font-bold flex items-center gap-1 ${type === 'ms' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>MS</button>
               </div>
             </div>
+
+            {/* --- CUSTOM BUTTON FOR 9618 PAPER 2 --- */}
+            {subject === '9618' && paper === '2' && (
+              <div className="flex flex-col ml-1 animate-in fade-in zoom-in duration-300">
+                <span className="text-[9px] uppercase font-bold text-slate-500 mb-0.5 tracking-wider">Compiler</span>
+                <button 
+                  onClick={() => window.open('https://pseudocode-ide.netlify.app/', '_blank')}
+                  className="h-[26px] px-3 bg-indigo-500 hover:bg-indigo-400 text-white rounded-md text-[13px] font-bold shadow-md shadow-indigo-900/20 border border-indigo-400/20 transition-all active:scale-95 flex items-center justify-center tracking-tighter"
+                  title="Open Online Compiler"
+                >
+                  &lt;&gt;
+                </button>
+              </div>
+            )}
           </div>
           
           {/* Desktop Actions */}
@@ -438,27 +452,27 @@ export default function App() {
             <div ref={containerRef} className="flex-1 overflow-auto flex justify-center p-4 md:p-8 bg-slate-900 custom-scrollbar pb-32 lg:pb-20 touch-pan-y">
                <div ref={contentRef} className="relative shadow-2xl shadow-black pb-20 origin-top-left transition-none">
                  <Document
-                    file={activeFileUrl}
-                    onLoadSuccess={onDocumentLoadSuccess}
-                    onLoadError={() => setPdfError(true)}
-                    loading={<div className="text-white animate-pulse mt-10">Loading Document...</div>}
-                    className="flex flex-col gap-4 md:gap-6"
+                   file={activeFileUrl}
+                   onLoadSuccess={onDocumentLoadSuccess}
+                   onLoadError={() => setPdfError(true)}
+                   loading={<div className="text-white animate-pulse mt-10">Loading Document...</div>}
+                   className="flex flex-col gap-4 md:gap-6"
                  >
                    {numPages && Array.from(new Array(numPages), (el, index) => (
                      <PageWrapper 
-                        key={`page_${index + 1}`}
-                        pageNumber={index + 1}
-                        setVisiblePage={setVisiblePage}
+                       key={`page_${index + 1}`}
+                       pageNumber={index + 1}
+                       setVisiblePage={setVisiblePage}
                      >
                        <Page 
-                          pageNumber={index + 1} 
-                          scale={scale} 
-                          rotate={rotation}
-                          renderTextLayer={false} 
-                          renderAnnotationLayer={false}
-                          className="shadow-xl" 
-                          canvasBackground="#ffffff"
-                          loading={<div className="bg-white h-[300px] w-[200px] flex items-center justify-center text-slate-300">Loading...</div>}
+                         pageNumber={index + 1} 
+                         scale={scale} 
+                         rotate={rotation}
+                         renderTextLayer={false} 
+                         renderAnnotationLayer={false}
+                         className="shadow-xl" 
+                         canvasBackground="#ffffff"
+                         loading={<div className="bg-white h-[300px] w-[200px] flex items-center justify-center text-slate-300">Loading...</div>}
                        />
                      </PageWrapper>
                    ))}
