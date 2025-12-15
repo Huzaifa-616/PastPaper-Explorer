@@ -137,60 +137,54 @@ export default function App() {
 
       {/* Header */}
       <header className="flex-shrink-0 bg-slate-900 border-b border-slate-800 shadow-xl z-20 relative">
-        {/* CHANGED: px-6 py-4 gap-6 lg:h-20 (Bigger dimensions) */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-center px-6 py-4 gap-6 lg:h-20">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center px-3 py-3 gap-3 lg:h-14">
           
-          {/* Logo Section */}
-          <div className="flex items-center justify-between w-full lg:w-auto gap-4 pr-6 lg:border-r border-slate-800 mr-2">
-            <div className="flex items-center gap-4 cursor-pointer" onClick={() => setIsViewing(false)}>
-              {/* CHANGED: w-10 h-10 (Bigger Logo) */}
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/40">
-                <BookOpen className="text-white" size={20} />
+          {/* Logo */}
+          <div className="flex items-center justify-between w-full lg:w-auto gap-2 pr-4 lg:border-r border-slate-800 mr-1">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setIsViewing(false)}>
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/40">
+                <BookOpen className="text-white" size={16} />
               </div>
               <div>
-                {/* CHANGED: text-lg (Bigger Text) */}
-                <h1 className="font-bold text-white text-lg leading-tight whitespace-nowrap">:) <span className="text-blue-500">By: Muhammad Huzaifa Imran</span></h1>
+                <h1 className="font-bold text-white text-base leading-tight whitespace-nowrap">:) <span className="text-blue-500">By: Muhammad Huzaifa Imran</span></h1>
               </div>
             </div>
             
             {/* Mobile Actions */}
-            <div className="flex items-center gap-3 lg:hidden">
-               <button onClick={handleLoadPaper} className={`px-4 py-2 rounded-lg font-bold text-xs transition-all ${isViewing ? 'bg-slate-800 text-slate-400' : 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'}`}>
+            <div className="flex items-center gap-2 lg:hidden">
+               <button onClick={handleLoadPaper} className={`px-2.5 py-1 rounded-md font-bold text-[10px] transition-all ${isViewing ? 'bg-slate-800 text-slate-400' : 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'}`}>
                   {isViewing ? 'Reload' : 'Load'}
                </button>
-               <button onClick={() => setShowContact(true)} className="p-2 bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-700">
-                  <Mail size={16} className="text-slate-400" />
+               <button onClick={() => setShowContact(true)} className="p-1.5 bg-slate-800 rounded-md border border-slate-700 hover:bg-slate-700">
+                  <Mail size={12} className="text-slate-400" />
                </button>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap items-center gap-3 lg:gap-4 w-full overflow-x-auto pb-2 lg:pb-0 no-scrollbar">
-            {/* I slightly increased the minWidths here too for better spacing */}
-            <Select label="Subject" value={subject} onChange={setSubject} options={SUBJECTS.map(s => ({ value: s.code, label: `${s.code} ${s.name}` }))} minWidth="w-36 lg:w-48"/>
-            <div className="w-px h-8 bg-slate-800 hidden lg:block"></div>
-            <Select label="Year" value={year} onChange={setYear} options={YEARS} minWidth="w-20 lg:w-24" />
-            <Select label="Season" value={season} onChange={setSeason} options={SEASONS.map(s => ({ value: s.code, label: s.name }))} minWidth="w-28 lg:w-32" />
-            <Select label="Paper" value={paper} onChange={setPaper} options={PAPERS} minWidth="w-14 lg:w-16" />
-            <Select label="Variant" value={variant} onChange={setVariant} options={VARIANTS} minWidth="w-14 lg:w-16" />
+          <div className="flex flex-wrap items-center gap-2 lg:gap-3 w-full overflow-x-auto pb-1 lg:pb-0 no-scrollbar">
+            <Select label="Subject" value={subject} onChange={setSubject} options={SUBJECTS.map(s => ({ value: s.code, label: `${s.code} ${s.name}` }))} minWidth="w-32 lg:w-40"/>
+            <div className="w-px h-6 bg-slate-800 hidden lg:block"></div>
+            <Select label="Year" value={year} onChange={setYear} options={YEARS} minWidth="w-16 lg:w-20" />
+            <Select label="Season" value={season} onChange={setSeason} options={SEASONS.map(s => ({ value: s.code, label: s.name }))} minWidth="w-24 lg:w-28" />
+            <Select label="Paper" value={paper} onChange={setPaper} options={PAPERS} minWidth="w-12 lg:w-14" />
+            <Select label="Variant" value={variant} onChange={setVariant} options={VARIANTS} minWidth="w-12 lg:w-14" />
             
-            <div className="flex flex-col ml-2">
-              <span className="text-[10px] uppercase font-bold text-slate-500 mb-0.5 tracking-wider">Type</span>
-              {/* CHANGED: py-1 (Taller buttons) */}
-              <div className="bg-slate-800 p-1 rounded-lg border border-slate-700 flex shadow-sm">
-                <button onClick={() => setType('qp')} className={`px-3 py-1 rounded-md text-xs font-bold flex items-center gap-1 ${type === 'qp' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>QP</button>
-                <button onClick={() => setType('ms')} className={`px-3 py-1 rounded-md text-xs font-bold flex items-center gap-1 ${type === 'ms' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>MS</button>
+            <div className="flex flex-col ml-1">
+              <span className="text-[9px] uppercase font-bold text-slate-500 mb-0.5 tracking-wider">Type</span>
+              <div className="bg-slate-800 p-0.5 rounded-md border border-slate-700 flex shadow-sm">
+                <button onClick={() => setType('qp')} className={`px-2 py-0.5 rounded-[4px] text-[10px] font-bold flex items-center gap-1 ${type === 'qp' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>QP</button>
+                <button onClick={() => setType('ms')} className={`px-2 py-0.5 rounded-[4px] text-[10px] font-bold flex items-center gap-1 ${type === 'ms' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>MS</button>
               </div>
             </div>
 
-            {/* --- CUSTOM BUTTON FOR 9618 PAPER 2 AND 4 --- */}
+            {/* --- CUSTOM BUTTON FOR 9618 PAPER 2 AND PAPER 4 --- */}
             {subject === '9618' && (paper === '2' || paper === '4') && (
-              <div className="flex flex-col ml-2 animate-in fade-in zoom-in duration-300">
-                <span className="text-[10px] uppercase font-bold text-slate-500 mb-0.5 tracking-wider">Compiler</span>
-                {/* CHANGED: h-[32px] (Bigger button) */}
+              <div className="flex flex-col ml-1 animate-in fade-in zoom-in duration-300">
+                <span className="text-[9px] uppercase font-bold text-slate-500 mb-0.5 tracking-wider">Compiler</span>
                 <button 
                   onClick={() => window.open('https://pseudocode-ide.netlify.app/', '_blank')}
-                  className="h-[32px] px-4 bg-indigo-500 hover:bg-indigo-400 text-white rounded-lg text-sm font-bold shadow-md shadow-indigo-900/20 border border-indigo-400/20 transition-all active:scale-95 flex items-center justify-center tracking-tighter"
+                  className="h-[26px] px-3 bg-indigo-500 hover:bg-indigo-400 text-white rounded-md text-[13px] font-bold shadow-md shadow-indigo-900/20 border border-indigo-400/20 transition-all active:scale-95 flex items-center justify-center tracking-tighter"
                   title="Open Online Compiler"
                 >
                   &lt;&gt;
@@ -200,22 +194,21 @@ export default function App() {
           </div>
           
           {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center ml-auto pl-6 lg:border-l border-slate-800 gap-4">
-             {/* CHANGED: px-5 py-2 text-sm (Bigger Load Button) */}
+          <div className="hidden lg:flex items-center ml-auto pl-4 lg:border-l border-slate-800 gap-3">
              <button 
                 onClick={handleLoadPaper} 
-                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
+                className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-900/20 transition-all active:scale-95"
              >
-                <Play size={12} fill="currentColor" /> Load
+                <Play size={10} fill="currentColor" /> Load
              </button>
-             <button onClick={() => setShowContact(true)} className="p-2.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 transition-colors text-slate-400 hover:text-white">
-                <Mail size={18} />
+             <button onClick={() => setShowContact(true)} className="p-1.5 rounded-md border border-slate-700 bg-slate-800 hover:bg-slate-700 transition-colors text-slate-400 hover:text-white">
+                <Mail size={14} />
              </button>
              
              {/* Info Indicator */}
-             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-700 bg-slate-800">
-                <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_5px_rgba(59,130,246,0.6)]"></div>
-                <span className="text-[10px] font-mono text-slate-400">PDF.JS ENGINE</span>
+             <div className="flex items-center gap-2 px-2.5 py-1 rounded-full border border-slate-700 bg-slate-800">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_5px_rgba(59,130,246,0.6)]"></div>
+                <span className="text-[9px] font-mono text-slate-400">PDF.JS ENGINE</span>
              </div>
           </div>
         </div>
