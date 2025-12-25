@@ -183,7 +183,7 @@ export default function App() {
               <div className="flex flex-col ml-1 animate-in fade-in zoom-in duration-300">
                 <span className="text-[9px] uppercase font-bold text-slate-500 mb-0.5 tracking-wider">Compiler</span>
                 <button 
-                  onClick={() => window.open('https://pseudocode-ide.netlify.app/', '_blank')}
+                  onClick={() => window.open('https://programming-ide.netlify.app/pseudocode/', '_blank')}
                   className="h-[26px] px-3 bg-indigo-500 hover:bg-indigo-400 text-white rounded-md text-[13px] font-bold shadow-md shadow-indigo-900/20 border border-indigo-400/20 transition-all active:scale-95 flex items-center justify-center tracking-tighter"
                   title="Open Online Compiler"
                 >
