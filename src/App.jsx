@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  BookOpen, ChevronDown, Mail, X, Copy, Check, Play, AlertTriangle 
+  BookOpen, ChevronDown, Mail, X, Copy, Check, Play, Github 
 } from 'lucide-react';
 
 // --- Configuration ---
@@ -17,6 +17,8 @@ const YEARS = Array.from({ length: 15 }, (_, i) => (2025 - i).toString());
 const SEASONS = [{ code: 'm', name: 'March' }, { code: 's', name: 'Summer' }, { code: 'w', name: 'Winter' }];
 const PAPERS = ['1', '2', '3', '4', '5', '6'];
 const VARIANTS = ['1', '2', '3'];
+
+const GITHUB_REPO_URL = "https://github.com/Huzaifa-616/PastPaper-Explorer";
 
 // --- Components ---
 
@@ -117,7 +119,6 @@ export default function App() {
   }, [subject, year, season, paper, variant, type]);
 
   // --- VIEWER PATH ---
-  // Points to the local folder in 'public'
   const viewerSrc = useMemo(() => {
     return `/pdf-viewer/web/viewer.html?file=${encodeURIComponent(activeFileUrl)}`;
   }, [activeFileUrl]);
@@ -146,7 +147,9 @@ export default function App() {
                 <BookOpen className="text-white" size={16} />
               </div>
               <div>
-                <h1 className="font-bold text-white text-base leading-tight whitespace-nowrap">:) <span className="text-blue-500">By: Muhammad Huzaifa Imran</span></h1>
+                <h1 className="font-bold text-white text-sm lg:text-base leading-tight whitespace-nowrap">
+                  <span className="hidden sm:inline">By: </span>Muhammad Huzaifa Imran
+                </h1>
               </div>
             </div>
             
@@ -155,6 +158,14 @@ export default function App() {
                <button onClick={handleLoadPaper} className={`px-2.5 py-1 rounded-md font-bold text-[10px] transition-all ${isViewing ? 'bg-slate-800 text-slate-400' : 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'}`}>
                   {isViewing ? 'Reload' : 'Load'}
                </button>
+               <a 
+                  href={GITHUB_REPO_URL} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-1.5 bg-slate-800 rounded-md border border-slate-700 hover:bg-slate-700"
+               >
+                  <Github size={12} className="text-slate-400" />
+               </a>
                <button onClick={() => setShowContact(true)} className="p-1.5 bg-slate-800 rounded-md border border-slate-700 hover:bg-slate-700">
                   <Mail size={12} className="text-slate-400" />
                </button>
@@ -173,17 +184,17 @@ export default function App() {
             <div className="flex flex-col ml-1">
               <span className="text-[9px] uppercase font-bold text-slate-500 mb-0.5 tracking-wider">Type</span>
               <div className="bg-slate-800 p-0.5 rounded-md border border-slate-700 flex shadow-sm">
-                <button onClick={() => setType('qp')} className={`px-2 py-0.5 rounded-[4px] text-[10px] font-bold flex items-center gap-1 ${type === 'qp' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>QP</button>
-                <button onClick={() => setType('ms')} className={`px-2 py-0.5 rounded-[4px] text-[10px] font-bold flex items-center gap-1 ${type === 'ms' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>MS</button>
+                <button onClick={() => setType('qp')} className={`px-2 py-0.5 rounded-[4px] text-[10px] font-bold flex items-center gap-1 ${type === 'qp' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}>QP</button>
+                <button onClick={() => setType('ms')} className={`px-2 py-0.5 rounded-[4px] text-[10px] font-bold flex items-center gap-1 ${type === 'ms' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'}`}>MS</button>
               </div>
             </div>
 
-            {/* --- CUSTOM BUTTON FOR 9618 PAPER 2 AND PAPER 4 --- */}
+            {/* Custom Button for 9618 */}
             {subject === '9618' && (paper === '2' || paper === '4') && (
               <div className="flex flex-col ml-1 animate-in fade-in zoom-in duration-300">
                 <span className="text-[9px] uppercase font-bold text-slate-500 mb-0.5 tracking-wider">Compiler</span>
                 <button 
-                  onClick={() => window.open('https://pseudocode-ide.netlify.app/', '_blank')}
+                  onClick={() => window.open('https://programming-ide.netlify.app/', '_blank')}
                   className="h-[26px] px-3 bg-indigo-500 hover:bg-indigo-400 text-white rounded-md text-[13px] font-bold shadow-md shadow-indigo-900/20 border border-indigo-400/20 transition-all active:scale-95 flex items-center justify-center tracking-tighter"
                   title="Open Online Compiler"
                 >
@@ -201,9 +212,25 @@ export default function App() {
              >
                 <Play size={10} fill="currentColor" /> Load
              </button>
-             <button onClick={() => setShowContact(true)} className="p-1.5 rounded-md border border-slate-700 bg-slate-800 hover:bg-slate-700 transition-colors text-slate-400 hover:text-white">
-                <Mail size={14} />
-             </button>
+             
+             <div className="flex items-center gap-1.5">
+               <a 
+                  href={GITHUB_REPO_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-1.5 rounded-md border border-slate-700 bg-slate-800 hover:bg-slate-700 transition-colors text-slate-400 hover:text-white"
+                  title="Source Code"
+               >
+                  <Github size={14} />
+               </a>
+               <button 
+                  onClick={() => setShowContact(true)} 
+                  className="p-1.5 rounded-md border border-slate-700 bg-slate-800 hover:bg-slate-700 transition-colors text-slate-400 hover:text-white"
+                  title="Contact Email"
+               >
+                  <Mail size={14} />
+               </button>
+             </div>
              
              {/* Info Indicator */}
              <div className="flex items-center gap-2 px-2.5 py-1 rounded-full border border-slate-700 bg-slate-800">
@@ -217,7 +244,6 @@ export default function App() {
       {/* Main Content */}
       <main className="flex-1 relative bg-slate-950 flex flex-col items-center overflow-hidden">
         
-        {/* === WELCOME SCREEN (Shown when no paper is loaded) === */}
         {!isViewing && (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center animate-in fade-in zoom-in-95 duration-300">
              <div className="w-24 h-24 bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl flex items-center justify-center mb-8 border border-slate-700 shadow-2xl shadow-blue-900/20">
@@ -236,12 +262,8 @@ export default function App() {
           </div>
         )}
 
-        {/* === CUSTOM PDF VIEWER IFRAME === */}
         {isViewing && (
           <div className="w-full h-full bg-slate-900">
-             {/* This IFRAME loads the full-featured Google/Edge style viewer 
-                 located in your public/pdf-viewer/web folder.
-             */}
              <iframe 
                 src={viewerSrc}
                 className="w-full h-full border-none"
