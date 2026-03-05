@@ -23,16 +23,6 @@ const REPO_NAME = "PastPaper-Explorer";
 const GITHUB_REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
 const IDE_URL = "https://programming-ide.netlify.app/";
 
-// --- LOCAL TESTING MAP ---
-// !!! IMPORTANT FOR LOCAL TESTING !!!
-// Browsers cannot scan your Windows folders. To see your files in the dropdown 
-// while testing locally, you MUST list them here exactly as they are in VS Code.
-const LOCAL_TEST_MAP = {
-  '9618_w25_sf_41': ['y.txt', 'z.txt', 'Instructions.txt'],
-  '9618_w25_sf_42': ['hashtable.txt', 'x.txt', 'Data.txt'],
-  '9618_w25_sf_43': ['QueueData.txt', 'Instructions.txt'],
-};
-
 // --- Components ---
 
 const Select = ({ label, value, onChange, options, minWidth = 'w-20', accentColor = 'blue', disabled = false }) => {
@@ -107,53 +97,51 @@ export default function App() {
   const [variant, setVariant] = useState('');
   const [type, setType] = useState('qp');
 
-  // Source File Explorer State
+  // Source File Discovery State
   const [availableFiles, setAvailableFiles] = useState([]);
   const [selectedSf, setSelectedSf] = useState('');
   const [sfContent, setSfContent] = useState('');
   const [isDiscovering, setIsDiscovering] = useState(false);
-  const [isUsingLocal, setIsUsingLocal] = useState(false);
   const [sfLoading, setSfLoading] = useState(false);
   const [sfCopied, setSfCopied] = useState(false);
   const [discoveryError, setDiscoveryError] = useState('');
 
   const isSelectionComplete = subject && year && season && paper && variant;
 
+  // folderName follows strictly: 9618_w25_sf_42
   const folderName = useMemo(() => {
     if (!isSelectionComplete) return '';
     const shortYear = year.slice(2);
     return `${subject}_${season}${shortYear}_sf_${paper}${variant}`;
   }, [subject, year, season, paper, variant, isSelectionComplete]);
 
-  // FEATURE: Dynamic Directory Discovery (Reads the folder contents)
+  // FEATURE: Dynamic GitHub Discovery
+  // This "looks inside" the GitHub folder to see what files are actually there.
   useEffect(() => {
     if (type === 'sf' && folderName) {
       async function discoverFiles() {
         setIsDiscovering(true);
         setAvailableFiles([]);
         setSelectedSf('');
-        setIsUsingLocal(false);
         setDiscoveryError('');
 
         try {
-          // 1. Ask GitHub Contents API to read the folder
-          const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/public/papers/${folderName}`);
-          if (!res.ok) throw new Error("Folder not pushed to GitHub yet");
-          const data = await res.json();
+          // Navigating your GitHub repository structure
+          const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/public/papers/${folderName}`;
+          const response = await fetch(apiUrl);
           
-          // Map actual filenames into the dropdown
-          const files = data.filter(f => f.type === 'file').map(f => f.name);
+          if (!response.ok) throw new Error(`Folder "${folderName}" not found on GitHub.`);
+          
+          const data = await response.json();
+          // Filter out only files (txt, csv, etc) and map their names
+          const files = data
+            .filter(item => item.type === 'file')
+            .map(item => item.name);
+          
           setAvailableFiles(files);
           if (files.length > 0) setSelectedSf(files[0]);
         } catch (err) {
-          // 2. Fallback to Local Map for your dev environment
-          if (LOCAL_TEST_MAP[folderName]) {
-            setAvailableFiles(LOCAL_TEST_MAP[folderName]);
-            setSelectedSf(LOCAL_TEST_MAP[folderName][0]);
-            setIsUsingLocal(true);
-          } else {
-            setDiscoveryError(`Directory "${folderName}" not found. Verify your naming matches your VS Code folder structure.`);
-          }
+          setDiscoveryError(err.message);
         } finally {
           setIsDiscovering(false);
         }
@@ -176,19 +164,22 @@ export default function App() {
     return `/pdf-viewer/web/viewer.html?file=${encodeURIComponent(activeFileUrl)}`;
   }, [activeFileUrl]);
 
-  // Fetch file raw text
+  // Fetch file content
   useEffect(() => {
     if (isViewing && type === 'sf' && selectedSf && activeFileUrl) {
       setSfLoading(true);
       setSfContent('');
       fetch(activeFileUrl)
         .then(async res => {
-          if (!res.ok || res.headers.get('content-type').includes('text/html')) throw new Error("File Missing");
+          const contentType = res.headers.get('content-type');
+          if (!res.ok || (contentType && contentType.includes('text/html'))) {
+             throw new Error("File could not be found at the predicted URL.");
+          }
           return res.text();
         })
         .then(text => { setSfContent(String(text)); setSfLoading(false); })
-        .catch(() => { 
-          setSfContent(`// Error: File "${selectedSf}" not found locally.\n// Expected Path: papers/${folderName}/${selectedSf}`); 
+        .catch((err) => { 
+          setSfContent(`// Error: ${err.message}\n// Path: ${activeFileUrl}\n// Ensure your files are uploaded to the folder "${folderName}" on GitHub.`); 
           setSfLoading(false); 
         });
     }
@@ -217,7 +208,7 @@ export default function App() {
       <header className="flex-shrink-0 bg-slate-900 border-b border-slate-800 shadow-xl z-20 relative">
         <div className="flex flex-col lg:flex-row items-start lg:items-center px-3 py-3 gap-3 lg:h-14">
           
-          {/* Logo Section - EXACT BRANDING RESTORED */}
+          {/* Logo Section - BRANDING PRESERVED */}
           <div className="flex items-center justify-between w-full lg:w-auto gap-2 pr-4 lg:border-r border-slate-800 mr-1">
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => setIsViewing(false)}>
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/40">
@@ -235,7 +226,7 @@ export default function App() {
                <button onClick={handleLoadPaper} disabled={!isSelectionComplete} className={`px-2.5 py-1 rounded-md font-bold text-[10px] transition-all ${isSelectionComplete ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-800 text-slate-500'}`}>
                   {isViewing ? 'Reload' : 'Load'}
                </button>
-               <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer" className="p-1.5 bg-slate-800 rounded-md border border-slate-700 text-slate-400"><Github size={12} /></a>
+               <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer" className="p-1.5 bg-slate-800 rounded-md border border-slate-700 hover:bg-slate-700 text-slate-400"><Github size={12} /></a>
                <button onClick={() => setShowContact(true)} className="p-1.5 bg-slate-800 rounded-md border border-slate-700 hover:bg-slate-700"><Mail size={12} className="text-slate-400" /></button>
             </div>
           </div>
@@ -259,12 +250,11 @@ export default function App() {
               </div>
             </div>
 
-            {/* Folder Scanned Resource Picker */}
+            {/* GitHub Dynamic Resource Picker */}
             {type === 'sf' && (
               <div className="flex items-end gap-2 animate-in slide-in-from-left-2">
-                <Select label="Files Inside Folder" value={selectedSf} onChange={setSelectedSf} options={availableFiles} minWidth="w-40 lg:w-56" accentColor="orange" disabled={isDiscovering}/>
+                <Select label="Discovered Files" value={selectedSf} onChange={setSelectedSf} options={availableFiles} minWidth="w-40 lg:w-56" accentColor="orange" disabled={isDiscovering}/>
                 {isDiscovering && <RefreshCw size={12} className="animate-spin text-orange-500 mb-2" />}
-                {isUsingLocal && <span className="text-[8px] text-orange-500 font-bold mb-2 uppercase animate-pulse">Scanning Folder...</span>}
               </div>
             )}
           </div>
@@ -283,19 +273,19 @@ export default function App() {
         {!isViewing && (
           <div className="w-full max-w-5xl px-6 py-12 flex flex-col items-center animate-in fade-in duration-500">
             <h2 className="text-4xl lg:text-5xl font-black text-white mb-4 tracking-tight">Student Success Hub</h2>
-            <p className="text-slate-400 text-lg mb-12 max-w-2xl text-center">Master your papers with a dynamic library of resources and practical tools.</p>
+            <p className="text-slate-400 text-lg mb-12 max-w-2xl text-center">Access full past papers and dynamically discovered source resources directly from GitHub.</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
               <div className="group bg-slate-900 border border-slate-800 rounded-3xl p-8 hover:border-blue-500/50 transition-all shadow-2xl">
-                <div className="w-14 h-14 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-6 text-blue-500"><BookOpen size={28} /></div>
+                <div className="w-14 h-14 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-6 text-blue-500 group-hover:scale-110 transition-transform"><BookOpen size={28} /></div>
                 <h3 className="text-2xl font-bold text-white mb-3">PastPaper Explorer</h3>
-                <p className="text-slate-400 mb-8 leading-relaxed">Access full PDF papers and dynamically discovered source files for Paper 4.</p>
-                <button onClick={handleLoadPaper} disabled={!isSelectionComplete} className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/40 transition-all disabled:opacity-50">Launch Explorer</button>
+                <p className="text-slate-400 mb-8 leading-relaxed">PDF Past Papers and dynamic Source Files (SF). Use the toolbar to select and launch.</p>
+                <button onClick={handleLoadPaper} disabled={!isSelectionComplete} className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50">Launch Explorer</button>
               </div>
               <div className="group bg-slate-900 border border-slate-800 rounded-3xl p-8 hover:border-indigo-500/50 transition-all shadow-2xl">
-                <div className="w-14 h-14 bg-indigo-600/20 rounded-2xl flex items-center justify-center mb-6 text-indigo-500"><Cpu size={28} /></div>
+                <div className="w-14 h-14 bg-indigo-600/20 rounded-2xl flex items-center justify-center mb-6 text-indigo-500 group-hover:scale-110 transition-transform"><Cpu size={28} /></div>
                 <h3 className="text-2xl font-bold text-white mb-3">Programming IDE</h3>
-                <p className="text-slate-400 mb-8 leading-relaxed">Practice coding for P2 and P4 with an online compiler (Python/Pseudocode).</p>
+                <p className="text-slate-400 mb-8 leading-relaxed">Practice your coding directly in your browser with our integrated compiler tool.</p>
                 <a href={IDE_URL} target="_blank" rel="noopener noreferrer" className="block w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg text-center">Open IDE <ExternalLink size={14} className="inline ml-1 mb-1"/></a>
               </div>
             </div>
@@ -303,17 +293,20 @@ export default function App() {
           </div>
         )}
 
+        {/* Viewing State */}
         {isViewing && (
           <div className="w-full h-full">
             {type === 'sf' ? (
               <div className="w-full h-full flex flex-col p-4 sm:p-8 bg-slate-950 overflow-auto">
                 <div className="max-w-5xl w-full mx-auto flex flex-col h-full">
+                  
+                  {/* SF Resource Header */}
                   <div className="flex items-center justify-between mb-4 bg-slate-900 p-4 rounded-xl border border-slate-800 shadow-2xl">
                     <div className="flex items-center gap-4">
                       <div className="p-2.5 bg-orange-500/10 rounded-lg"><FileText size={20} className="text-orange-500" /></div>
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-100">{String(selectedSf || "Explorer")}</span>
-                        <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Folder: papers/{folderName}/</span>
+                        <span className="text-sm font-bold text-slate-100">{String(selectedSf || "Fetching list...")}</span>
+                        <span className="text-[10px] font-mono text-slate-500 tracking-wider">GitHub Path: /papers/{folderName}/</span>
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -323,9 +316,18 @@ export default function App() {
                       </button>
                     </div>
                   </div>
+
+                  {/* SF Content Viewer */}
                   <div className="flex-1 bg-slate-900 rounded-2xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col min-h-[500px]">
-                    {sfLoading ? <div className="flex-1 flex flex-col items-center justify-center opacity-50"><RefreshCw size={24} className="animate-spin text-orange-500 mb-2" /><span className="text-xs font-mono uppercase tracking-widest text-slate-500">Reading Directory Data...</span></div> : (
-                      <pre className="flex-1 p-8 text-emerald-400 font-mono text-sm leading-relaxed whitespace-pre-wrap">{String(sfContent) || "// Select a resource file from the dropdown above to view its content."}</pre>
+                    {sfLoading ? (
+                      <div className="flex-1 flex flex-col items-center justify-center opacity-50">
+                        <RefreshCw size={24} className="animate-spin text-orange-500 mb-2" />
+                        <span className="text-xs font-mono uppercase tracking-widest text-slate-500">Reading GitHub Directory...</span>
+                      </div>
+                    ) : (
+                      <pre className="flex-1 p-8 text-emerald-400 font-mono text-sm leading-relaxed whitespace-pre-wrap selection:bg-blue-500/30">
+                        {String(sfContent) || "// Select a resource file from the dropdown menu to view its content."}
+                      </pre>
                     )}
                   </div>
                 </div>
