@@ -297,6 +297,49 @@ const GlobalStyles = ({ dark }) => (
     /* ── Scrollbar-free horizontal scroll ── */
     .no-sb { scrollbar-width: none; }
     .no-sb::-webkit-scrollbar { display: none; }
+
+    /* ── Mobile nav overrides ── */
+    @media (max-width: 640px) {
+      .nav-inner {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+      }
+      .nav-divider { display: none !important; }
+      .nav-brand-text { display: none !important; }
+
+      .nav-filters {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr !important;
+        gap: 8px 10px !important;
+        overflow: visible !important;
+        flex: unset !important;
+        padding-bottom: 0 !important;
+      }
+      .nav-filters > div { width: 100%; }
+      .nav-filters .nexus-select {
+        width: 100%;
+        font-size: 10px !important;
+        padding: 6px 22px 6px 8px !important;
+      }
+      .nav-filters .seg-wrap {
+        grid-column: span 1;
+      }
+      .seg-btn { padding: 5px 8px !important; font-size: 10px !important; }
+
+      .nav-actions {
+        display: flex !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 8px !important;
+      }
+      .nav-actions .btn-load {
+        flex: 1 !important;
+        justify-content: center !important;
+      }
+    }
   `}</style>
 );
 
@@ -536,7 +579,7 @@ export default function App() {
         }}>
           <div style={{ overflow: 'hidden', minHeight: 0 }}>
             <header className="nav-bar" style={{ padding: '12px 20px' }}>
-              <div style={{ maxWidth: 1600, margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14 }}>
+              <div className="nav-inner" style={{ maxWidth: 1600, margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14 }}>
 
                 {/* Brand */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginRight: 4 }}>
@@ -549,16 +592,16 @@ export default function App() {
                     </div>
                     <div>
                       <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>PastPaper Explorer</div>
-                      <div className="font-mono" style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: '0.1em' }}>BY M. HUZAIFA IMRAN</div>
+                      <div className="nav-brand-text" style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: '0.1em' }}>BY M. HUZAIFA IMRAN</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Divider */}
-                <div style={{ width: 1, height: 32, background: 'var(--line2)', flexShrink: 0 }} />
+                <div className="nav-divider" style={{ width: 1, height: 32, background: 'var(--line2)', flexShrink: 0 }} />
 
                 {/* Filters */}
-                <div className="no-sb" style={{ display: 'flex', alignItems: 'flex-end', gap: 12, flex: 1, overflowX: 'auto', paddingBottom: 2 }}>
+                <div className="nav-filters no-sb" style={{ display: 'flex', alignItems: 'flex-end', gap: 12, flex: 1, overflowX: 'auto', paddingBottom: 2 }}>
                   <NexusSelect label="Subject" value={subject} onChange={setSubject}
                     options={SUBJECTS.map(s => ({ value: s.code, label: `${s.code} · ${s.name}` }))} />
                   <NexusSelect label="Year"    value={year}    onChange={setYear}    options={YEARS} />
@@ -567,7 +610,7 @@ export default function App() {
                   <NexusSelect label="Variant" value={variant} onChange={setVariant} options={VARIANTS} />
 
                   {/* Doc type segmented */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                  <div className="seg-wrap" style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                     <span className="font-mono" style={{ fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text3)', paddingLeft: 2 }}>Type</span>
                     <div style={{ display: 'flex', background: 'var(--surface2)', border: '1px solid var(--line2)', borderRadius: 8, padding: 3, gap: 2 }}>
                       <button className={`seg-btn ${type === 'qp' ? 'active-amber' : 'inactive'}`} onClick={() => setType('qp')}>QP</button>
@@ -595,7 +638,7 @@ export default function App() {
                 </div>
 
                 {/* Right actions */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto', flexShrink: 0 }}>
+                <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto', flexShrink: 0 }}>
                   <button className={`btn-load ${isComplete ? 'ready' : 'disabled'}`} onClick={handleLoad} disabled={!isComplete}>
                     <Play size={11} fill="currentColor" />
                     {isViewing ? 'Reload' : 'Load Paper'}
