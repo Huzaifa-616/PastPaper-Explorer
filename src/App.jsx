@@ -479,7 +479,7 @@ const StartupScreen = ({ onSelectExplorer, toggleTheme, dark }) => (
           PastPaper Explorer
         </h2>
         <p style={{ color: 'var(--text2)', fontSize: 13, lineHeight: 1.6, marginBottom: 20 }}>
-          Access, view, and navigate A-Level past papers with a built-in fast PDF engine.
+          Access, view, and navigate A-Level past papers with a built-in PDF engine.
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {['Math', 'Physics', 'CS', 'Chemistry'].map(t => (
