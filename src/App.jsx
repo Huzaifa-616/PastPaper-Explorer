@@ -25,7 +25,6 @@ const MCQ_COUNT     = 40;
 const MCQ_OPTS      = ['A', 'B', 'C', 'D'];
 
 // ─── Hardcoded Answer Keys (from official CIE mark schemes 2021–2025) ─────────
-// Key format: `${subjectCode}_${season}${yearShort}_1_${variant}`
 const MCQ_ANSWER_KEYS = {
   '9700_m23_1_2': ['A','C','C','B','D','C','A','B','A','D','C','D','B','A','B','B','D','B','A','C','C','B','D','C','A','D','D','D','C','A','A','B','C','C','B','C','B','A','D','C'],
   '9700_m24_1_2': ['A','C','D','A','C','B','C','A','B','D','C','D','B','C','B','D','B','A','C','C','D','C','A','D','B','A','A','D','B','D','B','D','D','A','B','C','D','C','C','A'],
@@ -130,7 +129,11 @@ const MAX_FILE_BYTES  = 1.5 * 1024 * 1024; // 1.5 MB
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const loadNotes    = () => { try { return JSON.parse(localStorage.getItem(NOTES_KEY) || '{}'); } catch { return {}; } };
 const saveNotes    = (n) => localStorage.setItem(NOTES_KEY, JSON.stringify(n));
-const noteKey      = (code, paper) => `${code}_${paper}`;
+
+// Adjusted Format for Notes Key (Matches file convention: {Subject}_{Season}{Year}_{Paper}{Variant})
+const noteKey      = (code, season, year, paper, variant) => 
+  (year && season) ? `${code}_${season}${year.slice(2)}_${paper}${variant}` : `${code}_${paper}`;
+
 const subjectName  = (code) => SUBJECTS.find(s => s.code === code)?.name || code;
 const fmtBytes     = (b) => b < 1024 ? `${b}B` : b < 1048576 ? `${(b/1024).toFixed(1)}KB` : `${(b/1048576).toFixed(1)}MB`;
 
@@ -189,6 +192,7 @@ const GlobalStyles = ({ dark }) => (
     @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
     @keyframes slideInLeft  { from{transform:translateX(-100%)} to{transform:translateX(0)} }
     @keyframes slideInRight { from{transform:translateX(100%)}  to{transform:translateX(0)} }
+    @keyframes slideUp      { from{transform:translateY(100%)}  to{transform:translateY(0)} }
     @keyframes pulse-ring { 0%{transform:scale(0.95);opacity:0.6} 50%{transform:scale(1.05);opacity:0.2} 100%{transform:scale(0.95);opacity:0.6} }
 
     .anim-0 { animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) both; }
@@ -251,7 +255,20 @@ const GlobalStyles = ({ dark }) => (
     /* Notes sidebar */
     .notes-sidebar { position:absolute;left:0;top:0;bottom:0;width:340px;z-index:50;background:var(--surface);border-right:1px solid var(--line2);display:flex;flex-direction:column;box-shadow:4px 0 30px rgba(0,0,0,0.3);animation:slideInLeft 0.3s cubic-bezier(0.22,1,0.36,1) both; }
     .notes-backdrop { position:absolute;inset:0;z-index:49;background:rgba(0,0,0,0.3); }
-    .mcq-sidebar { position:absolute;right:0;top:0;bottom:0;width:320px;z-index:50;background:var(--surface);border-left:1px solid var(--line2);display:flex;flex-direction:column;box-shadow:-4px 0 30px rgba(0,0,0,0.3);animation:slideInRight 0.3s cubic-bezier(0.22,1,0.36,1) both; }
+    
+    /* MCQ sidebar - Desktop Standard (Inline) */
+    .mcq-sidebar { 
+      position: relative; 
+      width: 320px; 
+      flex-shrink: 0;
+      background: var(--surface); 
+      border-left: 1px solid var(--line2); 
+      display: flex; 
+      flex-direction: column; 
+      box-shadow: -4px 0 30px rgba(0,0,0,0.05); 
+      animation: slideInRight 0.3s cubic-bezier(0.22,1,0.36,1) both; 
+    }
+
     .note-card { background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:14px 16px;transition:border-color 0.2s; }
     .note-card:hover { border-color:var(--accent); }
 
@@ -259,21 +276,15 @@ const GlobalStyles = ({ dark }) => (
     .n-input:focus { border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-d); }
     .n-input::placeholder { color:var(--text3); }
 
-    /* Attach pill */
     .attach-pill { display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:6px;border:1px solid var(--line2);background:var(--surface3);font-size:10px;color:var(--text2);cursor:pointer;transition:all 0.2s;text-decoration:none; }
     .attach-pill:hover { border-color:var(--accent);color:var(--accent); }
 
-    /* MCQ modal */
-    .mcq-modal { background:var(--surface);border:1px solid var(--line2);border-radius:20px;width:100%;max-width:820px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;animation:fadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both; }
     .mcq-bubble { width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line2);background:transparent;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;font-family:'Roboto',sans-serif; }
     .mcq-bubble:hover { border-color:var(--text2);color:var(--text); }
     .mcq-bubble.sel-mine { background:var(--accent);border-color:var(--accent);color:#fff; }
     .mcq-bubble.sel-key  { background:var(--orange);border-color:var(--orange);color:#fff; }
     .mcq-bubble.correct  { background:var(--green);border-color:var(--green);color:#fff; }
     .mcq-bubble.wrong    { background:var(--red);border-color:var(--red);color:#fff; }
-    .mcq-row { display:grid;grid-template-columns:28px 1fr 1px 1fr 20px;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--line);min-height:40px; }
-    .mcq-row:last-child { border-bottom:none; }
-    .mcq-divider { width:1px;height:28px;background:var(--line2);justify-self:center; }
 
     .logo-mark { width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent) 0%,#93c5fd 100%);display:flex;align-items:center;justify-content:center; }
     .empty-icon-ring { width:110px;height:110px;border-radius:50%;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;position:relative; }
@@ -292,10 +303,21 @@ const GlobalStyles = ({ dark }) => (
       .seg-btn { padding:5px 8px !important;font-size:10px !important; }
       .nav-actions { display:flex !important;width:100% !important;margin-left:0 !important;justify-content:space-between !important; }
       .nav-actions .btn-load { flex:1 !important;justify-content:center !important; }
+      
       .notes-sidebar { width:100% !important; }
-      .mcq-sidebar   { width:100% !important; }
-      .mcq-modal { max-height:95vh;border-radius:14px; }
-      .mcq-row { grid-template-columns:22px 1fr 1px 1fr 18px;gap:4px; }
+      
+      /* MCQ sidebar - Mobile Bottom Sheet */
+      .mcq-sidebar { 
+        position: absolute !important;
+        bottom: 0; left: 0; right: 0; top: auto;
+        width: 100% !important; 
+        height: 50vh; 
+        border-left: none !important; 
+        border-top: 1px solid var(--line2);
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
+        animation: slideUp 0.3s cubic-bezier(0.22,1,0.36,1) both;
+        z-index: 50; 
+      }
       .mcq-bubble { width:26px;height:26px;font-size:10px; }
     }
   `}</style>
@@ -384,15 +406,15 @@ const PasswordModal = ({ isOpen, onClose, onSuccess }) => {
 };
 
 // ─── NotesSidebar ─────────────────────────────────────────────────────────────
-const NotesSidebar = ({ subjectCode, paperNum, onClose, isAdmin, onRequestAuth }) => {
-  const key      = noteKey(subjectCode, paperNum);
+const NotesSidebar = ({ subjectCode, paperNum, variant, year, season, onClose, isAdmin, onRequestAuth }) => {
+  const key      = noteKey(subjectCode, season, year, paperNum, variant);
   const subjName = subjectName(subjectCode);
   const [notes, setNotes]         = useState(() => loadNotes()[key] || []);
   const [showAdd, setShowAdd]     = useState(false);
   const [noteTitle, setNoteTitle] = useState('');
   const [noteBody,  setNoteBody]  = useState('');
   const [delConfirm, setDelConfirm] = useState(null);
-  const [pendingFiles, setPendingFiles] = useState([]); // {id,name,type,data,size}
+  const [pendingFiles, setPendingFiles] = useState([]);
   const [fileErr, setFileErr]     = useState('');
   const fileRef = useRef(null);
 
@@ -438,7 +460,10 @@ const NotesSidebar = ({ subjectCode, paperNum, onClose, isAdmin, onRequestAuth }
           <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6 }}>
             <div style={{ display:'flex',alignItems:'center',gap:9 }}>
               <div style={{ width:30,height:30,borderRadius:8,background:'var(--accent-d)',display:'flex',alignItems:'center',justifyContent:'center' }}><NotebookPen size={14} color="var(--accent)"/></div>
-              <div><div style={{ fontSize:13,fontWeight:700,color:'var(--text)' }}>Notes</div><div style={{ fontSize:10,color:'var(--text3)' }}>{subjName} · Paper {paperNum}</div></div>
+              <div>
+                <div style={{ fontSize:13,fontWeight:700,color:'var(--text)' }}>Notes</div>
+                <div style={{ fontSize:10,color:'var(--text3)' }}>{subjName} · Paper {paperNum}</div>
+              </div>
             </div>
             <button className="icon-btn" onClick={onClose} style={{ width:28,height:28,borderRadius:'50%' }}><X size={13}/></button>
           </div>
@@ -502,8 +527,12 @@ const NotesSidebar = ({ subjectCode, paperNum, onClose, isAdmin, onRequestAuth }
           {notes.length === 0 ? (
             <div style={{ textAlign:'center',padding:'48px 0',color:'var(--text3)' }}>
               <FileText size={36} style={{ opacity:0.3,marginBottom:12 }}/>
-              <p style={{ fontSize:13,marginBottom:6 }}>No notes yet</p>
-              <p style={{ fontSize:11 }}>{isAdmin?'Click "Add Note" to get started.':'Unlock to start adding notes.'}</p>
+              <p style={{ fontSize:13,marginBottom:6 }}>No local notes yet</p>
+              <p style={{ fontSize:11, marginBottom: 12 }}>{isAdmin?'Click "Add Note" to get started.':'Unlock to start adding local notes.'}</p>
+              <p style={{ fontSize:9, color:'var(--text3)', borderTop:'1px solid var(--line)', paddingTop:12, marginTop:12 }}>
+                Static Repo Notes expected format:<br/>
+                <span style={{fontFamily:'monospace'}}>/notes/{key}.pdf</span>
+              </p>
             </div>
           ) : notes.map(note => (
             <div key={note.id} className="note-card">
@@ -544,15 +573,16 @@ const NotesSidebar = ({ subjectCode, paperNum, onClose, isAdmin, onRequestAuth }
 };
 
 // ─── MCQ Solver ───────────────────────────────────────────────────────────────
-const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose }) => {
+const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqState, updateMcqState }) => {
   const N = MCQ_COUNT;
   const empty = () => Array(N).fill('');
 
   const msKey       = year && season ? `${subjectCode}_${season}${year.slice(2)}_1_${variant}` : null;
   const hardcodedKey = msKey ? (MCQ_ANSWER_KEYS[msKey] || null) : null;
 
-  const [mine,        setMine]        = useState(empty);
-  const [keyRevealed, setKeyRevealed] = useState(false);
+  // Controlled purely via parent's props
+  const mine        = mcqState.choices || empty();
+  const keyRevealed = mcqState.revealed || false;
 
   const key = hardcodedKey || empty();
 
@@ -566,16 +596,14 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose }) =>
 
   const toggle = useCallback((qi, opt) => {
     if (keyRevealed) return; // lock bubbles once key is shown
-    setMine(prev => { const n=[...prev]; n[qi] = prev[qi]===opt ? '' : opt; return n; });
-  }, [keyRevealed]);
+    const newChoices = [...mine];
+    newChoices[qi] = mine[qi] === opt ? '' : opt;
+    updateMcqState({ choices: newChoices });
+  }, [keyRevealed, mine, updateMcqState]);
 
-  const clearAll = () => { setMine(empty()); setKeyRevealed(false); };
+  const clearAll = () => updateMcqState({ choices: empty(), revealed: false });
+  const toggleReveal = () => updateMcqState({ revealed: !keyRevealed });
 
-  // Per-bubble appearance when key is revealed:
-  // user picked this opt AND it's correct  → green
-  // user picked this opt AND it's wrong    → red
-  // user did NOT pick this opt but it IS the correct answer → orange (shows the right answer)
-  // otherwise → dim
   const getBubbleCls = (qi, opt) => {
     const userPicked = mine[qi] === opt;
     const isCorrectAnswer = key[qi] === opt;
@@ -584,13 +612,12 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose }) =>
     }
     if (userPicked && isCorrectAnswer) return 'mcq-bubble correct';
     if (userPicked && !isCorrectAnswer) return 'mcq-bubble wrong';
-    if (!userPicked && isCorrectAnswer && mine[qi]) return 'mcq-bubble sel-key'; // only show correct if user attempted
+    if (!userPicked && isCorrectAnswer && mine[qi]) return 'mcq-bubble sel-key';
     return 'mcq-bubble';
   };
 
   return (
     <div className="mcq-sidebar">
-
       {/* ── Header ── */}
       <div style={{ padding:'14px 16px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
         <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8 }}>
@@ -609,7 +636,7 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose }) =>
         {/* Action row */}
         <div style={{ display:'flex',gap:6 }}>
           {hardcodedKey && (
-            <button onClick={() => setKeyRevealed(r => !r)}
+            <button onClick={toggleReveal}
               style={{ flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:'6px 10px',borderRadius:7,
                 border:`1px solid ${keyRevealed?'var(--line2)':'var(--orange)'}`,cursor:'pointer',transition:'all 0.2s',
                 background: keyRevealed ? 'var(--surface2)' : 'var(--orange-d)',
@@ -669,7 +696,7 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose }) =>
       <div style={{ padding:'8px 14px',borderTop:'1px solid var(--line2)',flexShrink:0 }}>
         <p style={{ fontSize:10,color:'var(--text3)',textAlign:'center' }}>
           {keyRevealed
-            ? <><span style={{color:'var(--green)'}}>■</span> Correct &nbsp;·&nbsp; <span style={{color:'var(--red)'}}>■</span> Wrong &nbsp;·&nbsp; <span style={{color:'var(--orange)'}}>■</span> Correct answer</>
+            ? <><span style={{color:'var(--green)'}}>■</span> Correct &nbsp;·&nbsp; <span style={{color:'var(--red)'}}>■</span> Wrong &nbsp;·&nbsp; <span style={{color:'var(--orange)'}}>■</span> Answer</>
             : <>{hardcodedKey ? <>Click <span style={{color:'var(--orange)',fontWeight:600}}>Answer Key</span> to check</> : 'No key available for this paper'}</>
           }
         </p>
@@ -742,6 +769,9 @@ export default function App() {
   const [isAdmin,     setIsAdmin]     = useState(false);
   const [showPwModal, setShowPwModal] = useState(false);
 
+  // MCQ Session State 
+  const [mcqSessionData, setMcqSessionData] = useState({});
+
   const [subject, setSubject] = useState('');
   const [year,    setYear]    = useState('');
   const [season,  setSeason]  = useState('');
@@ -753,6 +783,21 @@ export default function App() {
   const canShowNotes  = !!subject && !!paper;
   const canShowMCQ    = MCQ_SUBJECTS.includes(subject) && paper === MCQ_PAPER;
 
+  // Track state for the active MCQ paper
+  const paperKey = `${subject}_${season}${year ? year.slice(2) : ''}_${paper}_${variant}`;
+  
+  const currentMcqState = mcqSessionData[paperKey] || { 
+    choices: Array(MCQ_COUNT).fill(''), 
+    revealed: false 
+  };
+
+  const updateMcqState = useCallback((updates) => {
+    setMcqSessionData(prev => ({
+      ...prev,
+      [paperKey]: { ...(prev[paperKey] || { choices: Array(MCQ_COUNT).fill(''), revealed: false }), ...updates }
+    }));
+  }, [paperKey]);
+
   const activeFileUrl = useMemo(() => {
     if (!isComplete) return '';
     return `/papers/${subject}_${season}${year.slice(2)}_${type}_${paper}${variant}.pdf`;
@@ -761,7 +806,9 @@ export default function App() {
   const viewerSrc = useMemo(()=>`/pdf-viewer/web/viewer.html?file=${encodeURIComponent(activeFileUrl)}`,[activeFileUrl]);
 
   useEffect(()=>{ document.title="The Nexus | Study Tools"; },[]);
-  useEffect(()=>{ setShowNotes(false); setShowMCQ(false); },[subject,paper]);
+  
+  // Close sidebars if the user changes the foundational paper details
+  useEffect(()=>{ setShowNotes(false); setShowMCQ(false); },[subject,paper,variant,season,year]);
 
   const handleLoad = () => { if (!isComplete) return; setIsViewing(true); setShowNav(false); };
   const handleHome = () => { setIsViewing(false); setShowNav(true); };
@@ -775,7 +822,6 @@ export default function App() {
       <GlobalStyles dark={dark}/>
       <ContactModal isOpen={showContact} onClose={()=>setShowContact(false)}/>
       <PasswordModal isOpen={showPwModal} onClose={()=>setShowPwModal(false)} onSuccess={()=>setIsAdmin(true)}/>
-      {showMCQ && <MCQSolver subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} onClose={()=>setShowMCQ(false)}/>}
 
       <div style={{ display:'flex',flexDirection:'column',height:'100vh',background:'var(--bg)',overflow:'hidden' }}>
 
@@ -827,13 +873,13 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* MCQ Solver — Bio, Chem, Physics, Paper 1 only */}
+                  {/* MCQ Solver */}
                   {canShowMCQ && (
                     <div style={{ display:'flex',flexDirection:'column',gap:5 }} className="anim-fade">
                       <span style={{ fontSize:9,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:2 }}>MCQ</span>
-                      <button onClick={()=>setShowMCQ(true)}
-                        style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:'var(--orange-d)',color:'var(--orange)',fontSize:11,fontWeight:600 }}>
-                        <ListChecks size={13}/> Solver
+                      <button onClick={()=>setShowMCQ(s => !s)}
+                        style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showMCQ?'var(--orange)':'var(--orange-d)',color:showMCQ?'#fff':'var(--orange)',fontSize:11,fontWeight:600 }}>
+                        <ListChecks size={13}/> {showMCQ?'Close':'Solver'}
                       </button>
                     </div>
                   )}
@@ -876,7 +922,7 @@ export default function App() {
           {isViewing && showNav && <div style={{ position:'absolute',inset:0,zIndex:20,cursor:'pointer' }} onMouseEnter={()=>setShowNav(false)} onClick={()=>setShowNav(false)}/>}
 
           {showNotes && canShowNotes && (
-            <NotesSidebar subjectCode={subject} paperNum={paper} onClose={()=>setShowNotes(false)} isAdmin={isAdmin} onRequestAuth={()=>setShowPwModal(true)}/>
+            <NotesSidebar subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} onClose={()=>setShowNotes(false)} isAdmin={isAdmin} onRequestAuth={()=>setShowPwModal(true)}/>
           )}
 
           {/* Empty state */}
@@ -899,9 +945,23 @@ export default function App() {
             </div>
           )}
 
+          {/* Viewing Container (PDF + MCQ Sidebar inline) */}
           {isViewing && (
-            <div className="anim-fade" style={{ flex:1,display:'flex',flexDirection:'column',overflow:'hidden' }}>
-              <iframe src={viewerSrc} style={{ flex:1,width:'100%',border:'none',background:'#fff' }} title="PDF Viewer" allowFullScreen/>
+            <div className="anim-fade" style={{ flex:1,display:'flex',overflow:'hidden',position:'relative' }}>
+              {/* PDF Container */}
+              <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+                <iframe src={viewerSrc} style={{ width:'100%',height:'100%',border:'none',background:'#fff' }} title="PDF Viewer" allowFullScreen/>
+              </div>
+
+              {/* MCQ Sidebar (Side-by-Side on Desktop, Overlays as bottom sheet on Mobile) */}
+              {showMCQ && canShowMCQ && (
+                <MCQSolver 
+                  subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} 
+                  onClose={()=>setShowMCQ(false)}
+                  mcqState={currentMcqState} 
+                  updateMcqState={updateMcqState}
+                />
+              )}
             </div>
           )}
         </main>
