@@ -3,7 +3,7 @@ import {
   BookOpen, ChevronDown, ChevronUp, Mail, X, Copy, Check,
   Play, Github, Terminal, ArrowLeft, Layers, Sun, Moon,
   NotebookPen, Lock, Plus, Trash2, FileText, Eye, EyeOff,
-  Paperclip, ExternalLink, ListChecks, AlertCircle
+  Paperclip, ExternalLink, ListChecks, AlertCircle, Compass
 } from 'lucide-react';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -19,13 +19,12 @@ const YEARS         = Array.from({ length: 16 }, (_, i) => (2026 - i).toString()
 const SEASONS       = [{ code: 'm', name: 'March' }, { code: 's', name: 'Summer' }, { code: 'w', name: 'Winter' }];
 const PAPERS        = ['1', '2', '3', '4', '5', '6'];
 const VARIANTS      = ['1', '2', '3'];
-const MCQ_SUBJECTS  = ['9700', '9701', '9702']; // Bio, Chem, Physics
+const MCQ_SUBJECTS  = ['9700', '9701', '9702']; 
 const MCQ_PAPER     = '1';
 const MCQ_COUNT     = 40;
 const MCQ_OPTS      = ['A', 'B', 'C', 'D'];
 
-// ─── Hardcoded Answer Keys (from official CIE mark schemes 2021–2025) ─────────
-// Key format: `${subjectCode}_${season}${yearShort}_1_${variant}`
+// ─── Hardcoded Answer Keys ─────────────────────────────────────────────────────
 const MCQ_ANSWER_KEYS = {
   '9700_m23_1_2': ['A','C','C','B','D','C','A','B','A','D','C','D','B','A','B','B','D','B','A','C','C','B','D','C','A','D','D','D','C','A','A','B','C','C','B','C','B','A','D','C'],
   '9700_m24_1_2': ['A','C','D','A','C','B','C','A','B','D','C','D','B','C','B','D','B','A','C','C','D','C','A','D','B','A','A','D','B','D','B','D','D','A','B','C','D','C','C','A'],
@@ -38,18 +37,7 @@ const MCQ_ANSWER_KEYS = {
   '9700_s23_1_3': ['B','D','C','A','B','A','B','C','A','C','D','D','B','A','C','A','D','B','B','A','B','C','C','B','D','C','C','B','D','D','D','C','A','C','B','A','C','C','D','C'],
   '9700_s24_1_1': ['A','B','A','C','D','C','D','B','D','A','C','D','B','C','B','B','D','D','C','C','C','B','D','C','B','C','A','C','B','A','D','A','A','A','B','D','D','B','A','D'],
   '9700_s24_1_2': ['C','A','C','C','C','D','D','A','C','A','B','B','A','D','D','C','C','B','D','D','B','D','B','A','A','A','B','B','A','A','B','D','D','C','D','C','B','B','D','B'],
-  '9700_s25_1_1': ['C','B','A','C','A','B','C','A','A','C','A','D','C','B','B','C','D','B','A','B','A','D','B','A','C','A','C','C','C','A','C','A','D','D','D','A','A','D','A','B'],
-  '9700_s25_1_2': ['B','B','B','B','A','C','A','D','D','A','C','A','A','C','C','B','A','D','A','D','D','D','D','B','C','D','D','A','C','C','B','A','B','C','A','A','B','B','C','B'],
-  '9700_s25_1_3': ['C','A','C','A','C','B','A','B','C','B','B','A','B','B','D','A','A','D','C','D','A','B','C','D','C','C','D','B','B','C','C','B','C','D','C','C','B','A','D','C'],
-  '9700_w22_1_1': ['D','A','C','A','D','A','A','D','C','C','D','A','C','B','D','C','D','D','B','C','D','C','B','B','B','C','A','C','A','B','C','C','D','B','B','B','A','B','D','D'],
-  '9700_w22_1_2': ['D','A','C','B','D','A','D','C','B','C','B','C','A','C','C','C','C','A','B','B','C','A','D','B','D','D','C','D','D','C','A','A','A','D','A','B','A','D','A','B'],
-  '9700_w22_1_3': ['D','B','B','C','A','A','A','A','B','A','D','A','D','A','C','B','A','A','C','B','A','D','C','C','D','C','D','B','C','A','D','D','C','C','B','B','B','D','A','C'],
-  '9700_w23_1_1': ['B','C','B','B','C','C','D','C','A','D','B','B','A','C','C','C','B','B','D','A','C','D','B','D','A','B','','C','D','A','A','B','A','B','','D','B','A','C','B'],
-  '9700_w23_1_2': ['D','D','B','A','D','A','A','D','B','C','D','D','A','B','C','C','C','B','A','A','C','C','C','D','B','A','B','B','C','C','B','D','A','D','B','D','B','C','B','B'],
-  '9700_w23_1_3': ['C','B','C','D','A','B','C','C','B','A','C','B','D','A','D','C','B','D','D','B','B','D','B','D','B','D','A','A','B','D','C','D','B','C','D','D','C','B','D','C'],
-  '9700_w24_1_1': ['D','D','D','C','B','B','A','B','A','C','B','A','C','C','D','C','C','A','B','A','D','D','D','C','C','B','A','C','B','D','D','A','D','B','A','B','A','A','B','D'],
-  '9700_w24_1_2': ['C','D','A','C','B','A','A','A','C','B','A','D','A','B','D','D','D','D','B','A','B','B','D','C','C','B','B','A','C','C','B','C','B','A','A','B','A','A','C','B'],
-  '9700_w24_1_3': ['D','A','C','B','C','B','D','A','C','B','A','C','B','C','C','D','C','B','D','A','D','A','D','B','D','D','A','B','A','B','B','B','C','C','D','C','C','B','A','A'],
+  '9700_s24_1_3': ['D','A','C','B','C','B','D','A','C','B','A','C','B','C','C','D','C','B','D','A','D','A','D','B','D','D','A','B','A','B','B','B','C','C','D','C','C','B','A','A'],
   '9700_w25_1_1': ['D','B','A','A','D','C','D','D','C','B','A','C','B','A','B','B','B','D','A','C','A','C','B','A','D','B','C','A','C','A','B','D','B','D','C','A','C','C','C','C'],
   '9700_w25_1_2': ['C','A','A','C','B','B','B','D','B','C','D','C','B','B','C','D','A','A','D','A','B','D','A','D','B','D','C','B','C','B','C','D','A','A','D','A','C','C','D','C'],
   '9700_w25_1_3': ['B','B','C','C','B','B','B','C','A','B','A','A','A','B','C','D','A','D','A','C','D','D','C','D','B','B','A','C','D','A','C','C','C','D','A','B','A','B','A','B'],
@@ -125,7 +113,7 @@ const MCQ_ANSWER_KEYS = {
 const GITHUB_REPO_URL = "https://github.com/Huzaifa-616/PastPaper-Explorer";
 const NOTES_PASSWORD  = "bravo07";
 const NOTES_KEY       = "nexus_notes_v1";
-const MAX_FILE_BYTES  = 1.5 * 1024 * 1024; // 1.5 MB
+const MAX_FILE_BYTES  = 1.5 * 1024 * 1024; 
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const loadNotes    = () => { try { return JSON.parse(localStorage.getItem(NOTES_KEY) || '{}'); } catch { return {}; } };
@@ -206,11 +194,18 @@ const GlobalStyles = ({ dark }) => (
     .tool-card::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:linear-gradient(90deg,transparent,var(--accent),transparent); opacity:0; transition:opacity 0.3s; }
     .tool-card:hover { transform:translateY(-8px); border-color:var(--accent); }
     .tool-card:hover::before { opacity:1; }
+    
     .tool-card.blue:hover { border-color:var(--blue); }
     .tool-card.blue::before { background:linear-gradient(90deg,transparent,var(--blue),transparent); }
+    
+    .tool-card.green:hover { border-color:var(--green); }
+    .tool-card.green::before { background:linear-gradient(90deg,transparent,var(--green),transparent); }
+
     .tool-card:hover .cg-a { box-shadow:0 0 60px var(--accent-g); opacity:1; }
     .tool-card:hover .cg-b { box-shadow:0 0 60px rgba(91,141,245,0.3); opacity:1; }
-    .cg-a,.cg-b { position:absolute;inset:0;opacity:0;transition:opacity 0.4s;pointer-events:none;border-radius:16px; }
+    .tool-card:hover .cg-c { box-shadow:0 0 60px rgba(52,211,153,0.25); opacity:1; }
+
+    .cg-a,.cg-b,.cg-c { position:absolute;inset:0;opacity:0;transition:opacity 0.4s;pointer-events:none;border-radius:16px; }
     .icon-badge { width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;border:1px solid var(--line2);background:var(--surface2);transition:transform 0.4s cubic-bezier(0.22,1,0.36,1); }
     .tool-card:hover .icon-badge { transform:scale(1.1) rotate(-3deg); }
 
@@ -248,10 +243,37 @@ const GlobalStyles = ({ dark }) => (
     .modal-box { background:var(--surface);border:1px solid var(--line2);border-radius:20px;width:100%;max-width:420px;position:relative;overflow:hidden;animation:fadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both; }
     .modal-strip { height:2px;background:linear-gradient(90deg,var(--accent),var(--blue)); }
 
-    /* Notes sidebar */
+    /* Notes sidebar (Absolute Overlay) */
     .notes-sidebar { position:absolute;left:0;top:0;bottom:0;width:340px;z-index:50;background:var(--surface);border-right:1px solid var(--line2);display:flex;flex-direction:column;box-shadow:4px 0 30px rgba(0,0,0,0.3);animation:slideInLeft 0.3s cubic-bezier(0.22,1,0.36,1) both; }
     .notes-backdrop { position:absolute;inset:0;z-index:49;background:rgba(0,0,0,0.3); }
-    .mcq-sidebar { position:absolute;right:0;top:0;bottom:0;width:320px;z-index:50;background:var(--surface);border-left:1px solid var(--line2);display:flex;flex-direction:column;box-shadow:-4px 0 30px rgba(0,0,0,0.3);animation:slideInRight 0.3s cubic-bezier(0.22,1,0.36,1) both; }
+
+    /* Topicals sidebar - Desktop Standard (Inline Left) */
+    .topicals-sidebar { 
+      position: relative; 
+      width: 340px; 
+      flex-shrink: 0;
+      background: var(--surface); 
+      border-right: 1px solid var(--line2); 
+      display: flex; 
+      flex-direction: column; 
+      box-shadow: 4px 0 30px rgba(0,0,0,0.05); 
+      animation: slideInLeft 0.3s cubic-bezier(0.22,1,0.36,1) both; 
+      z-index: 10;
+    }
+    
+    /* MCQ sidebar - Desktop Standard (Inline Right) */
+    .mcq-sidebar { 
+      position: relative; 
+      width: 320px; 
+      flex-shrink: 0;
+      background: var(--surface); 
+      border-left: 1px solid var(--line2); 
+      display: flex; 
+      flex-direction: column; 
+      box-shadow: -4px 0 30px rgba(0,0,0,0.05); 
+      animation: slideInRight 0.3s cubic-bezier(0.22,1,0.36,1) both; 
+    }
+
     .note-card { background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:14px 16px;transition:border-color 0.2s; }
     .note-card:hover { border-color:var(--accent); }
 
@@ -259,21 +281,19 @@ const GlobalStyles = ({ dark }) => (
     .n-input:focus { border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-d); }
     .n-input::placeholder { color:var(--text3); }
 
-    /* Attach pill */
     .attach-pill { display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:6px;border:1px solid var(--line2);background:var(--surface3);font-size:10px;color:var(--text2);cursor:pointer;transition:all 0.2s;text-decoration:none; }
     .attach-pill:hover { border-color:var(--accent);color:var(--accent); }
 
-    /* MCQ modal */
-    .mcq-modal { background:var(--surface);border:1px solid var(--line2);border-radius:20px;width:100%;max-width:820px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;animation:fadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both; }
+    /* Topical Question Button Hover */
+    .topical-btn { transition: border-color 0.2s; }
+    .topical-btn:hover { border-color: var(--blue) !important; }
+
     .mcq-bubble { width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line2);background:transparent;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;font-family:'Roboto',sans-serif; }
     .mcq-bubble:hover { border-color:var(--text2);color:var(--text); }
     .mcq-bubble.sel-mine { background:var(--accent);border-color:var(--accent);color:#fff; }
     .mcq-bubble.sel-key  { background:var(--orange);border-color:var(--orange);color:#fff; }
     .mcq-bubble.correct  { background:var(--green);border-color:var(--green);color:#fff; }
     .mcq-bubble.wrong    { background:var(--red);border-color:var(--red);color:#fff; }
-    .mcq-row { display:grid;grid-template-columns:28px 1fr 1px 1fr 20px;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--line);min-height:40px; }
-    .mcq-row:last-child { border-bottom:none; }
-    .mcq-divider { width:1px;height:28px;background:var(--line2);justify-self:center; }
 
     .logo-mark { width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent) 0%,#93c5fd 100%);display:flex;align-items:center;justify-content:center; }
     .empty-icon-ring { width:110px;height:110px;border-radius:50%;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;position:relative; }
@@ -292,10 +312,27 @@ const GlobalStyles = ({ dark }) => (
       .seg-btn { padding:5px 8px !important;font-size:10px !important; }
       .nav-actions { display:flex !important;width:100% !important;margin-left:0 !important;justify-content:space-between !important; }
       .nav-actions .btn-load { flex:1 !important;justify-content:center !important; }
-      .notes-sidebar { width:100% !important; }
-      .mcq-sidebar   { width:100% !important; }
-      .mcq-modal { max-height:95vh;border-radius:14px; }
-      .mcq-row { grid-template-columns:22px 1fr 1px 1fr 18px;gap:4px; }
+      
+      .notes-sidebar, .topicals-sidebar { width:100% !important; }
+      .topicals-sidebar {
+        position: absolute !important;
+        z-index: 50;
+        height: 100%;
+        border-right: none !important;
+      }
+      
+      /* MCQ sidebar - Mobile Bottom Sheet */
+      .mcq-sidebar { 
+        position: absolute !important;
+        bottom: 0; left: 0; right: 0; top: auto;
+        width: 100% !important; 
+        height: 50vh; 
+        border-left: none !important; 
+        border-top: 1px solid var(--line2);
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
+        animation: slideUp 0.3s cubic-bezier(0.22,1,0.36,1) both;
+        z-index: 50; 
+      }
       .mcq-bubble { width:26px;height:26px;font-size:10px; }
     }
   `}</style>
@@ -383,16 +420,124 @@ const PasswordModal = ({ isOpen, onClose, onSuccess }) => {
   );
 };
 
+// ─── TopicalsSidebar ──────────────────────────────────────────────────────────
+const TopicalsSidebar = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => {
+  const [expandedPaper, setExpandedPaper] = useState(null);
+  const [expandedTopic, setExpandedTopic] = useState(null);
+  const subjName = subjectCode ? subjectName(subjectCode) : null;
+  
+  // The database is now perfectly structured by Python. React doesn't need to guess.
+  const db = topicalDb && subjectCode ? topicalDb[subjectCode] : null;
+
+  return (
+    <div className="topicals-sidebar">
+      {/* Header */}
+      <div style={{ padding:'16px 18px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
+        <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6 }}>
+          <div style={{ display:'flex',alignItems:'center',gap:9 }}>
+            <div style={{ width:30,height:30,borderRadius:8,background:'var(--green-d)',display:'flex',alignItems:'center',justifyContent:'center' }}>
+              <Compass size={14} color="var(--green)"/>
+            </div>
+            <div>
+              <div style={{ fontSize:13,fontWeight:700,color:'var(--text)' }}>Topical Extraction</div>
+              <div style={{ fontSize:10,color:'var(--text3)' }}>{subjName || 'No Subject Selected'}</div>
+            </div>
+          </div>
+          <button className="icon-btn" onClick={onClose} style={{ width:28,height:28,borderRadius:'50%' }}><X size={13}/></button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ flex:1, minHeight: 0, overflowY:'auto', padding:'14px 18px', display:'flex', flexDirection:'column', gap:8 }}>
+        {!subjectCode ? (
+          <div style={{ textAlign:'center',padding:'48px 0',color:'var(--text3)' }}>
+            <Compass size={36} style={{ opacity:0.3,marginBottom:12 }}/>
+            <p style={{ fontSize:13,marginBottom:6,color:'var(--text)' }}>Select a Subject</p>
+            <p style={{ fontSize:11,lineHeight:1.5 }}>Please select a subject from the top navigation to view topical questions.</p>
+          </div>
+        ) : !db || Object.keys(db).length === 0 ? (
+           <div style={{ textAlign:'center',padding:'48px 0',color:'var(--text3)' }}>
+            <Compass size={36} style={{ opacity:0.3,marginBottom:12 }}/>
+            <p style={{ fontSize:13,marginBottom:6,color:'var(--text)' }}>Coming Soon</p>
+            <p style={{ fontSize:11,lineHeight:1.5 }}>Topical mapping is currently only available for Computer Science (9618), or you need to run the Python indexer.</p>
+          </div>
+        ) : (
+          
+          // Map through the PRE-STRUCTURED JSON from Python
+          Object.keys(db).sort().map(pNum => {
+            const paperData = db[pNum];
+            const topicKeys = Object.keys(paperData.topics).sort();
+
+            if (topicKeys.length === 0) return null; // Failsafe
+
+            return (
+            <div key={pNum} style={{ background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:10,overflow:'hidden',flexShrink:0 }}>
+              
+              <button 
+                onClick={() => { setExpandedPaper(expandedPaper === pNum ? null : pNum); setExpandedTopic(null); }}
+                style={{ width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 14px',background:'var(--surface3)',border:'none',color:'var(--text)',fontWeight:700,fontSize:13,cursor:'pointer' }}>
+                <div style={{ textAlign:'left' }}>
+                  <div style={{ fontSize:13, fontWeight:700 }}>Paper {pNum}</div>
+                  <div style={{ fontSize:10, color:'var(--text2)', marginTop:2 }}>{paperData.title}</div>
+                </div>
+                {expandedPaper === pNum ? <ChevronUp size={14} color="var(--text3)"/> : <ChevronDown size={14} color="var(--text3)"/>}
+              </button>
+              
+              {expandedPaper === pNum && (
+                <div style={{ padding:'8px',display:'flex',flexDirection:'column',gap:6 }}>
+                  {topicKeys.map(topic => {
+                    const questions = paperData.topics[topic];
+                    
+                    return (
+                    <div key={topic} style={{ background:'var(--surface)',border:'1px solid var(--line2)',borderRadius:8,overflow:'hidden' }}>
+                      
+                      <button onClick={() => setExpandedTopic(expandedTopic === topic ? null : topic)}
+                        style={{ width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 12px',background:'transparent',border:'none',color:'var(--text)',fontWeight:600,fontSize:12,cursor:'pointer' }}>
+                        <span style={{ textAlign:'left', paddingRight:10 }}>{topic}</span>
+                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                           <span style={{ fontSize:10, background:'var(--surface3)', padding:'2px 6px', borderRadius:10, color:'var(--text2)' }}>
+                             {questions.length} Qs
+                           </span>
+                           {expandedTopic === topic ? <ChevronUp size={14} color="var(--text3)"/> : <ChevronDown size={14} color="var(--text3)"/>}
+                        </div>
+                      </button>
+                      
+                      {expandedTopic === topic && (
+                        <div style={{ padding:'0 12px 12px',display:'flex',flexDirection:'column',gap:6 }}>
+                            {questions.map((item, idx) => (
+                              <button key={idx} onClick={() => onSelectQuestion(item.paper_id, item.page_number)} className="topical-btn"
+                                style={{ display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 12px',background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:8,cursor:'pointer' }}>
+                                <div style={{ textAlign:'left' }}>
+                                  <div style={{ fontSize:11,fontWeight:600,color:'var(--accent)',marginBottom:2 }}>{item.season_year.toUpperCase()} · Var {item.variant}</div>
+                                  <div style={{ fontSize:10,color:'var(--text2)' }}>Question {item.questions.join(', ')}</div>
+                                </div>
+                                <div style={{ fontSize:10,color:'var(--text3)',background:'var(--surface3)',padding:'3px 6px',borderRadius:4 }}>Pg {item.page_number}</div>
+                              </button>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  )})}
+                </div>
+              )}
+            </div>
+          )})
+        )}
+      </div>
+    </div>
+  );
+};
+
 // ─── NotesSidebar ─────────────────────────────────────────────────────────────
-const NotesSidebar = ({ subjectCode, paperNum, onClose, isAdmin, onRequestAuth }) => {
-  const key      = noteKey(subjectCode, paperNum);
+const NotesSidebar = ({ subjectCode, paperNum, variant, year, season, onClose, isAdmin, onRequestAuth }) => {
+  const key      = noteKey(subjectCode, season, year, paperNum, variant);
   const subjName = subjectName(subjectCode);
   const [notes, setNotes]         = useState(() => loadNotes()[key] || []);
   const [showAdd, setShowAdd]     = useState(false);
   const [noteTitle, setNoteTitle] = useState('');
   const [noteBody,  setNoteBody]  = useState('');
   const [delConfirm, setDelConfirm] = useState(null);
-  const [pendingFiles, setPendingFiles] = useState([]); // {id,name,type,data,size}
+  const [pendingFiles, setPendingFiles] = useState([]);
   const [fileErr, setFileErr]     = useState('');
   const fileRef = useRef(null);
 
@@ -438,7 +583,10 @@ const NotesSidebar = ({ subjectCode, paperNum, onClose, isAdmin, onRequestAuth }
           <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6 }}>
             <div style={{ display:'flex',alignItems:'center',gap:9 }}>
               <div style={{ width:30,height:30,borderRadius:8,background:'var(--accent-d)',display:'flex',alignItems:'center',justifyContent:'center' }}><NotebookPen size={14} color="var(--accent)"/></div>
-              <div><div style={{ fontSize:13,fontWeight:700,color:'var(--text)' }}>Notes</div><div style={{ fontSize:10,color:'var(--text3)' }}>{subjName} · Paper {paperNum}</div></div>
+              <div>
+                <div style={{ fontSize:13,fontWeight:700,color:'var(--text)' }}>Notes</div>
+                <div style={{ fontSize:10,color:'var(--text3)' }}>{subjName} · Paper {paperNum}</div>
+              </div>
             </div>
             <button className="icon-btn" onClick={onClose} style={{ width:28,height:28,borderRadius:'50%' }}><X size={13}/></button>
           </div>
@@ -502,8 +650,12 @@ const NotesSidebar = ({ subjectCode, paperNum, onClose, isAdmin, onRequestAuth }
           {notes.length === 0 ? (
             <div style={{ textAlign:'center',padding:'48px 0',color:'var(--text3)' }}>
               <FileText size={36} style={{ opacity:0.3,marginBottom:12 }}/>
-              <p style={{ fontSize:13,marginBottom:6 }}>No notes yet</p>
-              <p style={{ fontSize:11 }}>{isAdmin?'Click "Add Note" to get started.':'Unlock to start adding notes.'}</p>
+              <p style={{ fontSize:13,marginBottom:6 }}>No local notes yet</p>
+              <p style={{ fontSize:11, marginBottom: 12 }}>{isAdmin?'Click "Add Note" to get started.':'Unlock to start adding local notes.'}</p>
+              <p style={{ fontSize:9, color:'var(--text3)', borderTop:'1px solid var(--line)', paddingTop:12, marginTop:12 }}>
+                Static Repo Notes expected format:<br/>
+                <span style={{fontFamily:'monospace'}}>/notes/{key}.pdf</span>
+              </p>
             </div>
           ) : notes.map(note => (
             <div key={note.id} className="note-card">
@@ -544,15 +696,16 @@ const NotesSidebar = ({ subjectCode, paperNum, onClose, isAdmin, onRequestAuth }
 };
 
 // ─── MCQ Solver ───────────────────────────────────────────────────────────────
-const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose }) => {
+const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqState, updateMcqState }) => {
   const N = MCQ_COUNT;
   const empty = () => Array(N).fill('');
 
   const msKey       = year && season ? `${subjectCode}_${season}${year.slice(2)}_1_${variant}` : null;
   const hardcodedKey = msKey ? (MCQ_ANSWER_KEYS[msKey] || null) : null;
 
-  const [mine,        setMine]        = useState(empty);
-  const [keyRevealed, setKeyRevealed] = useState(false);
+  // Controlled purely via parent's props
+  const mine        = mcqState.choices || empty();
+  const keyRevealed = mcqState.revealed || false;
 
   const key = hardcodedKey || empty();
 
@@ -566,16 +719,14 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose }) =>
 
   const toggle = useCallback((qi, opt) => {
     if (keyRevealed) return; // lock bubbles once key is shown
-    setMine(prev => { const n=[...prev]; n[qi] = prev[qi]===opt ? '' : opt; return n; });
-  }, [keyRevealed]);
+    const newChoices = [...mine];
+    newChoices[qi] = mine[qi] === opt ? '' : opt;
+    updateMcqState({ choices: newChoices });
+  }, [keyRevealed, mine, updateMcqState]);
 
-  const clearAll = () => { setMine(empty()); setKeyRevealed(false); };
+  const clearAll = () => updateMcqState({ choices: empty(), revealed: false });
+  const toggleReveal = () => updateMcqState({ revealed: !keyRevealed });
 
-  // Per-bubble appearance when key is revealed:
-  // user picked this opt AND it's correct  → green
-  // user picked this opt AND it's wrong    → red
-  // user did NOT pick this opt but it IS the correct answer → orange (shows the right answer)
-  // otherwise → dim
   const getBubbleCls = (qi, opt) => {
     const userPicked = mine[qi] === opt;
     const isCorrectAnswer = key[qi] === opt;
@@ -584,13 +735,12 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose }) =>
     }
     if (userPicked && isCorrectAnswer) return 'mcq-bubble correct';
     if (userPicked && !isCorrectAnswer) return 'mcq-bubble wrong';
-    if (!userPicked && isCorrectAnswer && mine[qi]) return 'mcq-bubble sel-key'; // only show correct if user attempted
+    if (!userPicked && isCorrectAnswer && mine[qi]) return 'mcq-bubble sel-key';
     return 'mcq-bubble';
   };
 
   return (
     <div className="mcq-sidebar">
-
       {/* ── Header ── */}
       <div style={{ padding:'14px 16px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
         <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8 }}>
@@ -609,7 +759,7 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose }) =>
         {/* Action row */}
         <div style={{ display:'flex',gap:6 }}>
           {hardcodedKey && (
-            <button onClick={() => setKeyRevealed(r => !r)}
+            <button onClick={toggleReveal}
               style={{ flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:'6px 10px',borderRadius:7,
                 border:`1px solid ${keyRevealed?'var(--line2)':'var(--orange)'}`,cursor:'pointer',transition:'all 0.2s',
                 background: keyRevealed ? 'var(--surface2)' : 'var(--orange-d)',
@@ -669,7 +819,7 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose }) =>
       <div style={{ padding:'8px 14px',borderTop:'1px solid var(--line2)',flexShrink:0 }}>
         <p style={{ fontSize:10,color:'var(--text3)',textAlign:'center' }}>
           {keyRevealed
-            ? <><span style={{color:'var(--green)'}}>■</span> Correct &nbsp;·&nbsp; <span style={{color:'var(--red)'}}>■</span> Wrong &nbsp;·&nbsp; <span style={{color:'var(--orange)'}}>■</span> Correct answer</>
+            ? <><span style={{color:'var(--green)'}}>■</span> Correct &nbsp;·&nbsp; <span style={{color:'var(--red)'}}>■</span> Wrong &nbsp;·&nbsp; <span style={{color:'var(--orange)'}}>■</span> Answer</>
             : <>{hardcodedKey ? <>Click <span style={{color:'var(--orange)',fontWeight:600}}>Answer Key</span> to check</> : 'No key available for this paper'}</>
           }
         </p>
@@ -679,7 +829,7 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose }) =>
 };
 
 // ─── StartupScreen ────────────────────────────────────────────────────────────
-const StartupScreen = ({ onSelectExplorer, toggleTheme, dark }) => (
+const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }) => (
   <div className="grid-bg" style={{ minHeight:'100vh',background:'var(--bg)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'40px 20px',position:'relative',overflow:'hidden' }}>
     <div style={{ position:'absolute',top:'-15%',left:'-10%',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle,rgba(79,142,247,0.07) 0%,transparent 70%)',pointerEvents:'none' }}/>
     <div style={{ position:'absolute',bottom:'-15%',right:'-10%',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle,rgba(129,140,248,0.06) 0%,transparent 70%)',pointerEvents:'none' }}/>
@@ -698,7 +848,10 @@ const StartupScreen = ({ onSelectExplorer, toggleTheme, dark }) => (
       <p style={{ color:'var(--text2)',fontSize:16,fontWeight:300,letterSpacing:'0.06em' }}>Connect &nbsp;·&nbsp; Compile &nbsp;·&nbsp; Conquer</p>
     </div>
 
-    <div className="anim-2" style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:20,width:'100%',maxWidth:640 }}>
+    {/* Expanded Grid for 3 Tools */}
+    <div className="anim-2" style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:20,width:'100%',maxWidth:960 }}>
+      
+      {/* 1. PastPaper Explorer */}
       <button className="tool-card" onClick={onSelectExplorer}>
         <div className="cg-a"/>
         <div className="icon-badge" style={{ background:'var(--accent-d)',borderColor:'rgba(79,142,247,0.25)' }}><Layers size={24} color="var(--accent)"/></div>
@@ -706,6 +859,17 @@ const StartupScreen = ({ onSelectExplorer, toggleTheme, dark }) => (
         <p style={{ color:'var(--text2)',fontSize:13,lineHeight:1.6,marginBottom:20 }}>Access, view, and navigate A-Level past papers with a built-in fast PDF engine.</p>
         <div style={{ display:'flex',flexWrap:'wrap',gap:6 }}>{['Math','Physics','CS','Chemistry'].map(t=><span className="tag" key={t}>{t}</span>)}</div>
       </button>
+
+      {/* 2. Topical Questions */}
+      <button className="tool-card green" onClick={onSelectTopicals}>
+        <div className="cg-c"/>
+        <div className="icon-badge" style={{ background:'var(--green-d)',borderColor:'rgba(52,211,153,0.25)' }}><Compass size={24} color="var(--green)"/></div>
+        <h2 style={{ fontSize:22,fontWeight:700,color:'var(--text)',marginBottom:10 }}>Topical Questions</h2>
+        <p style={{ color:'var(--text2)',fontSize:13,lineHeight:1.6,marginBottom:20 }}>Master specific syllabus topics. Questions automatically sorted by Paper and Subject.</p>
+        <div style={{ display:'flex',flexWrap:'wrap',gap:6 }}>{['Paper 1','Paper 2','Paper 3','Paper 4'].map(t=><span className="tag" key={t}>{t}</span>)}</div>
+      </button>
+
+      {/* 3. Programming IDE */}
       <button className="tool-card blue" onClick={()=>window.open('https://programming-ide.netlify.app/','_blank')}>
         <div className="cg-b"/>
         <div className="icon-badge" style={{ background:'var(--blue-d)',borderColor:'rgba(129,140,248,0.25)' }}><Terminal size={24} color="var(--blue)"/></div>
@@ -713,6 +877,7 @@ const StartupScreen = ({ onSelectExplorer, toggleTheme, dark }) => (
         <p style={{ color:'var(--text2)',fontSize:13,lineHeight:1.6,marginBottom:20 }}>Write, compile, and run code directly in the browser. Tailored for CS 9618.</p>
         <div style={{ display:'flex',flexWrap:'wrap',gap:6 }}>{['Python','C++','Java','Browser'].map(t=><span className="tag" key={t}>{t}</span>)}</div>
       </button>
+      
     </div>
 
     <div className="anim-3" style={{ marginTop:56,display:'flex',alignItems:'center',gap:16,flexWrap:'wrap',justifyContent:'center' }}>
@@ -722,7 +887,7 @@ const StartupScreen = ({ onSelectExplorer, toggleTheme, dark }) => (
         <span style={{ fontSize:10,color:'var(--text2)',letterSpacing:'0.06em' }}>View on GitHub</span>
       </a>
       <span style={{ color:'var(--line2)',fontSize:18 }}>·</span>
-      <span style={{ fontSize:10,color:'var(--text3)',letterSpacing:'0.06em' }}>Deployed on Netlify · By M. Huzaifa Imran</span>
+      <span style={{ fontSize:10,color:'var(--text3)',letterSpacing:'0.06em' }}>Deployed on Cloudflare · By M. Huzaifa Imran</span>
     </div>
   </div>
 );
@@ -733,14 +898,22 @@ export default function App() {
   useEffect(()=>{ localStorage.setItem('nexusTheme',dark?'dark':'light'); },[dark]);
   const toggleTheme = () => setDark(d=>!d);
 
-  const [showStartup, setShowStartup] = useState(true);
-  const [showContact, setShowContact] = useState(false);
-  const [isViewing,   setIsViewing]   = useState(false);
-  const [showNav,     setShowNav]     = useState(true);
-  const [showNotes,   setShowNotes]   = useState(false);
-  const [showMCQ,     setShowMCQ]     = useState(false);
-  const [isAdmin,     setIsAdmin]     = useState(false);
-  const [showPwModal, setShowPwModal] = useState(false);
+  const [showStartup, setShowStartup]   = useState(true);
+  const [showContact, setShowContact]   = useState(false);
+  const [isViewing,   setIsViewing]     = useState(false);
+  const [showNav,     setShowNav]       = useState(true);
+  const [showNotes,   setShowNotes]     = useState(false);
+  const [showMCQ,     setShowMCQ]       = useState(false);
+  const [showTopicals,setShowTopicals]  = useState(false);
+  const [isAdmin,     setIsAdmin]       = useState(false);
+  const [showPwModal, setShowPwModal]   = useState(false);
+
+  // Topical Database State
+  const [topicalDb, setTopicalDb] = useState(null);
+  const [targetPage, setTargetPage] = useState(1);
+
+  // MCQ Session State 
+  const [mcqSessionData, setMcqSessionData] = useState({});
 
   const [subject, setSubject] = useState('');
   const [year,    setYear]    = useState('');
@@ -753,21 +926,77 @@ export default function App() {
   const canShowNotes  = !!subject && !!paper;
   const canShowMCQ    = MCQ_SUBJECTS.includes(subject) && paper === MCQ_PAPER;
 
+  const paperKey = `${subject}_${season}${year ? year.slice(2) : ''}_${paper}_${variant}`;
+  
+  const currentMcqState = mcqSessionData[paperKey] || { 
+    choices: Array(MCQ_COUNT).fill(''), 
+    revealed: false 
+  };
+
+  const updateMcqState = useCallback((updates) => {
+    setMcqSessionData(prev => ({
+      ...prev,
+      [paperKey]: { ...(prev[paperKey] || { choices: Array(MCQ_COUNT).fill(''), revealed: false }), ...updates }
+    }));
+  }, [paperKey]);
+
+  // Load the Topical JSON Database
+  useEffect(() => {
+    fetch('/topicals_db.json')
+      .then(res => res.json())
+      .then(data => setTopicalDb(data))
+      .catch(err => console.log('No topical DB generated yet.'));
+  }, []);
+
   const activeFileUrl = useMemo(() => {
     if (!isComplete) return '';
     return `/papers/${subject}_${season}${year.slice(2)}_${type}_${paper}${variant}.pdf`;
   }, [subject,year,season,paper,variant,type,isComplete]);
 
-  const viewerSrc = useMemo(()=>`/pdf-viewer/web/viewer.html?file=${encodeURIComponent(activeFileUrl)}`,[activeFileUrl]);
+  const viewerSrc = useMemo(() => {
+    if (!isComplete) return '';
+    let url = `/pdf-viewer/web/viewer.html?file=${encodeURIComponent(activeFileUrl)}`;
+    if (targetPage > 1) {
+      url += `#page=${targetPage}`;
+    }
+    return url;
+  }, [activeFileUrl, targetPage, isComplete]);
 
   useEffect(()=>{ document.title="The Nexus | Study Tools"; },[]);
-  useEffect(()=>{ setShowNotes(false); setShowMCQ(false); },[subject,paper]);
+  
+  // Close sidebars when manually switching papers
+  useEffect(()=>{ 
+    setShowNotes(false); 
+    setShowMCQ(false); 
+    setShowTopicals(false);
+  }, [subject,paper,variant,season,year,type]);
 
-  const handleLoad = () => { if (!isComplete) return; setIsViewing(true); setShowNav(false); };
+  const handleLoad = () => { if (!isComplete) return; setTargetPage(1); setIsViewing(true); setShowNav(false); };
   const handleHome = () => { setIsViewing(false); setShowNav(true); };
 
+  const handleSelectTopicals = () => {
+    setShowStartup(false);
+    setShowTopicals(true);
+  };
+
+  // Handler triggered from Topical Sidebar
+  const handleTopicalSelect = useCallback((paperId, pageNum) => {
+    const parts = paperId.replace('.pdf', '').split('_');
+    if (parts.length >= 4) {
+      setSubject(parts[0]);
+      setSeason(parts[1][0]); 
+      setYear("20" + parts[1].slice(1)); 
+      setType(parts[2]); 
+      setPaper(parts[3][0]); 
+      setVariant(parts[3][1]); 
+      setTargetPage(pageNum);
+      setIsViewing(true);
+      if (window.innerWidth <= 640) setShowTopicals(false);
+    }
+  }, []);
+
   if (showStartup) return (
-    <><GlobalStyles dark={dark}/><StartupScreen onSelectExplorer={()=>setShowStartup(false)} toggleTheme={toggleTheme} dark={dark}/></>
+    <><GlobalStyles dark={dark}/><StartupScreen onSelectExplorer={()=>setShowStartup(false)} onSelectTopicals={handleSelectTopicals} toggleTheme={toggleTheme} dark={dark}/></>
   );
 
   return (
@@ -775,7 +1004,6 @@ export default function App() {
       <GlobalStyles dark={dark}/>
       <ContactModal isOpen={showContact} onClose={()=>setShowContact(false)}/>
       <PasswordModal isOpen={showPwModal} onClose={()=>setShowPwModal(false)} onSuccess={()=>setIsAdmin(true)}/>
-      {showMCQ && <MCQSolver subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} onClose={()=>setShowMCQ(false)}/>}
 
       <div style={{ display:'flex',flexDirection:'column',height:'100vh',background:'var(--bg)',overflow:'hidden' }}>
 
@@ -787,7 +1015,7 @@ export default function App() {
 
                 {/* Brand */}
                 <div style={{ display:'flex',alignItems:'center',gap:10,marginRight:4 }}>
-                  <button className="icon-btn" onClick={()=>{setShowStartup(true);handleHome();setShowNotes(false);}} title="Back" style={{ flexShrink:0 }}><ArrowLeft size={14}/></button>
+                  <button className="icon-btn" onClick={()=>{setShowStartup(true);handleHome();setShowNotes(false);setShowTopicals(false);}} title="Back" style={{ flexShrink:0 }}><ArrowLeft size={14}/></button>
                   <div style={{ display:'flex',alignItems:'center',gap:8,cursor:'pointer' }} onClick={handleHome}>
                     <div className="logo-mark"><Layers size={16} color="#fff" strokeWidth={2.2}/></div>
                     <div>
@@ -801,39 +1029,48 @@ export default function App() {
 
                 {/* Filters */}
                 <div className="nav-filters no-sb" style={{ display:'flex',alignItems:'flex-end',gap:12,flex:1,overflowX:'auto',paddingBottom:2 }}>
-                  <NexusSelect label="Subject" value={subject} onChange={v=>{setSubject(v);setShowNotes(false);}} options={SUBJECTS.map(s=>({value:s.code,label:`${s.code} · ${s.name}`}))}/>
-                  <NexusSelect label="Year"    value={year}    onChange={setYear}    options={YEARS}/>
-                  <NexusSelect label="Season"  value={season}  onChange={setSeason}  options={SEASONS.map(s=>({value:s.code,label:s.name}))}/>
-                  <NexusSelect label="Paper"   value={paper}   onChange={v=>{setPaper(v);setShowNotes(false);}} options={PAPERS}/>
-                  <NexusSelect label="Variant" value={variant} onChange={setVariant} options={VARIANTS}/>
+                  <NexusSelect label="Subject" value={subject} onChange={v=>{setSubject(v);setShowNotes(false);setTargetPage(1);}} options={SUBJECTS.map(s=>({value:s.code,label:`${s.code} · ${s.name}`}))}/>
+                  <NexusSelect label="Year"    value={year}    onChange={v=>{setYear(v);setTargetPage(1);}}    options={YEARS}/>
+                  <NexusSelect label="Season"  value={season}  onChange={v=>{setSeason(v);setTargetPage(1);}}  options={SEASONS.map(s=>({value:s.code,label:s.name}))}/>
+                  <NexusSelect label="Paper"   value={paper}   onChange={v=>{setPaper(v);setShowNotes(false);setTargetPage(1);}} options={PAPERS}/>
+                  <NexusSelect label="Variant" value={variant} onChange={v=>{setVariant(v);setTargetPage(1);}} options={VARIANTS}/>
 
                   {/* QP / MS */}
                   <div className="seg-wrap" style={{ display:'flex',flexDirection:'column',gap:5 }}>
                     <span style={{ fontSize:9,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:2 }}>Type</span>
                     <div style={{ display:'flex',background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:8,padding:3,gap:2 }}>
-                      <button className={`seg-btn ${type==='qp'?'a-accent':'inactive'}`} onClick={()=>setType('qp')}>QP</button>
-                      <button className={`seg-btn ${type==='ms'?'a-blue':'inactive'}`}   onClick={()=>setType('ms')}>MS</button>
+                      <button className={`seg-btn ${type==='qp'?'a-accent':'inactive'}`} onClick={()=>{setType('qp');setTargetPage(1);}}>QP</button>
+                      <button className={`seg-btn ${type==='ms'?'a-blue':'inactive'}`}   onClick={()=>{setType('ms');setTargetPage(1);}}>MS</button>
                     </div>
+                  </div>
+
+                  {/* Topicals - Always available to prompt Subject Selection */}
+                  <div style={{ display:'flex',flexDirection:'column',gap:5 }} className="anim-fade">
+                    <span style={{ fontSize:9,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:2 }}>Topics</span>
+                    <button onClick={()=>{setShowTopicals(s=>!s); setShowNotes(false);}}
+                      style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showTopicals?'var(--green)':'var(--green-d)',color:showTopicals?'#fff':'var(--green)',fontSize:11,fontWeight:600 }}>
+                      <Compass size={13}/> {showTopicals?'Close':'Topicals'}
+                    </button>
                   </div>
 
                   {/* Notes */}
                   {canShowNotes && (
                     <div style={{ display:'flex',flexDirection:'column',gap:5 }} className="anim-fade">
                       <span style={{ fontSize:9,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:2 }}>Notes</span>
-                      <button onClick={()=>setShowNotes(s=>!s)}
-                        style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showNotes?'var(--green)':'var(--green-d)',color:showNotes?'#fff':'var(--green)',fontSize:11,fontWeight:600 }}>
+                      <button onClick={()=>{setShowNotes(s=>!s); setShowTopicals(false);}}
+                        style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showNotes?'var(--accent)':'var(--accent-d)',color:showNotes?'#fff':'var(--accent)',fontSize:11,fontWeight:600 }}>
                         <NotebookPen size={13}/> {showNotes?'Close':'Notes'}
                       </button>
                     </div>
                   )}
 
-                  {/* MCQ Solver — Bio, Chem, Physics, Paper 1 only */}
+                  {/* MCQ Solver */}
                   {canShowMCQ && (
                     <div style={{ display:'flex',flexDirection:'column',gap:5 }} className="anim-fade">
                       <span style={{ fontSize:9,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:2 }}>MCQ</span>
-                      <button onClick={()=>setShowMCQ(true)}
-                        style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:'var(--orange-d)',color:'var(--orange)',fontSize:11,fontWeight:600 }}>
-                        <ListChecks size={13}/> Solver
+                      <button onClick={()=>setShowMCQ(s => !s)}
+                        style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showMCQ?'var(--orange)':'var(--orange-d)',color:showMCQ?'#fff':'var(--orange)',fontSize:11,fontWeight:600 }}>
+                        <ListChecks size={13}/> {showMCQ?'Close':'Solver'}
                       </button>
                     </div>
                   )}
@@ -876,34 +1113,54 @@ export default function App() {
           {isViewing && showNav && <div style={{ position:'absolute',inset:0,zIndex:20,cursor:'pointer' }} onMouseEnter={()=>setShowNav(false)} onClick={()=>setShowNav(false)}/>}
 
           {showNotes && canShowNotes && (
-            <NotesSidebar subjectCode={subject} paperNum={paper} onClose={()=>setShowNotes(false)} isAdmin={isAdmin} onRequestAuth={()=>setShowPwModal(true)}/>
+            <NotesSidebar subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} onClose={()=>setShowNotes(false)} isAdmin={isAdmin} onRequestAuth={()=>setShowPwModal(true)}/>
           )}
 
-          {/* Empty state */}
-          {!isViewing && (
-            <div className="grid-bg anim-fade" style={{ flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:40,textAlign:'center',background:'var(--bg)' }}>
-              <div style={{ position:'absolute',top:'20%',left:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle,rgba(79,142,247,0.04) 0%,transparent 70%)',pointerEvents:'none' }}/>
-              <div style={{ position:'absolute',bottom:'20%',right:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle,rgba(129,140,248,0.04) 0%,transparent 70%)',pointerEvents:'none' }}/>
-              <div className="empty-icon-ring" style={{ marginBottom:32,zIndex:1 }}><BookOpen size={38} color="var(--accent)" strokeWidth={1.5}/></div>
-              <h2 style={{ fontSize:36,fontWeight:700,color:'var(--text)',marginBottom:14,zIndex:1 }}>Ready to study?</h2>
-              <p style={{ color:'var(--text2)',fontSize:15,lineHeight:1.7,maxWidth:420,marginBottom:32,fontWeight:300,zIndex:1 }}>
-                Configure your paper above — subject, year, season, paper, and variant — then hit&nbsp;
-                <span style={{ fontSize:12,color:'var(--accent)',background:'var(--accent-d)',padding:'2px 8px',borderRadius:5,whiteSpace:'nowrap' }}>Load Paper</span>
-                &nbsp;to open the viewer.
-              </p>
-              <div style={{ display:'flex',gap:10,flexWrap:'wrap',justifyContent:'center',zIndex:1 }}>
-                {['Fast PDF Engine','Full-Screen Viewer','16 Years of Papers','Subject Notes','MCQ Solver','File Attachments'].map(t=>(
-                  <span className="tag" key={t} style={{ fontSize:11 }}><span style={{ color:'var(--accent)',fontSize:8 }}>✦</span> {t}</span>
-                ))}
+          {/* Horizontal Layout Wrapper for Inline Topicals & PDF Content */}
+          <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
+            
+            {/* Topicals Sidebar Inline Left */}
+            {showTopicals && (
+              <TopicalsSidebar subjectCode={subject} topicalDb={topicalDb} onClose={()=>setShowTopicals(false)} onSelectQuestion={handleTopicalSelect}/>
+            )}
+
+            {/* Content Area */}
+            {!isViewing ? (
+              <div className="grid-bg anim-fade" style={{ flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:40,textAlign:'center',background:'var(--bg)' }}>
+                <div style={{ position:'absolute',top:'20%',left:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle,rgba(79,142,247,0.04) 0%,transparent 70%)',pointerEvents:'none' }}/>
+                <div style={{ position:'absolute',bottom:'20%',right:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle,rgba(129,140,248,0.04) 0%,transparent 70%)',pointerEvents:'none' }}/>
+                <div className="empty-icon-ring" style={{ marginBottom:32,zIndex:1 }}><BookOpen size={38} color="var(--accent)" strokeWidth={1.5}/></div>
+                <h2 style={{ fontSize:36,fontWeight:700,color:'var(--text)',marginBottom:14,zIndex:1 }}>Ready to study?</h2>
+                <p style={{ color:'var(--text2)',fontSize:15,lineHeight:1.7,maxWidth:420,marginBottom:32,fontWeight:300,zIndex:1 }}>
+                  Configure your paper above — subject, year, season, paper, and variant — then hit&nbsp;
+                  <span style={{ fontSize:12,color:'var(--accent)',background:'var(--accent-d)',padding:'2px 8px',borderRadius:5,whiteSpace:'nowrap' }}>Load Paper</span>
+                  &nbsp;to open the viewer.
+                </p>
+                <div style={{ display:'flex',gap:10,flexWrap:'wrap',justifyContent:'center',zIndex:1 }}>
+                  {['Fast PDF Engine','Full-Screen Viewer','16 Years of Papers','Topical Mode','MCQ Solver','File Attachments'].map(t=>(
+                    <span className="tag" key={t} style={{ fontSize:11 }}><span style={{ color:'var(--accent)',fontSize:8 }}>✦</span> {t}</span>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="anim-fade" style={{ flex:1,display:'flex',overflow:'hidden',position:'relative' }}>
+                {/* PDF Container */}
+                <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+                  <iframe src={viewerSrc} style={{ width:'100%',height:'100%',border:'none',background:'#fff' }} title="PDF Viewer" allowFullScreen/>
+                </div>
 
-          {isViewing && (
-            <div className="anim-fade" style={{ flex:1,display:'flex',flexDirection:'column',overflow:'hidden' }}>
-              <iframe src={viewerSrc} style={{ flex:1,width:'100%',border:'none',background:'#fff' }} title="PDF Viewer" allowFullScreen/>
-            </div>
-          )}
+                {/* MCQ Sidebar Inline Right */}
+                {showMCQ && canShowMCQ && (
+                  <MCQSolver 
+                    subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} 
+                    onClose={()=>setShowMCQ(false)}
+                    mcqState={currentMcqState} 
+                    updateMcqState={updateMcqState}
+                  />
+                )}
+              </div>
+            )}
+          </div>
         </main>
       </div>
     </>
