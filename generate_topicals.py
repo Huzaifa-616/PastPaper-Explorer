@@ -3,7 +3,7 @@ import os
 import re
 import json
 
-# Single Source of Truth for 9618
+# Unified Source of Truth for 9618, 9702, and 9701
 SYLLABUS = {
     "9618": {
         "1": {
@@ -46,6 +46,85 @@ SYLLABUS = {
                 "Data Structures & Files": ["linked list", "stack", "queue", "binary tree", "hash table", "exception handling", "serial file", "sequential file", "random file", "node", "pointer", "null pointer", "root", "leaf", "inorder", "preorder", "postorder", "hashing", "collision", "synonym", "try", "catch", "push", "pop", "enqueue", "dequeue"]
             }
         }
+    },
+    "9702": {
+        "1": {
+            "title": "AS Level Theory (MCQ)",
+            "topics": {
+                "Physical Quantities & Units": ["base unit", "derived unit", "si unit", "scalar", "vector", "uncertainty", "absolute uncertainty", "percentage uncertainty", "systematic error", "random error", "homogeneity", "precision", "accuracy", "cathode-ray oscilloscope", "cro"],
+                "Kinematics": ["displacement", "velocity", "acceleration", "kinematic equation", "projectile", "free fall", "speed-time graph", "displacement-time graph", "terminal velocity", "constant acceleration", "air resistance"],
+                "Dynamics": ["newton's first law", "newton's second law", "newton's third law", "momentum", "rate of change of momentum", "impulse", "conservation of momentum", "elastic collision", "inelastic collision", "mass", "weight", "friction", "drag force"],
+                "Forces, Density & Pressure": ["centre of gravity", "moment", "torque", "couple", "equilibrium", "coplanar forces", "density", "pressure", "hydrostatic pressure", "upthrust", "archimedes", "viscous drag"],
+                "Work, Energy & Power": ["work done", "kinetic energy", "potential energy", "gravitational potential energy", "elastic potential energy", "efficiency", "conservation of energy", "power", "useful power", "driving force"],
+                "Deformation of Solids": ["compressive", "tensile", "spring constant", "hooke's law", "stress", "strain", "young modulus", "elastic deformation", "plastic deformation", "elastic limit", "limit of proportionality", "strain energy"],
+                "Waves & Superposition": ["progressive wave", "transverse wave", "longitudinal wave", "amplitude", "wavelength", "frequency", "period", "phase difference", "intensity", "doppler effect", "electromagnetic spectrum", "polarisation", "malus's law", "principle of superposition", "stationary wave", "standing wave", "node", "antinode", "diffraction", "interference", "coherence", "young's double-slit", "diffraction grating", "fringe width", "path difference", "fringe separation"],
+                "Electricity & D.C. Circuits": ["electric current", "charge", "quantised", "coulomb", "drift velocity", "potential difference", "electromotive force", "e.m.f", "resistance", "ohm", "resistivity", "i-v characteristic", "ohm's law", "kirchhoff's first law", "kirchhoff's second law", "series circuit", "parallel circuit", "potential divider", "potentiometer", "internal resistance", "terminal p.d", "galvanometer"],
+                "Particle Physics": ["alpha particle", "beta particle", "gamma radiation", "isotope", "nucleon", "hadron", "lepton", "quark", "antimatter", "positron", "beta decay", "neutrino", "weak interaction", "strong interaction", "flavour"]
+            }
+        },
+        "2": {
+            "title": "AS Level Structured",
+            "topics": {
+                "Physical Quantities & Units": ["base unit", "derived unit", "si unit", "scalar", "vector", "uncertainty", "absolute uncertainty", "percentage uncertainty", "systematic error", "random error", "homogeneity", "precision", "accuracy", "cathode-ray oscilloscope", "cro"],
+                "Kinematics": ["displacement", "velocity", "acceleration", "kinematic equation", "projectile", "free fall", "speed-time graph", "displacement-time graph", "terminal velocity", "constant acceleration", "air resistance"],
+                "Dynamics": ["newton's first law", "newton's second law", "newton's third law", "momentum", "rate of change of momentum", "impulse", "conservation of momentum", "elastic collision", "inelastic collision", "mass", "weight", "friction", "drag force"],
+                "Forces, Density & Pressure": ["centre of gravity", "moment", "torque", "couple", "equilibrium", "coplanar forces", "density", "pressure", "hydrostatic pressure", "upthrust", "archimedes", "viscous drag"],
+                "Work, Energy & Power": ["work done", "kinetic energy", "potential energy", "gravitational potential energy", "elastic potential energy", "efficiency", "conservation of energy", "power", "useful power", "driving force"],
+                "Deformation of Solids": ["compressive", "tensile", "spring constant", "hooke's law", "stress", "strain", "young modulus", "elastic deformation", "plastic deformation", "elastic limit", "limit of proportionality", "strain energy"],
+                "Waves & Superposition": ["progressive wave", "transverse wave", "longitudinal wave", "amplitude", "wavelength", "frequency", "period", "phase difference", "intensity", "doppler effect", "electromagnetic spectrum", "polarisation", "malus's law", "principle of superposition", "stationary wave", "standing wave", "node", "antinode", "diffraction", "interference", "coherence", "young's double-slit", "diffraction grating", "fringe width", "path difference", "fringe separation"],
+                "Electricity & D.C. Circuits": ["electric current", "charge", "quantised", "coulomb", "drift velocity", "potential difference", "electromotive force", "e.m.f", "resistance", "ohm", "resistivity", "i-v characteristic", "ohm's law", "kirchhoff's first law", "kirchhoff's second law", "series circuit", "parallel circuit", "potential divider", "potentiometer", "internal resistance", "terminal p.d", "galvanometer"],
+                "Particle Physics": ["alpha particle", "beta particle", "gamma radiation", "isotope", "nucleon", "hadron", "lepton", "quark", "antimatter", "positron", "beta decay", "neutrino", "weak interaction", "strong interaction", "flavour"]
+            }
+        },
+        "4": {
+            "title": "A Level Structured",
+            "topics": {
+                "Motion in a Circle & Gravitation": ["radian", "angular velocity", "angular displacement", "centripetal acceleration", "centripetal force", "uniform circular motion", "gravitational field strength", "newton's law of gravitation", "point mass", "gravitational potential", "escape velocity", "orbit", "geostationary", "kepler"],
+                "Thermal Physics & Ideal Gases": ["thermal energy", "thermal equilibrium", "thermodynamic scale", "kelvin", "absolute zero", "specific heat capacity", "specific latent heat", "melting", "boiling", "evaporation", "ideal gas", "equation of state", "pv = nrt", "avogadro constant", "kinetic theory", "brownian motion", "root-mean-square", "mean square speed", "boltzmann constant", "first law of thermodynamics", "internal energy", "isothermal", "adiabatic"],
+                "Oscillations": ["simple harmonic motion", "s.h.m", "angular frequency", "restoring force", "damping", "resonance", "natural frequency", "forced oscillation", "amplitude-frequency graph"],
+                "Electric & Magnetic Fields": ["electric field strength", "uniform electric field", "coulomb's law", "electric potential", "permittivity", "point charge", "equipotential", "magnetic flux density", "tesla", "hall effect", "hall voltage", "fleming's left-hand", "force on a moving charge", "velocity selector", "electromagnetic induction", "magnetic flux", "weber", "faraday's law", "lenz's law"],
+                "Capacitance & Alternating Current": ["capacitance", "farad", "capacitor", "dielectric", "series and parallel capacitors", "time constant", "exponential discharge", "alternating current", "a.c.", "peak current", "r.m.s", "rectification", "half-wave", "full-wave", "smoothing", "transformer"],
+                "Quantum & Nuclear Physics": ["photon", "planck constant", "particulate nature", "photoelectric effect", "work function", "threshold frequency", "stopping potential", "de broglie", "wave-particle duality", "energy level", "emission spectrum", "absorption spectrum", "band theory", "mass defect", "mass excess", "binding energy", "atomic mass unit", "nuclear fission", "nuclear fusion", "radioactive decay", "decay constant", "half-life", "activity", "becquerel"],
+                "Medical Physics & Cosmology": ["ultrasound", "piezoelectric", "acoustic impedance", "intensity reflection coefficient", "attenuation", "x-ray", "radiograph", "contrast media", "ct scan", "positron emission tomography", "pet scan", "annihilation", "tracer", "luminosity", "radiant flux", "standard candle", "wien's displacement law", "stefan-boltzmann", "hubble's law", "redshift", "big bang", "expanding universe"]
+            }
+        }
+    },
+    "9701": {
+        "1": {
+            "title": "AS Level Theory (MCQ)",
+            "topics": {
+                "Physical: Atoms, Bonding & Stoichiometry": ["isotope", "nucleon", "stoichiometry", "empirical formula", "molecular formula", "avogadro", "ionic bond", "covalent bond", "metallic bond", "intermolecular force", "van der waals", "hydrogen bond", "dipole", "electronegativity", "dot-and-cross", "sp3", "sp2", "ideal gas", "pv=nrt", "lattice"],
+                "Physical: Energetics & Kinetics": ["enthalpy", "exothermic", "endothermic", "activation energy", "hess's law", "bond energy", "calorimetry", "rate of reaction", "collision theory", "catalyst", "boltzmann distribution"],
+                "Physical: Equilibria & Electrochemistry": ["reversible reaction", "dynamic equilibrium", "le chatelier", "kc", "kp", "haber process", "contact process", "bronsted-lowry", "weak acid", "weak base", "oxidation number", "redox", "half-equation", "electrolysis"],
+                "Inorganic: Periodicity & Groups 2/17": ["periodicity", "atomic radius", "ionization energy", "melting point", "electrical conductivity", "magnesium", "calcium", "barium", "strontium", "thermal decomposition", "halogen", "chlorine", "bromine", "iodine", "displacement reaction", "disproportionation", "nitrogen", "sulfur", "ammonia"],
+                "Organic: Intro & Hydrocarbons": ["alkane", "alkene", "functional group", "homologous series", "isomerism", "stereoisomerism", "chiral", "optical isomer", "free-radical substitution", "electrophilic addition", "markovnikov", "cracking", "carbocation", "inductive effect"],
+                "Organic: Halogens, Hydroxy & Carbonyls": ["halogenoalkane", "nucleophilic substitution", "sn1", "sn2", "elimination reaction", "alcohol", "primary alcohol", "secondary alcohol", "tertiary alcohol", "oxidation of alcohol", "aldehyde", "ketone", "nucleophilic addition", "tollens", "fehling", "2,4-dnp", "iodoform"],
+                "Organic: Carboxylic, Nitrogen & Polymers": ["carboxylic acid", "ester", "esterification", "hydrolysis", "primary amine", "nitrile", "addition polymerisation", "polyalkene", "repeat unit", "monomer"]
+            }
+        },
+        "2": {
+            "title": "AS Level Structured",
+            "topics": {
+                "Physical: Atoms, Bonding & Stoichiometry": ["isotope", "nucleon", "stoichiometry", "empirical formula", "molecular formula", "avogadro", "ionic bond", "covalent bond", "metallic bond", "intermolecular force", "van der waals", "hydrogen bond", "dipole", "electronegativity", "dot-and-cross", "sp3", "sp2", "ideal gas", "pv=nrt", "lattice"],
+                "Physical: Energetics & Kinetics": ["enthalpy", "exothermic", "endothermic", "activation energy", "hess's law", "bond energy", "calorimetry", "rate of reaction", "collision theory", "catalyst", "boltzmann distribution"],
+                "Physical: Equilibria & Electrochemistry": ["reversible reaction", "dynamic equilibrium", "le chatelier", "kc", "kp", "haber process", "contact process", "bronsted-lowry", "weak acid", "weak base", "oxidation number", "redox", "half-equation", "electrolysis"],
+                "Inorganic: Periodicity & Groups 2/17": ["periodicity", "atomic radius", "ionization energy", "melting point", "electrical conductivity", "magnesium", "calcium", "barium", "strontium", "thermal decomposition", "halogen", "chlorine", "bromine", "iodine", "displacement reaction", "disproportionation", "nitrogen", "sulfur", "ammonia"],
+                "Organic: Intro & Hydrocarbons": ["alkane", "alkene", "functional group", "homologous series", "isomerism", "stereoisomerism", "chiral", "optical isomer", "free-radical substitution", "electrophilic addition", "markovnikov", "cracking", "carbocation", "inductive effect"],
+                "Organic: Halogens, Hydroxy & Carbonyls": ["halogenoalkane", "nucleophilic substitution", "sn1", "sn2", "elimination reaction", "alcohol", "primary alcohol", "secondary alcohol", "tertiary alcohol", "oxidation of alcohol", "aldehyde", "ketone", "nucleophilic addition", "tollens", "fehling", "2,4-dnp", "iodoform"],
+                "Organic: Carboxylic, Nitrogen & Polymers": ["carboxylic acid", "ester", "esterification", "hydrolysis", "primary amine", "nitrile", "addition polymerisation", "polyalkene", "repeat unit", "monomer"]
+            }
+        },
+        "4": {
+            "title": "A Level Structured",
+            "topics": {
+                "Further Physical: Thermodynamics & Kinetics": ["born-haber", "lattice energy", "electron affinity", "enthalpy change of hydration", "enthalpy change of solution", "entropy", "gibbs free energy", "delta g", "spontaneous", "rate equation", "order of reaction", "rate constant", "half-life", "rate-determining step"],
+                "Further Physical: Equilibria & Electrochemistry": ["partition coefficient", "kpc", "acid dissociation constant", "ka", "pka", "ph", "buffer solution", "solubility product", "ksp", "common ion effect", "standard electrode potential", "standard cell potential", "nernst equation", "faraday constant", "q=it", "f=le"],
+                "Further Inorganic: Transition Elements": ["transition element", "variable oxidation state", "complex ion", "ligand", "dative bond", "coordination number", "geometry", "degenerate", "splitting", "colour", "visible spectrum", "d-d transition", "stability constant", "kstab"],
+                "Further Organic: Arenes & Derivatives": ["arene", "benzene", "delocalised", "electrophilic substitution", "friedel-crafts", "phenol", "acidity of phenol", "directing effect", "halogenoarene", "acyl chloride"],
+                "Further Organic: Nitrogen Compounds & Polymers": ["amine", "basicity", "phenylamine", "diazotisation", "azo dye", "amide", "polyamide", "polyester", "amino acid", "zwitterion", "peptide bond", "protein", "isoelectric point", "condensation polymerisation", "degradable polymer"],
+                "Analytical Techniques (NMR & Chromatography)": ["chromatography", "retention time", "rf value", "nuclear magnetic resonance", "nmr", "chemical shift", "splitting pattern", "spin-spin coupling", "doublet", "triplet", "quartet", "integration", "d2o exchange", "mass spectrometry", "m+ peak", "m+1 peak", "m+2 peak"]
+            }
+        }
     }
 }
 
@@ -53,13 +132,14 @@ PAPERS_DIR = "./public/papers"
 OUTPUT_JSON = "./public/topicals_db.json"
 
 def build_topical_database():
-    # 1. Initialize the pristine JSON structure
-    database = {"9618": {}}
-    for p_num, p_data in SYLLABUS["9618"].items():
-        database["9618"][p_num] = {
-            "title": p_data["title"],
-            "topics": {t: [] for t in p_data["topics"].keys()}
-        }
+    database = {}
+    for subj_code, subj_data in SYLLABUS.items():
+        database[subj_code] = {}
+        for p_num, p_data in subj_data.items():
+            database[subj_code][p_num] = {
+                "title": p_data["title"],
+                "topics": {t: [] for t in p_data["topics"].keys()}
+            }
 
     print("Starting STRICT CAIE PDF analysis...\n")
 
@@ -69,7 +149,6 @@ def build_topical_database():
 
     question_pattern = re.compile(r'(?m)^\s*([1-9][0-9]*)(?:\s|\n|\()')
 
-    # 2. Scan the PDFs and populate the array
     for filename in os.listdir(PAPERS_DIR):
         if not filename.endswith(".pdf") or "_qp_" not in filename:
             continue
@@ -84,10 +163,10 @@ def build_topical_database():
         paper_variant = parts[3]
         paper_num = paper_variant[0]
 
-        if subject_code != "9618" or paper_num not in SYLLABUS["9618"]:
+        if subject_code not in SYLLABUS or paper_num not in SYLLABUS[subject_code]:
             continue
 
-        keywords_map = SYLLABUS["9618"][paper_num]["topics"]
+        keywords_map = SYLLABUS[subject_code][paper_num]["topics"]
 
         try:
             doc = fitz.open(filepath)
@@ -116,22 +195,23 @@ def build_topical_database():
                         "questions": list(set(matches))
                     }
 
-                    if page_entry not in database["9618"][paper_num]["topics"][topic]:
-                        database["9618"][paper_num]["topics"][topic].append(page_entry)
+                    if page_entry not in database[subject_code][paper_num]["topics"][topic]:
+                        database[subject_code][paper_num]["topics"][topic].append(page_entry)
                         questions_found += len(set(matches))
 
         doc.close()
-        print(f"Processed: {filename} (Paper {paper_num}) - Found {questions_found} questions.")
+        print(f"Processed: {filename} ({subject_code} Paper {paper_num}) - Found {questions_found} questions.")
 
-    # 3. THE MAGIC FIX: Delete all topics that found 0 questions
-    for p_num in list(database["9618"].keys()):
-        topics = database["9618"][p_num]["topics"]
-        database["9618"][p_num]["topics"] = {k: v for k, v in topics.items() if len(v) > 0}
+    # Clean out any empty topics
+    for subj_code in list(database.keys()):
+        for p_num in list(database[subj_code].keys()):
+            topics = database[subj_code][p_num]["topics"]
+            database[subj_code][p_num]["topics"] = {k: v for k, v in topics.items() if len(v) > 0}
 
     with open(OUTPUT_JSON, "w") as f:
         json.dump(database, f, indent=2)
 
-    print(f"\nSuccess! Optimized database saved to {OUTPUT_JSON}")
+    print(f"\nSuccess! Optimized multi-subject database saved to {OUTPUT_JSON}")
 
 if __name__ == "__main__":
     build_topical_database()

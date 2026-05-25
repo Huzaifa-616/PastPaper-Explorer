@@ -24,6 +24,56 @@ const MCQ_PAPER     = '1';
 const MCQ_COUNT     = 40;
 const MCQ_OPTS      = ['A', 'B', 'C', 'D'];
 
+// ─── Topical Taxonomy (Strict Syllabus Mapping) ───────────────────────────────
+const SYLLABUS_STRUCTURE = {
+  '9618': {
+    '1': {
+      title: 'AS Level Theory',
+      topics: ['Data Representation', 'Networking', 'Hardware & Processors', 'Logic Gates', 'Assembly Language', 'System Software', 'Security, Privacy & Ethics', 'Databases']
+    },
+    '2': {
+      title: 'AS Problem Solving',
+      topics: ['Algorithm Design', 'Data Structures', 'Programming Concepts', 'Software Development']
+    },
+    '3': {
+      title: 'A Level Advanced Theory',
+      topics: ['Advanced Data Representation', 'Advanced Networking', 'Hardware & Virtual Machines', 'Advanced System Software', 'Artificial Intelligence']
+    },
+    '4': {
+      title: 'A Level Practical',
+      topics: ['Algorithms & Recursion', 'OOP & Paradigms', 'File Processing']
+    }
+  },
+  '9702': {
+    '1': {
+      title: 'AS Level Theory (MCQ)',
+      topics: ['Physical Quantities & Units', 'Kinematics', 'Dynamics', 'Forces, Density & Pressure', 'Work, Energy & Power', 'Deformation of Solids', 'Waves & Superposition', 'Electricity & D.C. Circuits', 'Particle Physics']
+    },
+    '2': {
+      title: 'AS Level Structured',
+      topics: ['Physical Quantities & Units', 'Kinematics', 'Dynamics', 'Forces, Density & Pressure', 'Work, Energy & Power', 'Deformation of Solids', 'Waves & Superposition', 'Electricity & D.C. Circuits', 'Particle Physics']
+    },
+    '4': {
+      title: 'A Level Structured',
+      topics: ['Motion in a Circle & Gravitation', 'Thermal Physics & Ideal Gases', 'Oscillations', 'Electric & Magnetic Fields', 'Capacitance & Alternating Current', 'Quantum & Nuclear Physics', 'Medical Physics & Cosmology']
+    }
+  },
+  '9701': {
+    '1': {
+      title: 'AS Level Theory (MCQ)',
+      topics: ['Physical: Atoms, Bonding & Stoichiometry', 'Physical: Energetics & Kinetics', 'Physical: Equilibria & Electrochemistry', 'Inorganic: Periodicity & Groups 2/17', 'Organic: Intro & Hydrocarbons', 'Organic: Halogens, Hydroxy & Carbonyls', 'Organic: Carboxylic, Nitrogen & Polymers']
+    },
+    '2': {
+      title: 'AS Level Structured',
+      topics: ['Physical: Atoms, Bonding & Stoichiometry', 'Physical: Energetics & Kinetics', 'Physical: Equilibria & Electrochemistry', 'Inorganic: Periodicity & Groups 2/17', 'Organic: Intro & Hydrocarbons', 'Organic: Halogens, Hydroxy & Carbonyls', 'Organic: Carboxylic, Nitrogen & Polymers']
+    },
+    '4': {
+      title: 'A Level Structured',
+      topics: ['Further Physical: Thermodynamics & Kinetics', 'Further Physical: Equilibria & Electrochemistry', 'Further Inorganic: Transition Elements', 'Further Organic: Arenes & Derivatives', 'Further Organic: Nitrogen Compounds & Polymers', 'Analytical Techniques (NMR & Chromatography)']
+    }
+  }
+};
+
 // ─── Hardcoded Answer Keys ─────────────────────────────────────────────────────
 const MCQ_ANSWER_KEYS = {
   '9700_m23_1_2': ['A','C','C','B','D','C','A','B','A','D','C','D','B','A','B','B','D','B','A','C','C','B','D','C','A','D','D','D','C','A','A','B','C','C','B','C','B','A','D','C'],
@@ -459,7 +509,7 @@ const TopicalsSidebar = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) 
            <div style={{ textAlign:'center',padding:'48px 0',color:'var(--text3)' }}>
             <Compass size={36} style={{ opacity:0.3,marginBottom:12 }}/>
             <p style={{ fontSize:13,marginBottom:6,color:'var(--text)' }}>Coming Soon</p>
-            <p style={{ fontSize:11,lineHeight:1.5 }}>Topical mapping is currently only available for Computer Science (9618), or you need to run the Python indexer.</p>
+            <p style={{ fontSize:11,lineHeight:1.5 }}>Topical mapping is currently available for Computer Science (9618), Physics (9702), and Chemistry (9701).</p>
           </div>
         ) : (
           
@@ -887,7 +937,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }
         <span style={{ fontSize:10,color:'var(--text2)',letterSpacing:'0.06em' }}>View on GitHub</span>
       </a>
       <span style={{ color:'var(--line2)',fontSize:18 }}>·</span>
-      <span style={{ fontSize:10,color:'var(--text3)',letterSpacing:'0.06em' }}>Deployed on Cloudflare · By M. Huzaifa Imran</span>
+      <span style={{ fontSize:10,color:'var(--text3)',letterSpacing:'0.06em' }}>Deployed on Cloudflare</span>
     </div>
   </div>
 );
@@ -1020,7 +1070,7 @@ export default function App() {
                     <div className="logo-mark"><Layers size={16} color="#fff" strokeWidth={2.2}/></div>
                     <div>
                       <div style={{ fontSize:13,fontWeight:600,color:'var(--text)',lineHeight:1.2 }}>PastPaper Explorer</div>
-                      <div className="nav-brand-text" style={{ fontSize:9,color:'var(--text3)',letterSpacing:'0.1em' }}>BY M. HUZAIFA IMRAN</div>
+                      <div className="nav-brand-text" style={{ fontSize:9,color:'var(--text3)',letterSpacing:'0.1em' }}>STUDY TOOLS</div>
                     </div>
                   </div>
                 </div>
