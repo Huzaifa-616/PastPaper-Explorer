@@ -24,6 +24,104 @@ const MCQ_SUBJECTS  = ['9700','9701','9702'];
 const MCQ_PAPER     = '1';
 const MCQ_COUNT     = 40;
 const MCQ_OPTS      = ['A','B','C','D'];
+
+// ─── Hardcoded Answer Keys (from official CIE mark schemes) ──────────────────
+const MCQ_ANSWER_KEYS = {
+  '9700_m23_1_2': ['A','C','C','B','D','C','A','B','A','D','C','D','B','A','B','B','D','B','A','C','C','B','D','C','A','D','D','D','C','A','A','B','C','C','B','C','B','A','D','C'],
+  '9700_m24_1_2': ['A','C','D','A','C','B','C','A','B','D','C','D','B','C','B','D','B','A','C','C','D','C','A','D','B','A','A','D','B','D','B','D','D','A','B','C','D','C','C','A'],
+  '9700_m25_1_2': ['D','A','B','B','B','D','C','B','D','C','C','D','B','D','A','B','A','C','C','D','D','A','C','B','D','D','C','B','B','A','A','B','C','D','C','B','A','A','D','A'],
+  '9700_s21_1_1': ['C','D','A','D','D','B','C','B','A','B','D','C','D','D','A','D','C','C','B','D','B','B','A','D','B','B','D','B','B','A','D','C','A','A','B','B','A','A','B','C'],
+  '9700_s21_1_2': ['D','B','C','D','B','B','D','C','C','A','B','A','B','A','A','D','C','C','A','A','D','C','A','B','C','C','B','C','B','D','B','C','C','D','C','B','D','A','D','B'],
+  '9700_s21_1_3': ['A','C','C','B','C','A','B','D','C','D','C','B','D','D','C','A','D','D','A','B','D','C','B','A','A','D','A','C','B','B','A','A','C','C','A','D','B','D','A','C'],
+  '9700_s23_1_1': ['B','A','A','D','B','D','C','C','C','C','B','B','D','B','B','C','D','B','C','B','D','C','A','B','A','A','A','C','B','A','D','C','D','D','B','C','D','A','D','C'],
+  '9700_s23_1_2': ['B','B','B','B','C','B','D','B','B','D','B','A','A','C','C','D','C','A','A','D','B','A','B','B','C','B','B','C','A','C','A','B','B','A','D','C','C','D','D','B'],
+  '9700_s23_1_3': ['B','D','C','A','B','A','B','C','A','C','D','D','B','A','C','A','D','B','B','A','B','C','C','B','D','C','C','B','D','D','D','C','A','C','B','A','C','C','D','C'],
+  '9700_s24_1_1': ['A','B','A','C','D','C','D','B','D','A','C','D','B','C','B','B','D','D','C','C','C','B','D','C','B','C','A','C','B','A','D','A','A','A','B','D','D','B','A','D'],
+  '9700_s24_1_2': ['C','A','C','C','C','D','D','A','C','A','B','B','A','D','D','C','C','B','D','D','B','D','B','A','A','A','B','B','A','A','B','D','D','C','D','C','B','B','D','B'],
+  '9700_s25_1_1': ['C','B','A','C','A','B','C','A','A','C','A','D','C','B','B','C','D','B','A','B','A','D','B','A','C','A','C','C','C','A','C','A','D','D','D','A','A','D','A','B'],
+  '9700_s25_1_2': ['B','B','B','B','A','C','A','D','D','A','C','A','A','C','C','B','A','D','A','D','D','D','D','B','C','D','D','A','C','C','B','A','B','C','A','A','B','B','C','B'],
+  '9700_s25_1_3': ['C','A','C','A','C','B','A','B','C','B','B','A','B','B','D','A','A','D','C','D','A','B','C','D','C','C','D','B','B','C','C','B','C','D','C','C','B','A','D','C'],
+  '9700_w22_1_1': ['D','A','C','A','D','A','A','D','C','C','D','A','C','B','D','C','D','D','B','C','D','C','B','B','B','C','A','C','A','B','C','C','D','B','B','B','A','B','D','D'],
+  '9700_w22_1_2': ['D','A','C','B','D','A','D','C','B','C','B','C','A','C','C','C','C','A','B','B','C','A','D','B','D','D','C','D','D','C','A','A','A','D','A','B','A','D','A','B'],
+  '9700_w22_1_3': ['D','B','B','C','A','A','A','A','B','A','D','A','D','A','C','B','A','A','C','B','A','D','C','C','D','C','D','B','C','A','D','D','C','C','B','B','B','D','A','C'],
+  '9700_w23_1_1': ['B','C','B','B','C','C','D','C','A','D','B','B','A','C','C','C','B','B','D','A','C','D','B','D','A','B','','C','D','A','A','B','A','B','','D','B','A','C','B'],
+  '9700_w23_1_2': ['D','D','B','A','D','A','A','D','B','C','D','D','A','B','C','C','C','B','A','A','C','C','C','D','B','A','B','B','C','C','B','D','A','D','B','D','B','C','B','B'],
+  '9700_w23_1_3': ['C','B','C','D','A','B','C','C','B','A','C','B','D','A','D','C','B','D','D','B','B','D','B','D','B','D','A','A','B','D','C','D','B','C','D','D','C','B','D','C'],
+  '9700_w24_1_1': ['D','D','D','C','B','B','A','B','A','C','B','A','C','C','D','C','C','A','B','A','D','D','D','C','C','B','A','C','B','D','D','A','D','B','A','B','A','A','B','D'],
+  '9700_w24_1_2': ['C','D','A','C','B','A','A','A','C','B','A','D','A','B','D','D','D','D','B','A','B','B','D','C','C','B','B','A','C','C','B','C','B','A','A','B','A','A','C','B'],
+  '9700_w24_1_3': ['D','A','C','B','C','B','D','A','C','B','A','C','B','C','C','D','C','B','D','A','D','A','D','B','D','D','A','B','A','B','B','B','C','C','D','C','C','B','A','A'],
+  '9700_w25_1_1': ['D','B','A','A','D','C','D','D','C','B','A','C','B','A','B','B','B','D','A','C','A','C','B','A','D','B','C','A','C','A','B','D','B','D','C','A','C','C','C','C'],
+  '9700_w25_1_2': ['C','A','A','C','B','B','B','D','B','C','D','C','B','B','C','D','A','A','D','A','B','D','A','D','B','D','C','B','C','B','C','D','A','A','D','A','C','C','D','C'],
+  '9700_w25_1_3': ['B','B','C','C','B','B','B','C','A','B','A','A','A','B','C','D','A','D','A','C','D','D','C','D','B','B','A','C','D','A','C','C','C','D','A','B','A','B','A','B'],
+  '9701_m22_1_2': ['A','A','C','D','B','B','C','D','A','A','C','A','B','D','A','B','A','C','D','B','D','D','B','C','D','C','C','A','B','A','C','A','D','C','A','A','B','C','C','B'],
+  '9701_m23_1_2': ['D','D','B','A','D','A','B','C','B','D','C','C','C','D','C','A','A','B','A','B','B','C','D','D','D','B','A','B','D','A','D','B','A','D','C','A','B','C','B','B'],
+  '9701_m24_1_2': ['D','C','D','D','C','B','D','C','B','C','A','C','A','D','A','A','C','C','D','B','C','C','D','C','B','D','B','D','D','D','D','A','D','A','C','A','D','B','C','C'],
+  '9701_m25_1_2': ['D','D','C','B','A','C','A','C','D','A','B','A','B','B','C','A','D','C','B','A','B','A','B','C','A','D','C','B','C','D','B','C','C','C','B','D','B','A','D','D'],
+  '9701_s21_1_1': ['C','C','B','D','B','B','C','A','D','D','C','B','B','A','A','C','D','C','D','A','B','B','C','D','A','A','C','B','C','D','A','A','D','B','D','A','A','B','D','C'],
+  '9701_s21_1_2': ['C','D','B','C','A','D','D','A','A','B','C','B','C','C','D','D','D','B','C','B','D','A','B','C','A','A','C','D','B','D','B','A','C','B','D','A','A','A','C','B'],
+  '9701_s21_1_3': ['A','D','C','A','C','B','A','D','D','A','D','B','B','C','C','D','C','B','C','B','B','B','A','D','A','A','D','C','B','D','B','B','C','A','D','A','D','C','A','C'],
+  '9701_s22_1_1': ['B','B','A','D','D','C','A','A','D','C','B','C','D','B','B','C','A','C','A','C','B','D','D','D','C','C','A','C','B','A','C','C','A','D','B','D','B','B','D','A'],
+  '9701_s22_1_2': ['C','A','D','B','C','B','D','B','A','D','D','C','B','C','A','A','B','C','A','B','D','D','D','B','C','C','A','A','B','B','A','D','C','A','D','B','C','A','C','D'],
+  '9701_s22_1_3': ['D','C','A','A','D','B','C','C','B','A','B','D','B','D','D','C','A','A','C','B','B','A','C','A','C','D','A','B','C','C','D','A','B','D','C','D','B','A','B','C'],
+  '9701_s23_1_2': ['C','B','D','C','B','D','B','B','B','D','C','B','B','B','C','C','D','D','C','A','B','A','A','C','A','B','B','D','C','D','C','D','C','B','D','A','D','C','C','B'],
+  '9701_s23_1_3': ['B','D','B','A','D','C','D','B','A','B','B','A','C','D','C','A','C','B','B','D','B','A','C','C','D','A','C','B','C','D','B','C','D','D','A','B','A','A','B','D'],
+  '9701_s24_1_1': ['C','C','C','D','A','B','B','B','C','B','A','B','D','D','C','D','C','D','B','C','B','C','A','C','B','C','A','B','A','B','D','D','D','B','C','D','D','A','B','B'],
+  '9701_s24_1_2': ['C','C','A','A','C','A','B','B','C','C','B','D','D','A','B','D','B','C','A','A','D','D','D','A','C','D','B','A','A','D','D','D','D','C','A','C','C','B','D','A'],
+  '9701_s24_1_3': ['A','C','A','D','B','D','C','C','C','C','A','A','B','B','C','D','C','B','C','D','A','B','A','C','B','A','C','A','C','C','D','C','D','B','B','C','B','A','B','D'],
+  '9701_s25_1_1': ['C','B','B','C','A','D','A','B','B','C','B','C','A','D','A','C','C','D','D','B','A','D','D','A','B','D','B','A','B','C','C','A','B','D','C','A','C','D','A','C'],
+  '9701_s25_1_2': ['A','C','D','D','C','A','A','B','C','D','C','B','D','C','A','D','C','A','D','B','A','D','B','C','C','A','D','B','B','A','D','D','A','B','C','D','B','B','C','B'],
+  '9701_s25_1_3': ['A','C','B','A','C','C','C','B','A','A','B','B','B','D','C','B','A','D','C','D','D','A','D','C','D','B','A','B','C','A','D','C','D','B','A','D','D','B','C','A'],
+  '9701_w21_1_1': ['A','C','A','B','C','D','B','C','C','B','D','D','C','C','A','D','D','A','B','A','B','D','B','C','A','D','A','C','B','B','A','D','A','B','D','C','B','D','C','A'],
+  '9701_w21_1_2': ['A','C','C','B','B','B','D','A','B','D','D','C','B','D','A','C','D','A','D','C','A','C','A','C','D','D','A','C','B','B','A','C','D','C','C','B','A','A','B','D'],
+  '9701_w21_1_3': ['A','C','A','B','C','D','B','C','C','B','D','D','C','C','A','D','D','A','B','A','B','D','B','C','A','D','A','C','B','B','A','D','A','B','D','C','B','D','C','A'],
+  '9701_w22_1_1': ['A','C','D','D','C','B','A','D','C','B','C','B','B','A','A','A','C','B','A','D','C','B','C','D','D','B','B','A','D','A','C','A','A','B','C','D','D','B','C','D'],
+  '9701_w22_1_2': ['A','C','D','B','C','A','B','C','A','B','B','D','C','C','D','A','D','D','B','A','B','C','B','C','A','D','A','D','A','B','D','D','B','C','A','C','B','D','C','A'],
+  '9701_w22_1_3': ['A','C','D','D','C','B','A','D','C','B','C','B','B','A','A','A','C','B','A','D','C','B','C','D','D','B','B','A','D','A','C','A','A','B','C','D','D','B','C','D'],
+  '9701_w23_1_1': ['B','D','A','C','A','A','A','A','D','D','A','B','C','D','D','A','D','A','D','A','B','A','B','C','B','B','D','D','D','B','D','D','D','B','D','D','C','C','C','A'],
+  '9701_w23_1_2': ['D','C','B','A','C','C','D','B','A','C','B','B','C','C','D','C','D','D','D','B','B','A','C','D','B','B','C','B','C','A','D','D','A','C','A','C','C','C','C','B'],
+  '9701_w23_1_3': ['B','D','A','C','A','A','A','A','D','D','A','B','C','D','D','A','D','A','D','A','B','A','B','C','B','B','D','D','D','B','D','D','D','B','D','D','C','C','C','A'],
+  '9701_w24_1_1': ['A','C','C','D','A','D','B','D','B','A','A','A','C','A','A','B','D','C','C','B','C','C','C','C','B','D','B','C','D','B','B','D','D','D','B','A','B','C','A','A'],
+  '9701_w24_1_2': ['D','C','D','C','D','B','C','C','B','D','C','C','A','D','D','D','A','C','A','B','C','A','A','C','B','D','A','B','A','C','A','B','C','B','B','D','A','D','B','A'],
+  '9701_w24_1_3': ['A','C','C','D','A','D','B','D','B','A','A','A','C','A','A','B','D','C','C','B','C','C','C','C','B','D','B','C','D','B','B','D','D','D','B','A','B','C','A','A'],
+  '9701_w25_1_1': ['B','C','B','B','A','B','D','B','B','A','C','A','C','A','A','C','A','D','D','B','B','D','B','C','B','D','A','C','C','D','A','D','A','D','A','D','C','C','B','D'],
+  '9701_w25_1_2': ['D','A','B','C','B','C','B','D','C','D','D','B','D','B','C','A','D','D','C','B','A','A','B','A','A','A','B','A','D','A','C','C','C','B','B','C','C','D','A','D'],
+  '9701_w25_1_3': ['B','C','B','B','A','B','D','B','B','A','C','A','C','A','A','C','A','D','D','B','B','D','B','C','B','D','A','C','C','D','A','D','A','D','A','D','C','C','B','D'],
+  '9702_m22_1_2': ['B','B','D','B','D','D','C','A','C','D','A','C','D','D','A','B','C','D','C','D','B','C','A','D','C','C','D','B','D','B','A','C','C','A','A','B','C','C','B','D'],
+  '9702_m23_1_2': ['C','B','A','B','B','D','D','C','D','C','C','B','D','D','B','C','B','C','B','D','A','A','D','B','C','D','B','C','A','D','A','B','B','A','B','A','C','C','A','A'],
+  '9702_m24_1_2': ['A','A','D','B','B','B','A','D','B','C','C','D','D','C','C','B','D','A','C','D','D','B','D','D','A','C','B','B','D','C','C','A','C','B','B','C','C','A','B','B'],
+  '9702_m25_1_2': ['D','D','C','A','A','C','B','B','A','A','C','D','D','A','B','A','B','A','D','D','B','A','D','C','B','A','C','C','C','D','C','A','C','B','C','B','B','B','D','D'],
+  '9702_s21_1_1': ['A','D','C','B','D','C','C','D','A','C','A','D','C','D','A','D','A','B','B','C','D','B','A','A','A','B','A','B','B','D','C','A','C','B','D','C','B','B','B','A'],
+  '9702_s21_1_2': ['D','B','D','D','D','D','B','C','B','D','A','C','B','C','A','A','D','D','A','D','B','A','B','A','B','C','B','B','C','A','D','A','A','B','A','C','A','C','C','A'],
+  '9702_s21_1_3': ['C','C','A','B','B','D','C','C','D','B','A','B','A','A','B','D','C','B','D','D','C','B','A','A','D','B','C','B','A','B','D','A','C','A','A','C','B','C','C','D'],
+  '9702_s22_1_1': ['D','B','A','C','C','C','D','D','B','D','C','B','A','B','A','A','C','A','A','D','A','D','C','D','A','B','B','A','B','D','C','B','D','D','D','A','D','D','C','C'],
+  '9702_s22_1_2': ['C','B','C','B','A','D','C','A','B','B','C','D','C','B','C','B','A','C','B','A','D','C','D','A','A','B','B','D','D','C','B','A','D','A','B','A','D','C','C','B'],
+  '9702_s22_1_3': ['D','D','B','C','A','C','D','C','D','B','A','C','D','B','A','A','C','C','B','C','B','B','B','D','A','A','B','C','B','B','D','D','D','B','D','A','A','B','B','A'],
+  '9702_s23_1_1': ['C','B','D','B','C','C','C','A','A','D','D','A','C','A','C','B','B','A','A','D','A','C','C','C','B','A','C','D','A','C','B','D','B','C','A','B','D','D','D','A'],
+  '9702_s23_1_2': ['B','D','D','C','B','A','C','B','D','A','B','C','A','A','D','A','B','D','B','B','B','C','D','B','A','A','B','D','C','C','A','D','C','D','A','B','C','C','D','A'],
+  '9702_s23_1_3': ['C','A','D','A','C','D','B','B','D','C','B','C','D','A','C','C','D','B','B','A','D','D','B','C','B','A','C','B','D','A','D','B','B','A','A','C','A','D','A','A'],
+  '9702_s24_1_1': ['A','A','C','B','B','D','C','C','B','D','A','B','D','A','A','B','B','A','B','B','D','C','C','A','C','A','B','D','B','B','D','D','C','C','C','D','D','B','C','A'],
+  '9702_s24_1_2': ['C','D','A','D','B','B','C','A','C','A','B','C','D','C','D','A','B','C','C','D','C','D','B','B','C','A','D','D','A','C','D','C','B','A','D','A','B','D','C','C'],
+  '9702_s24_1_3': ['C','D','B','A','C','A','D','A','A','C','B','B','C','B','A','D','C','A','B','B','C','C','C','A','D','A','B','D','A','B','D','D','C','A','C','C','D','A','D','B'],
+  '9702_s25_1_1': ['C','D','B','B','D','D','C','A','B','C','C','D','B','A','B','C','D','A','A','B','D','C','D','C','C','A','C','B','B','D','A','C','D','D','A','B','C','D','C','B'],
+  '9702_s25_1_2': ['D','D','B','C','A','C','A','B','B','C','B','D','C','D','A','A','B','C','B','C','A','B','D','C','B','D','B','D','C','D','C','A','D','C','D','D','A','B','A','B'],
+  '9702_s25_1_3': ['A','C','C','B','B','A','A','B','B','B','C','D','D','C','D','B','B','D','C','D','D','A','D','D','C','B','C','B','A','D','A','C','C','D','C','C','A','D','A','A'],
+  '9702_w21_1_1': ['B','B','A','A','B','B','D','C','B','D','C','A','D','D','D','C','B','A','C','A','D','B','D','A','D','A','D','C','C','B','A','C','D','A','D','C','A','A','C','B'],
+  '9702_w21_1_2': ['C','A','D','A','D','C','B','A','B','D','B','C','C','D','C','B','C','A','A','B','A','D','D','D','C','A','C','B','A','A','A','C','B','B','B','C','A','A','C','B'],
+  '9702_w21_1_3': ['C','D','C','B','D','B','D','A','A','A','B','A','A','C','C','B','C','C','B','C','D','B','D','A','C','B','A','C','D','B','B','D','D','D','B','A','A','B','D','B'],
+  '9702_w22_1_1': ['C','D','C','A','D','B','C','A','A','D','B','A','C','D','C','D','C','C','C','D','A','B','B','D','A','A','A','B','D','C','B','C','A','B','C','D','C','B','A','D'],
+  '9702_w22_1_2': ['D','C','D','C','A','A','D','C','B','C','D','D','B','A','C','A','C','B','C','B','A','D','B','A','B','D','B','C','C','D','B','B','D','D','A','B','A','C','B','B'],
+  '9702_w22_1_3': ['B','B','C','D','A','B','D','D','A','B','D','D','B','C','B','B','C','B','C','A','A','C','B','A','C','B','C','C','D','D','D','A','C','B','C','C','B','A','D','D'],
+  '9702_w23_1_1': ['C','A','D','C','B','A','D','B','B','B','C','A','D','D','D','A','A','C','D','B','B','C','C','D','A','B','C','D','A','C','D','A','B','B','A','A','B','D','C','B'],
+  '9702_w23_1_2': ['B','D','D','A','D','B','A','C','B','C','A','C','B','C','A','C','D','B','D','D','C','A','C','C','C','B','B','A','D','B','B','D','A','D','A','B','D','A','B','C'],
+  '9702_w23_1_3': ['B','A','C','A','D','C','B','D','A','C','C','B','B','A','D','B','B','C','A','D','D','A','B','C','A','B','A','A','C','C','A','D','A','C','C','D','D','B','A','D'],
+  '9702_w24_1_1': ['D','D','C','C','D','D','C','B','B','B','B','D','A','C','A','C','B','A','D','B','D','A','B','A','D','A','C','C','B','C','B','B','C','D','C','A','A','D','D','C'],
+  '9702_w24_1_2': ['C','A','D','A','B','C','C','B','D','C','D','A','C','D','D','B','C','C','A','C','B','A','C','C','C','B','D','B','B','B','A','B','A','B','B','A','D','B','D','C'],
+  '9702_w24_1_3': ['D','C','B','C','A','C','A','B','B','C','B','A','D','D','D','A','D','C','C','A','A','D','B','D','C','C','C','A','C','B','A','A','A','B','B','D','C','B','A','D'],
+  '9702_w25_1_1': ['D','D','B','C','D','D','B','C','C','D','A','A','B','C','C','B','B','C','A','A','D','B','C','A','B','B','D','C','D','A','D','C','A','A','D','D','C','A','A','B'],
+  '9702_w25_1_2': ['B','D','C','C','B','B','A','C','D','B','A','D','A','C','C','A','C','A','B','B','A','A','C','D','B','D','C','D','A','C','C','D','B','D','B','D','A','C','D','A'],
+  '9702_w25_1_3': ['D','D','B','C','D','D','B','C','C','D','A','A','B','C','C','B','B','C','A','A','D','B','C','A','B','B','D','C','D','A','D','C','A','A','D','D','C','A','A','B'],
+};
+
 const GITHUB_REPO   = "https://github.com/Huzaifa-616/PastPaper-Explorer";
 const NOTES_PW      = "bravo07";
 const NOTES_KEY     = "nexus_notes_v1";
@@ -101,6 +199,8 @@ const GlobalStyles = ({dark}) => (
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
     @keyframes slideInLeft{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+    @keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
     @keyframes pulse-ring{0%{transform:scale(0.95);opacity:0.6}50%{transform:scale(1.05);opacity:0.2}100%{transform:scale(0.95);opacity:0.6}}
     @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -168,15 +268,13 @@ const GlobalStyles = ({dark}) => (
     .attach-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:6px;border:1px solid var(--line2);background:var(--surface3);font-size:10px;color:var(--text2);cursor:pointer;transition:all 0.2s;text-decoration:none;}
     .attach-pill:hover{border-color:var(--accent);color:var(--accent);}
 
-    .mcq-modal{background:var(--surface);border:1px solid var(--line2);border-radius:20px;width:100%;max-width:820px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;animation:fadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both;}
+    .mcq-sidebar{position:relative;width:320px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--line2);display:flex;flex-direction:column;box-shadow:-4px 0 30px rgba(0,0,0,0.05);animation:slideInRight 0.3s cubic-bezier(0.22,1,0.36,1) both;}
     .mcq-bubble{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line2);background:transparent;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;font-family:'Roboto',sans-serif;}
     .mcq-bubble:hover{border-color:var(--text2);color:var(--text);}
     .mcq-bubble.sel-mine{background:var(--accent);border-color:var(--accent);color:#fff;}
     .mcq-bubble.sel-key{background:var(--orange);border-color:var(--orange);color:#fff;}
     .mcq-bubble.correct{background:var(--green);border-color:var(--green);color:#fff;}
     .mcq-bubble.wrong{background:var(--red);border-color:var(--red);color:#fff;}
-    .mcq-row{display:grid;grid-template-columns:28px 1fr 1px 1fr 20px;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--line);min-height:40px;}
-    .mcq-row:last-child{border-bottom:none;}
 
     /* Topicals */
     .tp-paper-card{background:var(--surface);border:1px solid var(--line2);border-radius:14px;padding:20px;cursor:pointer;transition:all 0.3s cubic-bezier(0.22,1,0.36,1);position:relative;overflow:hidden;text-align:left;}
@@ -226,8 +324,7 @@ const GlobalStyles = ({dark}) => (
       .nav-actions{display:flex!important;width:100%!important;margin-left:0!important;justify-content:space-between!important;}
       .nav-actions .btn-load{flex:1!important;justify-content:center!important;}
       .notes-sidebar{width:100%!important;}
-      .mcq-modal{max-height:95vh;border-radius:14px;}
-      .mcq-row{grid-template-columns:22px 1fr 1px 1fr 18px;gap:4px;}
+      .mcq-sidebar{position:absolute!important;bottom:0;left:0;right:0;top:auto;width:100%!important;height:50vh;border-left:none!important;border-top:1px solid var(--line2);box-shadow:0 -10px 40px rgba(0,0,0,0.4);animation:slideUp 0.3s cubic-bezier(0.22,1,0.36,1) both;z-index:50;}
       .mcq-bubble{width:26px;height:26px;font-size:10px;}
       .tp-paper-card{padding:14px;}
     }
@@ -427,75 +524,112 @@ const NotesSidebar = ({subjectCode,paperNum,onClose,isAdmin,onRequestAuth}) => {
 };
 
 // ─── MCQSolver ────────────────────────────────────────────────────────────────
-const MCQSolver = ({subjectCode,paperNum,variant,onClose}) => {
-  const N=MCQ_COUNT;const empty=()=>Array(N).fill('');
-  const [mine,setMine]=useState(empty);const [key,setKey]=useState(empty);
-  const [tab,setTab]=useState('mine');const [shown,setShown]=useState(false);
+const MCQSolver = ({subjectCode,paperNum,variant,year,season,onClose,mcqState,updateMcqState}) => {
+  const N=MCQ_COUNT;
+  const empty=()=>Array(N).fill('');
+
+  const msKey       = year&&season ? `${subjectCode}_${season}${year.slice(2)}_1_${variant}` : null;
+  const hardcodedKey = msKey ? (MCQ_ANSWER_KEYS[msKey]||null) : null;
+
+  const mine        = mcqState.choices||empty();
+  const keyRevealed = mcqState.revealed||false;
+  const key         = hardcodedKey||empty();
+
   const sn=subjName(subjectCode);const pl=`Paper 1${variant}`;
+  const answered=mine.filter(Boolean).length;
   const correct=useMemo(()=>mine.filter((a,i)=>a&&key[i]&&a===key[i]).length,[mine,key]);
-  const mineCount=mine.filter(Boolean).length;const keyCount=key.filter(Boolean).length;
-  const pct=keyCount>0&&mineCount>0?Math.round(correct/keyCount*100):null;
-  const setBubble=useCallback((arr,setArr,qi,opt)=>{setArr(prev=>{const n=[...prev];n[qi]=prev[qi]===opt?'':opt;return n;});},[]);
-  const clearAll=()=>{setMine(empty());setKey(empty());setShown(false);};
-  const Bubble=({qi,opt,arr,setArr,mode})=>{
-    const sel=arr[qi]===opt;let cls='mcq-bubble';
-    if(shown&&mode==='mine'&&key[qi]){if(sel&&arr[qi]===key[qi])cls+=' correct';else if(sel&&arr[qi]!==key[qi])cls+=' wrong';}
-    else{if(sel)cls+=(mode==='mine'?' sel-mine':' sel-key');}
-    return <button className={cls} onClick={()=>setBubble(arr,setArr,qi,opt)} style={{color:sel?undefined:'var(--text3)'}}>{opt}</button>;
+  const keyCount=key.filter(Boolean).length;
+  const pct=keyRevealed&&keyCount>0&&answered>0?Math.round(correct/keyCount*100):null;
+
+  const toggle=useCallback((qi,opt)=>{
+    if(keyRevealed) return;
+    const newChoices=[...mine];
+    newChoices[qi]=mine[qi]===opt?'':opt;
+    updateMcqState({choices:newChoices});
+  },[keyRevealed,mine,updateMcqState]);
+
+  const clearAll=()=>updateMcqState({choices:empty(),revealed:false});
+  const toggleReveal=()=>updateMcqState({revealed:!keyRevealed});
+
+  const getBubbleCls=(qi,opt)=>{
+    const userPicked=mine[qi]===opt;
+    const isCorrectAnswer=key[qi]===opt;
+    if(!keyRevealed) return 'mcq-bubble'+(userPicked?' sel-mine':'');
+    if(userPicked&&isCorrectAnswer) return 'mcq-bubble correct';
+    if(userPicked&&!isCorrectAnswer) return 'mcq-bubble wrong';
+    if(!userPicked&&isCorrectAnswer&&mine[qi]) return 'mcq-bubble sel-key';
+    return 'mcq-bubble';
   };
-  const ResultDot=({qi})=>{
-    if(!shown||!mine[qi]||!key[qi]) return <span style={{width:16}}/>;
-    return mine[qi]===key[qi]?<span style={{color:'var(--green)',fontSize:14}}>✓</span>:<span style={{color:'var(--red)',fontSize:14}}>✗</span>;
-  };
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="mcq-modal" onClick={e=>e.stopPropagation()}>
-        <div style={{padding:'14px 18px',borderBottom:'1px solid var(--line2)',flexShrink:0,background:'var(--surface)'}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
-            <div style={{display:'flex',alignItems:'center',gap:10}}>
-              <div style={{width:34,height:34,borderRadius:9,background:'var(--orange-d)',display:'flex',alignItems:'center',justifyContent:'center'}}><ListChecks size={17} color="var(--orange)"/></div>
-              <div><div style={{fontSize:14,fontWeight:700,color:'var(--text)'}}>MCQ Solver</div><div style={{fontSize:10,color:'var(--text3)'}}>{sn} · {pl}</div></div>
-            </div>
-            <div style={{display:'flex',alignItems:'center',gap:8}}>
-              <button onClick={clearAll} style={{padding:'5px 12px',borderRadius:7,border:'1px solid var(--line2)',cursor:'pointer',background:'var(--surface2)',color:'var(--text2)',fontSize:11}}>Reset</button>
-              <button className="icon-btn" onClick={onClose} style={{width:28,height:28,borderRadius:'50%'}}><X size={13}/></button>
+    <div className="mcq-sidebar">
+      {/* Header */}
+      <div style={{padding:'14px 16px',borderBottom:'1px solid var(--line2)',flexShrink:0}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+          <div style={{display:'flex',alignItems:'center',gap:9}}>
+            <div style={{width:30,height:30,borderRadius:8,background:'var(--orange-d)',display:'flex',alignItems:'center',justifyContent:'center'}}><ListChecks size={14} color="var(--orange)"/></div>
+            <div>
+              <div style={{fontSize:13,fontWeight:700,color:'var(--text)'}}>MCQ Solver</div>
+              <div style={{fontSize:10,color:'var(--text3)'}}>{sn} · {pl}</div>
             </div>
           </div>
-          {mineCount>0&&keyCount>0&&(
-            <div style={{display:'flex',alignItems:'center',gap:12,padding:'8px 12px',borderRadius:10,background:'var(--surface2)',border:'1px solid var(--line2)'}}>
-              <div><span style={{fontSize:22,fontWeight:700,color:pct>=70?'var(--green)':pct>=50?'var(--orange)':'var(--red)'}}>{correct}</span><span style={{fontSize:13,color:'var(--text2)'}}>/{keyCount}</span></div>
-              <div style={{flex:1}}><div style={{height:6,borderRadius:3,background:'var(--surface3)',overflow:'hidden'}}><div style={{height:'100%',width:`${(correct/keyCount)*100}%`,background:pct>=70?'var(--green)':pct>=50?'var(--orange)':'var(--red)',borderRadius:3,transition:'width 0.5s ease'}}/></div></div>
-              <span style={{fontSize:13,fontWeight:600,color:'var(--text2)',minWidth:36,textAlign:'right'}}>{pct}%</span>
-              {!shown&&<button onClick={()=>setShown(true)} style={{padding:'5px 12px',borderRadius:7,border:'none',cursor:'pointer',background:'var(--orange)',color:'#fff',fontSize:11,fontWeight:600,flexShrink:0}}>Check</button>}
-              {shown&&<button onClick={()=>setShown(false)} style={{padding:'5px 12px',borderRadius:7,border:'1px solid var(--line2)',cursor:'pointer',background:'transparent',color:'var(--text2)',fontSize:11,flexShrink:0}}>Hide</button>}
-            </div>
+          <button className="icon-btn" onClick={onClose} style={{width:28,height:28,borderRadius:'50%',flexShrink:0}}><X size={13}/></button>
+        </div>
+        {/* Action row */}
+        <div style={{display:'flex',gap:6}}>
+          {hardcodedKey&&(
+            <button onClick={toggleReveal}
+              style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:'6px 10px',borderRadius:7,
+                border:`1px solid ${keyRevealed?'var(--line2)':'var(--orange)'}`,cursor:'pointer',transition:'all 0.2s',
+                background:keyRevealed?'var(--surface2)':'var(--orange-d)',
+                color:keyRevealed?'var(--text2)':'var(--orange)',
+                fontSize:11,fontWeight:600}}>
+              {keyRevealed?<><EyeOff size={11}/> Hide Key</>:<><Eye size={11}/> Answer Key</>}
+            </button>
           )}
-          <div style={{display:'flex',gap:4,marginTop:10,background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:9,padding:3}}>
-            <button className={`seg-btn ${tab==='mine'?'a-a':'inactive'}`} style={{flex:1}} onClick={()=>setTab('mine')}>My Answers {mineCount>0?`(${mineCount})`:''}</button>
-            <button className={`seg-btn ${tab==='key'?'a-o':'inactive'}`}  style={{flex:1}} onClick={()=>setTab('key')}>Answer Key {keyCount>0?`(${keyCount})`:''}</button>
-          </div>
+          <button onClick={clearAll} style={{padding:'6px 10px',borderRadius:7,border:'1px solid var(--line2)',cursor:'pointer',background:'var(--surface2)',color:'var(--text2)',fontSize:11,transition:'all 0.2s'}}>Reset</button>
         </div>
-        <div className="no-sb" style={{flex:1,overflowY:'auto',padding:'8px 18px'}}>
-          <div style={{display:'grid',gridTemplateColumns:'28px 1fr 1px 1fr 20px',gap:6,padding:'6px 0',borderBottom:'2px solid var(--line2)',marginBottom:2}}>
-            <span style={{fontSize:9,color:'var(--text3)',textAlign:'center'}}>Q</span>
-            <span style={{fontSize:9,color:'var(--accent)',textAlign:'center',letterSpacing:'0.08em'}}>{tab==='mine'?'MY ANSWER':'— — —'}</span>
-            <span/>
-            <span style={{fontSize:9,color:'var(--orange)',textAlign:'center',letterSpacing:'0.08em'}}>{tab==='key'?'ANSWER KEY':'— — —'}</span>
-            <span/>
-          </div>
-          {Array.from({length:N},(_,qi)=>(
-            <div key={qi} className="mcq-row">
-              <span style={{fontSize:10,color:'var(--text3)',fontWeight:500,textAlign:'center'}}>{qi+1}</span>
-              <div style={{display:'flex',gap:3,justifyContent:'center'}}>{MCQ_OPTS.map(opt=><Bubble key={opt} qi={qi} opt={opt} arr={mine} setArr={setMine} mode="mine"/>)}</div>
-              <div style={{width:1,height:28,background:'var(--line2)',justifySelf:'center'}}/>
-              <div style={{display:'flex',gap:3,justifyContent:'center'}}>{MCQ_OPTS.map(opt=><Bubble key={opt} qi={qi} opt={opt} arr={key} setArr={setKey} mode="key"/>)}</div>
-              <ResultDot qi={qi}/>
+        {/* Score bar */}
+        {keyRevealed&&keyCount>0&&(
+          <div style={{display:'flex',alignItems:'center',gap:10,padding:'7px 10px',borderRadius:9,background:'var(--surface2)',border:'1px solid var(--line2)',marginTop:8}}>
+            <span style={{fontSize:20,fontWeight:700,color:pct>=70?'var(--green)':pct>=50?'var(--orange)':'var(--red)'}}>{correct}</span>
+            <span style={{fontSize:12,color:'var(--text2)'}}>/ {keyCount}</span>
+            <div style={{flex:1,height:5,borderRadius:3,background:'var(--surface3)',overflow:'hidden'}}>
+              <div style={{height:'100%',width:`${pct??0}%`,background:pct>=70?'var(--green)':pct>=50?'var(--orange)':'var(--red)',borderRadius:3,transition:'width 0.5s ease'}}/>
             </div>
-          ))}
+            <span style={{fontSize:12,fontWeight:600,color:'var(--text2)'}}>{pct??'—'}%</span>
+          </div>
+        )}
+      </div>
+      {/* Question grid */}
+      <div className="no-sb" style={{flex:1,overflowY:'auto',padding:'4px 14px 10px'}}>
+        <div style={{display:'grid',gridTemplateColumns:'24px 1fr',gap:6,padding:'5px 0',borderBottom:'2px solid var(--line2)',marginBottom:2}}>
+          <span style={{fontSize:9,color:'var(--text3)',textAlign:'center'}}>Q</span>
+          <span style={{fontSize:9,letterSpacing:'0.08em',color:keyRevealed?'var(--orange)':'var(--accent)',textAlign:'center'}}>
+            {keyRevealed?'KEY REVEALED':'MY ANSWERS'}
+          </span>
         </div>
-        <div style={{padding:'10px 18px',borderTop:'1px solid var(--line2)',flexShrink:0}}>
-          <p style={{fontSize:10,color:'var(--text3)',textAlign:'center'}}>Blue = My Answer · Orange = Answer Key · {shown?'✓ green = correct · ✗ red = wrong':'Press "Check" to see results'}</p>
-        </div>
+        {Array.from({length:N},(_,qi)=>(
+          <div key={qi} style={{display:'grid',gridTemplateColumns:'24px 1fr',gap:6,alignItems:'center',padding:'2px 0',borderBottom:'1px solid var(--line)',minHeight:36}}>
+            <span style={{fontSize:10,color:'var(--text3)',fontWeight:500,textAlign:'center'}}>{qi+1}</span>
+            <div style={{display:'flex',gap:3,justifyContent:'center'}}>
+              {MCQ_OPTS.map(opt=>{
+                const cls=getBubbleCls(qi,opt);
+                const isSel=mine[qi]===opt||(keyRevealed&&mine[qi]&&key[qi]===opt);
+                return <button key={opt} className={cls} onClick={()=>toggle(qi,opt)} style={{color:isSel?undefined:'var(--text3)',cursor:keyRevealed?'default':'pointer'}}>{opt}</button>;
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      {/* Footer */}
+      <div style={{padding:'8px 14px',borderTop:'1px solid var(--line2)',flexShrink:0}}>
+        <p style={{fontSize:10,color:'var(--text3)',textAlign:'center'}}>
+          {keyRevealed
+            ?<><span style={{color:'var(--green)'}}>■</span> Correct &nbsp;·&nbsp; <span style={{color:'var(--red)'}}>■</span> Wrong &nbsp;·&nbsp; <span style={{color:'var(--orange)'}}>■</span> Answer</>
+            :<>{hardcodedKey?<>Click <span style={{color:'var(--orange)',fontWeight:600}}>Answer Key</span> to check</>:'No key available for this paper'}</>
+          }
+        </p>
       </div>
     </div>
   );
@@ -831,6 +965,9 @@ export default function App() {
   const [isAdmin,setIsAdmin]         = useState(false);
   const [showPwModal,setShowPwModal] = useState(false);
 
+  // MCQ session state — persists across paper changes within the session
+  const [mcqSessionData,setMcqSessionData] = useState({});
+
   const [subject,setSubject] = useState('');
   const [year,setYear]       = useState('');
   const [season,setSeason]   = useState('');
@@ -842,6 +979,12 @@ export default function App() {
   const canShowNotes = !!subject&&!!paper;
   const canShowMCQ   = MCQ_SUBJECTS.includes(subject)&&paper===MCQ_PAPER;
 
+  const paperKey = `${subject}_${season}${year?year.slice(2):''}_${paper}_${variant}`;
+  const currentMcqState = mcqSessionData[paperKey]||{choices:Array(MCQ_COUNT).fill(''),revealed:false};
+  const updateMcqState = useCallback((updates)=>{
+    setMcqSessionData(prev=>({...prev,[paperKey]:{...(prev[paperKey]||{choices:Array(MCQ_COUNT).fill(''),revealed:false}),...updates}}));
+  },[paperKey]);
+
   const activeFileUrl = useMemo(()=>{
     if(!isComplete) return '';
     return `/papers/${subject}_${season}${year.slice(2)}_${type}_${paper}${variant}.pdf`;
@@ -849,7 +992,7 @@ export default function App() {
   const viewerSrc = useMemo(()=>`/pdf-viewer/web/viewer.html?file=${encodeURIComponent(activeFileUrl)}`,[activeFileUrl]);
 
   useEffect(()=>{document.title="The Nexus | Study Tools";},[]);
-  useEffect(()=>{setShowNotes(false);setShowMCQ(false);},[subject,paper]);
+  useEffect(()=>{setShowNotes(false);setShowMCQ(false);},[subject,paper,variant,season,year]);
 
   const handleLoad = ()=>{if(!isComplete) return;setIsViewing(true);setShowNav(false);};
   const handleHome = ()=>{setIsViewing(false);setShowNav(true);};
@@ -879,7 +1022,6 @@ export default function App() {
       <GlobalStyles dark={dark}/>
       <ContactModal isOpen={showContact} onClose={()=>setShowContact(false)}/>
       <PasswordModal isOpen={showPwModal} onClose={()=>setShowPwModal(false)} onSuccess={()=>setIsAdmin(true)}/>
-      {showMCQ&&<MCQSolver subjectCode={subject} paperNum={paper} variant={variant} onClose={()=>setShowMCQ(false)}/>}
 
       <div style={{display:'flex',flexDirection:'column',height:'100vh',background:'var(--bg)',overflow:'hidden'}}>
         {/* Nav */}
@@ -926,9 +1068,9 @@ export default function App() {
                   {canShowMCQ&&(
                     <div style={{display:'flex',flexDirection:'column',gap:5}} className="anim-fade">
                       <span style={{fontSize:9,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:2}}>MCQ</span>
-                      <button onClick={()=>setShowMCQ(true)}
-                        style={{display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:'var(--orange-d)',color:'var(--orange)',fontSize:11,fontWeight:600}}>
-                        <ListChecks size={13}/> Solver
+                      <button onClick={()=>setShowMCQ(s=>!s)}
+                        style={{display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showMCQ?'var(--orange)':'var(--orange-d)',color:showMCQ?'#fff':'var(--orange)',fontSize:11,fontWeight:600}}>
+                        <ListChecks size={13}/> {showMCQ?'Close':'Solver'}
                       </button>
                     </div>
                   )}
@@ -988,8 +1130,20 @@ export default function App() {
           )}
 
           {isViewing&&(
-            <div className="anim-fade" style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
-              <iframe src={viewerSrc} style={{flex:1,width:'100%',border:'none',background:'#fff'}} title="PDF Viewer" allowFullScreen/>
+            <div className="anim-fade" style={{flex:1,display:'flex',overflow:'hidden',position:'relative'}}>
+              {/* PDF */}
+              <div style={{flex:1,position:'relative',overflow:'hidden'}}>
+                <iframe src={viewerSrc} style={{width:'100%',height:'100%',border:'none',background:'#fff'}} title="PDF Viewer" allowFullScreen/>
+              </div>
+              {/* MCQ Sidebar */}
+              {showMCQ&&canShowMCQ&&(
+                <MCQSolver
+                  subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season}
+                  onClose={()=>setShowMCQ(false)}
+                  mcqState={currentMcqState}
+                  updateMcqState={updateMcqState}
+                />
+              )}
             </div>
           )}
         </main>
