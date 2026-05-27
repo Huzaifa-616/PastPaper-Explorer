@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
-  BookOpen, ChevronDown, ChevronUp, Mail, X, Copy, Check,
+  BookOpen, ChevronDown, ChevronUp, ChevronRight, Mail, X, Copy, Check,
   Play, Github, Terminal, ArrowLeft, Layers, Sun, Moon,
-  NotebookPen, Lock, Plus, Trash2, FileText, Eye, EyeOff,
-  Paperclip, ExternalLink, ListChecks, AlertCircle, Compass,
-  Search, Clock, ArrowRight, Activity, Zap, Beaker, Code2
+  FileText, Eye, EyeOff, ListChecks, Compass,
+  Search, Clock, ArrowRight, Activity, Zap, Beaker, Code2, Folder, Library
 } from 'lucide-react';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -24,6 +23,8 @@ const MCQ_SUBJECTS  = ['9700', '9701', '9702'];
 const MCQ_PAPER     = '1';
 const MCQ_COUNT     = 40;
 const MCQ_OPTS      = ['A', 'B', 'C', 'D'];
+
+const GITHUB_REPO_URL = "https://github.com/Huzaifa-616/PastPaper-Explorer";
 
 // ─── Topical Taxonomy (Strict Syllabus Mapping) ───────────────────────────────
 const SYLLABUS_STRUCTURE = {
@@ -131,28 +132,8 @@ const MCQ_ANSWER_KEYS = {
   '9702_w25_1_3': ['D','D','B','C','D','D','B','C','C','D','A','A','B','C','C','B','B','C','A','A','D','B','C','A','B','B','D','C','D','A','D','C','A','A','D','D','C','A','A','B'],
 };
 
-const GITHUB_REPO_URL = "https://github.com/Huzaifa-616/PastPaper-Explorer";
-const NOTES_PASSWORD  = "bravo07";
-const NOTES_KEY       = "nexus_notes_v1";
-const MAX_FILE_BYTES  = 1.5 * 1024 * 1024; 
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-const loadNotes    = () => { try { return JSON.parse(localStorage.getItem(NOTES_KEY) || '{}'); } catch { return {}; } };
-const saveNotes    = (n) => localStorage.setItem(NOTES_KEY, JSON.stringify(n));
-const noteKey      = (code, paper) => `${code}_${paper}`;
 const subjectName  = (code) => SUBJECTS.find(s => s.code === code)?.name || code;
-const fmtBytes     = (b) => b < 1024 ? `${b}B` : b < 1048576 ? `${(b/1024).toFixed(1)}KB` : `${(b/1048576).toFixed(1)}MB`;
-
-const openBlob = (att) => {
-  try {
-    const parts  = att.data.split(',');
-    const binary = atob(parts[1]);
-    const bytes  = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    const blob   = new Blob([bytes], { type: att.type });
-    window.open(URL.createObjectURL(blob), '_blank');
-  } catch { alert('Could not open file.'); }
-};
 
 // ─── GlobalStyles (Massive Visual Upgrade) ────────────────────────────────────
 const GlobalStyles = ({ dark }) => (
@@ -199,7 +180,6 @@ const GlobalStyles = ({ dark }) => (
     @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
-    @keyframes pulseGlow { 0%{opacity:0.3} 50%{opacity:0.6} 100%{opacity:0.3} }
     @keyframes slideInLeft  { from{transform:translateX(-100%)} to{transform:translateX(0)} }
     @keyframes slideInRight { from{transform:translateX(100%)}  to{transform:translateX(0)} }
 
@@ -260,15 +240,8 @@ const GlobalStyles = ({ dark }) => (
     .modal-overlay { position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);animation:fadeIn 0.2s ease both;padding:16px; }
     .modal-box { background:var(--bg2);border:1px solid var(--line2);border-radius:24px;width:100%;max-width:420px;position:relative;overflow:hidden;animation:fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
 
-    .notes-sidebar { position:absolute;left:0;top:0;bottom:0;width:340px;z-index:50;background:var(--bg2);border-right:1px solid var(--line2);display:flex;flex-direction:column;box-shadow:4px 0 30px rgba(0,0,0,0.2);animation:slideInLeft 0.3s cubic-bezier(0.16,1,0.3,1) both; }
-    .notes-backdrop { position:absolute;inset:0;z-index:49;background:rgba(0,0,0,0.4);backdrop-filter:blur(2px); }
-
     .topicals-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--line2); display: flex; flex-direction: column; z-index: 10; animation: slideInLeft 0.3s cubic-bezier(0.16,1,0.3,1) both; }
     .mcq-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-left: 1px solid var(--line2); display: flex; flex-direction: column; animation: slideInRight 0.3s cubic-bezier(0.16,1,0.3,1) both; }
-
-    .n-input { width:100%;background:var(--surface);border:1px solid var(--line2);border-radius:10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;padding:12px 14px;outline:none;resize:vertical;transition:all 0.2s; }
-    .n-input:focus { border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
-    .n-input::placeholder { color:var(--text3); }
 
     .mcq-bubble { width:32px;height:32px;border-radius:50%;border:1.5px solid var(--line2);background:transparent;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center; }
     .mcq-bubble:hover { border-color:var(--text2);color:var(--text); }
@@ -283,8 +256,19 @@ const GlobalStyles = ({ dark }) => (
     .custom-sb::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 4px; }
     .custom-sb:hover::-webkit-scrollbar-thumb { background: var(--text3); }
     
-    .tools-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; max-width: 1000px; }
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; width: 100%; max-width: 1100px; }
     .featured-card { grid-column: 1 / -1; }
+    
+    /* Pull-tab for hover-open */
+    .pull-tab-pill {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; justify-content: center;
+      width: 48px; height: 28px; border-radius: 14px;
+      background: var(--surface2); border: 1px solid var(--line2);
+      cursor: pointer; transition: all 0.2s; z-index: 40;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .pull-tab-pill:hover { background: var(--surface3); transform: translateX(-50%) translateY(2px); }
     
     @media (max-width: 768px) {
       .tools-grid { grid-template-columns: 1fr; }
@@ -297,7 +281,7 @@ const GlobalStyles = ({ dark }) => (
 );
 
 // ─── StartupScreen (The Redesigned Command Center) ────────────────────────────
-const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }) => {
+const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, toggleTheme, dark }) => {
   const [activeTab, setActiveTab] = useState('9618'); // Default to CS
 
   // Dynamic Theme Colors based on active subject
@@ -401,7 +385,30 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }
             </div>
           </div>
 
-          {/* Tool 3: Topicals (FEATURED WIDE CARD) */}
+          {/* Tool 3: Library (Replaces Notes Sidebar) */}
+          <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
+               onClick={() => onSelectLibrary(activeTab)}
+               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
+               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; }}>
+            <div>
+              <div style={{ width:48, height:48, borderRadius:14, background:'var(--surface2)', border:'1px solid var(--line2)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
+                <Library size={20} color="var(--text)"/>
+              </div>
+              <h3 style={{ fontSize:20, fontWeight:700, marginBottom:8 }}>Resource Library</h3>
+              <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Access textbooks, revision notes, and formula sheets directly from your repository.</p>
+            </div>
+            <div style={{ marginTop:24, display:'flex', flexWrap:'wrap', gap:8, alignItems:'center', justifyContent:'space-between' }}>
+              <div style={{ display:'flex', gap:8 }}>
+                {['PDFs', 'Notes', 'Books'].map(p => <span key={p} style={{ fontSize:11, fontWeight:500, padding:'4px 10px', background:'var(--surface2)', borderRadius:100, border:'1px solid var(--line2)', color:'var(--text3)' }}>{p}</span>)}
+              </div>
+              <button onClick={(e) => { e.stopPropagation(); onSelectLibrary(''); }}
+                style={{ fontSize:11, fontWeight:600, padding:'6px 12px', background:'var(--text)', color:'var(--bg)', borderRadius:8, border:'none', cursor:'pointer' }}>
+                Browse All
+              </button>
+            </div>
+          </div>
+
+          {/* Tool 4: Topicals (FEATURED WIDE CARD) */}
           <div className="glass-panel featured-card" style={{ padding: 0, borderRadius: 24, cursor: 'pointer', transition: 'all 0.3s', display: 'flex', flexDirection: 'row', overflow: 'hidden', position: 'relative' }}
                onClick={() => onSelectTopicals(activeTab)}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = currentBrand.hex; e.currentTarget.querySelector('.feature-glow').style.opacity = '0.3'; }}
@@ -451,13 +458,13 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }
       </main>
       
       <footer style={{ padding:'24px', textAlign:'center', zIndex:10 }}>
-        <p style={{ fontSize:12, color:'var(--text3)', letterSpacing:'0.05em', fontWeight:500 }}>MUHAMMAD HUZAIFA IMRAN</p>
+        <p style={{ fontSize:12, color:'var(--text3)', letterSpacing:'0.05em', fontWeight:500 }}>MUHAMMAD HUZAIFA IMRAN • LAHORE, PAKISTAN</p>
       </footer>
     </div>
   );
 };
 
-// ─── NexusSelect, Modals, and Sidebars ───────────────────────────────────────
+// ─── NexusSelect & Modals ───────────────────────────────────────────────────
 
 const NexusSelect = ({ label, value, onChange, options }) => (
   <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
@@ -502,45 +509,299 @@ const ContactModal = ({ isOpen, onClose }) => {
   );
 };
 
-const PasswordModal = ({ isOpen, onClose, onSuccess }) => {
-  const [pw, setPw] = useState(''); const [show, setShow] = useState(false); const [err, setErr] = useState(false);
-  const ref = useRef(null);
-  useEffect(() => { if (isOpen) { setPw(''); setErr(false); setTimeout(()=>ref.current?.focus(),100); } }, [isOpen]);
-  const submit = () => { if (pw===NOTES_PASSWORD) { onSuccess(); onClose(); setPw(''); setErr(false); } else { setErr(true); setPw(''); } };
-  if (!isOpen) return null;
+// ─── Sidebars (Topicals, Library, MCQSolver) ────────────────────────────────
+
+const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => {
+  const [selectedPaper, setSelectedPaper] = useState(null);
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const [searchQ, setSearchQ] = useState('');
+
+  const subjName = subjectCode ? subjectName(subjectCode) : null;
+  const db = topicalDb && subjectCode ? topicalDb[subjectCode] : null;
+  const syllabus = subjectCode ? SYLLABUS_STRUCTURE[subjectCode] : null;
+  const papers = syllabus ? Object.keys(syllabus).sort() : [];
+
+  useEffect(() => {
+    if (syllabus) { setSelectedPaper(Object.keys(syllabus).sort()[0]); setSelectedTopic(null); }
+  }, [subjectCode]);
+
+  useEffect(() => { setSelectedTopic(null); setSearchQ(''); }, [selectedPaper]);
+
+  const getQs = (pNum, topic) => db?.[pNum]?.topics?.[topic] || [];
+
+  const paperInfo = selectedPaper && syllabus ? syllabus[selectedPaper] : null;
+  const topics = paperInfo ? paperInfo.topics : [];
+  const questions = selectedPaper && selectedTopic ? getQs(selectedPaper, selectedTopic) : [];
+  const filteredQuestions = searchQ.trim()
+    ? questions.filter(q => q.season_year.toLowerCase().includes(searchQ.toLowerCase()))
+    : questions;
+
+  const maxQ = useMemo(() => {
+    if (!selectedPaper || !db || !syllabus) return 1;
+    const ts = syllabus[selectedPaper]?.topics || [];
+    return Math.max(1, ...ts.map(t => getQs(selectedPaper, t).length));
+  }, [selectedPaper, db]);
+
+  const totalQ = useMemo(() => {
+    if (!db) return 0;
+    let c = 0;
+    Object.values(db).forEach(p => Object.values(p.topics || {}).forEach(qs => c += qs.length));
+    return c;
+  }, [db]);
+
+  const totalTopics = syllabus ? Object.values(syllabus).reduce((acc, p) => acc + p.topics.length, 0) : 0;
+
+  const PAPER_COLORS = {
+    '1': { hex: '#2dd4bf', bg: 'rgba(45,212,191,0.08)' },
+    '2': { hex: '#818cf8', bg: 'rgba(129,140,248,0.08)' },
+    '3': { hex: '#fbbf24', bg: 'rgba(251,191,36,0.08)' },
+    '4': { hex: '#fb7185', bg: 'rgba(251,113,133,0.08)' },
+  };
+  const pColor = (pNum) => PAPER_COLORS[pNum] || PAPER_COLORS['1'];
+  const ac = selectedPaper ? pColor(selectedPaper) : pColor('1');
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" style={{ maxWidth:360 }} onClick={e=>e.stopPropagation()}>
-        <div style={{ padding:'24px' }}>
-          <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24 }}>
-            <div style={{ display:'flex',alignItems:'center',gap:12 }}>
-              <div style={{ width:36,height:36,borderRadius:10,background:'var(--surface2)',display:'flex',alignItems:'center',justifyContent:'center' }}><Lock size={18} color="var(--text)" /></div>
-              <div><div style={{ fontSize:18,fontWeight:700,color:'var(--text)' }}>Admin Access</div><div style={{ fontSize:12,color:'var(--text3)' }}>Enter password to add notes</div></div>
+    <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', background:'var(--bg)', animation:'fadeIn 0.3s ease both' }}>
+
+      <div style={{ padding:'14px 28px', borderBottom:'1px solid var(--line2)', background:'var(--bg2)', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'space-between', gap:24 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+          <div style={{ width:40, height:40, borderRadius:12, background:ac.bg, border:`1px solid ${ac.hex}40`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <Compass size={20} color={ac.hex}/>
+          </div>
+          <div>
+            <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
+              <span style={{ fontSize:17, fontWeight:800, color:'var(--text)' }}>Topic Explorer</span>
+              {subjName && <><span style={{ color:'var(--text3)', fontSize:14 }}>/</span><span style={{ fontSize:14, fontWeight:600, color:ac.hex }}>{subjName}</span></>}
+              {selectedPaper && <><span style={{ color:'var(--text3)', fontSize:14 }}>/</span><span style={{ fontSize:13, fontWeight:600, color:'var(--text2)' }}>Paper {selectedPaper}</span></>}
+              {selectedTopic && <><span style={{ color:'var(--text3)', fontSize:14 }}>/</span><span style={{ fontSize:12, fontWeight:600, color:'var(--text2)', maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{selectedTopic}</span></>}
             </div>
-            <button className="icon-btn" onClick={onClose}><X size={16} /></button>
+            <div style={{ fontSize:11, color:'var(--text3)', marginTop:2 }}>
+              {totalQ > 0 ? `${totalQ} indexed questions · ${papers.length} papers · ${totalTopics} topics` : 'Browse past paper questions by topic'}
+            </div>
           </div>
-          <div style={{ position:'relative',marginBottom:err?12:20 }}>
-            <input ref={ref} type={show?'text':'password'} className="n-input" placeholder="Password" value={pw}
-              onChange={e=>{setPw(e.target.value);setErr(false);}} onKeyDown={e=>e.key==='Enter'&&submit()}
-              style={{ paddingRight:44,borderColor:err?'var(--red)':undefined }} />
-            <button onClick={()=>setShow(s=>!s)} style={{ position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',color:'var(--text3)' }}>
-              {show?<EyeOff size={16}/>:<Eye size={16}/>}
-            </button>
-          </div>
-          {err && <p style={{ fontSize:12,color:'var(--red)',marginBottom:16 }}>Incorrect password. Try again.</p>}
-          <button onClick={submit} style={{ width:'100%',padding:'14px',borderRadius:10,border:'none',cursor:'pointer',background:'var(--text)',color:'var(--bg)',fontSize:14,fontWeight:600,transition:'all 0.2s' }}>Unlock Database</button>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          {totalQ > 0 && [{ label:'Questions', val:totalQ }, { label:'Topics', val:totalTopics }].map((s, i) => (
+            <div key={i} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', background:'var(--surface2)', border:'1px solid var(--line2)', borderRadius:8, fontSize:12 }}>
+              <span style={{ fontWeight:800, color:i===0?ac.hex:'var(--text)' }}>{s.val}</span>
+              <span style={{ color:'var(--text3)', fontWeight:500 }}>{s.label}</span>
+            </div>
+          ))}
+          <div style={{ width:1, height:24, background:'var(--line2)' }}/>
+          <button className="icon-btn" onClick={onClose}><X size={16}/></button>
         </div>
       </div>
+
+      {!subjectCode ? (
+        <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:12 }}>
+          <Compass size={56} style={{ opacity:0.15 }}/>
+          <p style={{ fontSize:15, color:'var(--text2)', fontWeight:600 }}>Select a subject from the navigation bar above</p>
+        </div>
+      ) : !syllabus ? (
+        <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:12 }}>
+          <Compass size={56} style={{ opacity:0.15 }}/>
+          <p style={{ fontSize:16, color:'var(--text)', fontWeight:700 }}>Coming Soon</p>
+          <p style={{ fontSize:14, color:'var(--text2)' }}>Topical mapping for {subjName} is not yet available.</p>
+        </div>
+      ) : (
+        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+
+          {/* Paper Selector */}
+          <div style={{ width:210, flexShrink:0, borderRight:'1px solid var(--line2)', padding:'16px 10px', display:'flex', flexDirection:'column', gap:6, background:'var(--bg2)', overflowY:'auto' }} className="custom-sb">
+            <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text3)', paddingLeft:8, marginBottom:6 }}>Papers</p>
+            {papers.map(pNum => {
+              const pc = pColor(pNum);
+              const pData = syllabus[pNum];
+              const isActive = selectedPaper === pNum;
+              const pQCount = pData.topics.reduce((a, t) => a + getQs(pNum, t).length, 0);
+              return (
+                <button key={pNum} onClick={() => setSelectedPaper(pNum)}
+                  style={{ width:'100%', textAlign:'left', padding:'14px', borderRadius:12, border:`1px solid ${isActive ? pc.hex+'60' : 'var(--line2)'}`, background:isActive ? pc.bg : 'transparent', cursor:'pointer', transition:'all 0.2s' }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--surface2)'; }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
+                    <div style={{ width:8, height:8, borderRadius:'50%', background:pc.hex, flexShrink:0 }}/>
+                    <span style={{ fontSize:13, fontWeight:700, color:isActive ? pc.hex : 'var(--text)' }}>Paper {pNum}</span>
+                  </div>
+                  <p style={{ fontSize:11, color:'var(--text3)', lineHeight:1.4, paddingLeft:16, marginBottom:6 }}>{pData.title}</p>
+                  <div style={{ display:'flex', gap:5, paddingLeft:16, flexWrap:'wrap' }}>
+                    <span style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:6, background:'var(--surface2)', color:'var(--text3)' }}>{pData.topics.length} topics</span>
+                    {pQCount > 0 && <span style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:6, background:pc.bg, color:pc.hex }}>{pQCount} Qs</span>}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Topics Grid */}
+          <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', minWidth:0 }}>
+            <div style={{ padding:'14px 20px', borderBottom:'1px solid var(--line2)', background:'var(--bg2)', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                {paperInfo && <div style={{ width:4, height:22, borderRadius:2, background:ac.hex, flexShrink:0 }}/>}
+                <span style={{ fontSize:15, fontWeight:700, color:'var(--text)' }}>{paperInfo?.title || 'Select a Paper'}</span>
+                {topics.length > 0 && <span style={{ fontSize:12, color:'var(--text3)', background:'var(--surface2)', padding:'3px 8px', borderRadius:6 }}>{topics.length} topics</span>}
+              </div>
+              {selectedTopic && (
+                <button onClick={() => setSelectedTopic(null)}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:8, border:'1px solid var(--line2)', background:'var(--surface2)', color:'var(--text2)', cursor:'pointer', fontSize:12, fontWeight:600 }}>
+                  <X size={12}/> Clear
+                </button>
+              )}
+            </div>
+            <div className="custom-sb" style={{ flex:1, overflowY:'auto', padding:'20px' }}>
+              {topics.length === 0 ? (
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', color:'var(--text3)', fontSize:14 }}>Select a paper to view its topics</div>
+              ) : (
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(210px, 1fr))', gap:12 }}>
+                  {topics.map(topic => {
+                    const qCount = getQs(selectedPaper, topic).length;
+                    const barPct = maxQ > 0 ? (qCount / maxQ) * 100 : 0;
+                    const isSel = selectedTopic === topic;
+                    return (
+                      <button key={topic} onClick={() => setSelectedTopic(isSel ? null : topic)}
+                        style={{ textAlign:'left', padding:'18px', borderRadius:14, border:`1px solid ${isSel ? ac.hex+'70' : 'var(--line2)'}`, background:isSel ? ac.bg : 'var(--bg2)', cursor:'pointer', transition:'all 0.2s', position:'relative', overflow:'hidden' }}
+                        onMouseEnter={e => { if (!isSel) { e.currentTarget.style.background = 'var(--surface2)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = 'var(--line2)'; } }}
+                        onMouseLeave={e => { if (!isSel) { e.currentTarget.style.background = 'var(--bg2)'; e.currentTarget.style.transform = 'translateY(0)'; } }}>
+                        {isSel && <div style={{ position:'absolute', top:0, right:0, width:'60%', height:'100%', background:`radial-gradient(ellipse at top right, ${ac.hex}20, transparent 70%)`, pointerEvents:'none' }}/>}
+                        <div style={{ fontSize:13, fontWeight:700, color:isSel ? ac.hex : 'var(--text)', marginBottom:12, lineHeight:1.4 }}>{topic}</div>
+                        <div style={{ height:4, borderRadius:4, background:'var(--surface3)', marginBottom:10, overflow:'hidden' }}>
+                          <div style={{ height:'100%', width:`${barPct}%`, background:isSel ? ac.hex : 'var(--line2)', borderRadius:4, transition:'width 0.5s ease' }}/>
+                        </div>
+                        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                          <span style={{ fontSize:12, fontWeight:700, color:qCount > 0 ? (isSel ? ac.hex : 'var(--text2)') : 'var(--text3)' }}>
+                            {qCount > 0 ? `${qCount} question${qCount !== 1 ? 's' : ''}` : 'No data yet'}
+                          </span>
+                          {isSel && <ArrowRight size={13} color={ac.hex}/>}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Questions Detail Panel */}
+          {selectedTopic && (
+            <div style={{ width:320, flexShrink:0, borderLeft:'1px solid var(--line2)', display:'flex', flexDirection:'column', background:'var(--bg2)', animation:'slideInRight 0.25s cubic-bezier(0.16,1,0.3,1) both' }}>
+              <div style={{ padding:'16px 20px', borderBottom:'1px solid var(--line2)', flexShrink:0 }}>
+                <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:6 }}>
+                  <span style={{ fontSize:13, fontWeight:800, color:'var(--text)', lineHeight:1.4, flex:1, paddingRight:8 }}>{selectedTopic}</span>
+                  <button className="icon-btn" style={{ width:28, height:28, flexShrink:0 }} onClick={() => setSelectedTopic(null)}><X size={14}/></button>
+                </div>
+                <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:questions.length > 5 ? 12 : 0 }}>
+                  <div style={{ width:6, height:6, borderRadius:'50%', background:ac.hex }}/>
+                  <span style={{ fontSize:11, color:ac.hex, fontWeight:700 }}>{questions.length} paper{questions.length !== 1 ? 's' : ''} available</span>
+                </div>
+                {questions.length > 5 && (
+                  <div style={{ position:'relative' }}>
+                    <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Filter by season / year…"
+                      style={{ width:'100%', padding:'8px 12px 8px 32px', borderRadius:8, border:'1px solid var(--line2)', background:'var(--surface2)', color:'var(--text)', fontSize:12, outline:'none', fontFamily:'Outfit, sans-serif', transition:'border-color 0.2s' }}
+                      onFocus={e => e.target.style.borderColor = ac.hex}
+                      onBlur={e => e.target.style.borderColor = 'var(--line2)'}/>
+                    <Search size={12} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'var(--text3)', pointerEvents:'none' }}/>
+                  </div>
+                )}
+              </div>
+              <div className="custom-sb" style={{ flex:1, overflowY:'auto', padding:'12px 14px', display:'flex', flexDirection:'column', gap:8 }}>
+                {filteredQuestions.length === 0 ? (
+                  <p style={{ textAlign:'center', color:'var(--text3)', fontSize:13, padding:'24px 0' }}>
+                    {questions.length === 0 ? 'No questions indexed yet.' : 'No results.'}
+                  </p>
+                ) : (
+                  filteredQuestions.map((item, idx) => {
+                    const sCode = item.season_year[0];
+                    const yrSuffix = item.season_year.slice(1);
+                    const sName = { m:'March', s:'Summer', w:'Winter' }[sCode] || sCode.toUpperCase();
+                    return (
+                      <button key={idx} onClick={() => onSelectQuestion(item.paper_id, item.page_number)}
+                        style={{ textAlign:'left', padding:'12px 14px', borderRadius:12, border:'1px solid var(--line2)', background:'var(--bg)', cursor:'pointer', transition:'all 0.15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = ac.hex+'80'; e.currentTarget.style.background = ac.bg; e.currentTarget.style.transform = 'translateX(3px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.style.background = 'var(--bg)'; e.currentTarget.style.transform = 'translateX(0)'; }}>
+                        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:6 }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+                            <span style={{ fontSize:11, fontWeight:700, padding:'3px 8px', borderRadius:6, background:ac.bg, color:ac.hex }}>{sName} 20{yrSuffix}</span>
+                            <span style={{ fontSize:11, fontWeight:600, color:'var(--text3)', padding:'3px 7px', borderRadius:6, background:'var(--surface2)' }}>Var {item.variant}</span>
+                          </div>
+                          <span style={{ fontSize:10, fontWeight:700, color:'var(--text3)' }}>pg {item.page_number}</span>
+                        </div>
+                        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                          <span style={{ fontSize:12, color:'var(--text2)', fontWeight:500 }}>Q {item.questions?.join(', ')}</span>
+                          <ArrowRight size={12} color="var(--text3)"/>
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+              <div style={{ padding:'12px 16px', borderTop:'1px solid var(--line2)', flexShrink:0 }}>
+                <p style={{ fontSize:11, color:'var(--text3)', textAlign:'center' }}>Click any card to open the paper at that page</p>
+              </div>
+            </div>
+          )}
+
+        </div>
+      )}
     </div>
   );
 };
 
-const TopicalsSidebar = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => {
-  const [expandedPaper, setExpandedPaper] = useState(null);
-  const [expandedTopic, setExpandedTopic] = useState(null);
+// ─── NEW: Library Explorer Sidebar (Replaces old Local Notes) ────────────────
+const LibrarySidebar = ({ subjectCode, libraryDb, onClose }) => {
   const subjName = subjectCode ? subjectName(subjectCode) : null;
-  const db = topicalDb && subjectCode ? topicalDb[subjectCode] : null;
-  const syllabus = subjectCode ? SYLLABUS_STRUCTURE[subjectCode] : null;
+  const [expanded, setExpanded] = useState({});
+
+  const targetFolder = useMemo(() => {
+    // If no subject is selected, show the entire library root
+    if (!subjectCode) return { children: libraryDb }; 
+    return libraryDb?.find(f => f.name === subjectCode) || null;
+  }, [libraryDb, subjectCode]);
+
+  const toggleFolder = (path) => {
+    setExpanded(prev => ({ ...prev, [path]: !prev[path] }));
+  };
+
+  const renderTree = (nodes, currentPath = '') => {
+    if (!nodes) return null;
+    return nodes.map((node) => {
+      const nodePath = `${currentPath}/${node.name}`;
+      if (node.type === 'folder') {
+        const isExp = expanded[nodePath];
+        return (
+          <div key={nodePath} style={{ marginBottom: 4 }}>
+            <button onClick={() => toggleFolder(nodePath)}
+              style={{ display:'flex', alignItems:'center', width:'100%', padding:'10px 12px', background: isExp ? 'var(--surface2)' : 'transparent', border:'none', borderRadius:8, color:'var(--text)', cursor:'pointer', transition:'all 0.2s' }}
+              onMouseEnter={e => { if(!isExp) e.currentTarget.style.background = 'var(--surface2)'; }}
+              onMouseLeave={e => { if(!isExp) e.currentTarget.style.background = 'transparent'; }}>
+              {isExp ? <ChevronDown size={16} style={{ marginRight:8, color:'var(--text3)' }}/> : <ChevronRight size={16} style={{ marginRight:8, color:'var(--text3)' }}/>}
+              <Folder size={16} style={{ marginRight:8, color:'var(--accent)' }}/>
+              <span style={{ fontSize:13, fontWeight:600 }}>{node.name}</span>
+            </button>
+            {isExp && (
+              <div style={{ paddingLeft: 12, marginTop: 4, borderLeft:'1px solid var(--line2)', marginLeft: 18 }}>
+                {renderTree(node.children, nodePath)}
+              </div>
+            )}
+          </div>
+        );
+      } else {
+        return (
+          <div key={nodePath} style={{ marginBottom: 4 }}>
+            <a href={node.path} target="_blank" rel="noopener noreferrer"
+              style={{ display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%', padding:'10px 12px', background:'var(--surface)', border:'1px solid var(--line2)', borderRadius:8, color:'var(--text2)', cursor:'pointer', transition:'all 0.2s', textDecoration:'none' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text3)'; e.currentTarget.style.color = 'var(--text)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.style.color = 'var(--text2)'; }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8, overflow:'hidden' }}>
+                <FileText size={14} style={{ flexShrink:0, color:'var(--rose)' }}/>
+                <span style={{ fontSize:12, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', fontWeight:500 }}>{node.name}</span>
+              </div>
+              <span style={{ fontSize:10, color:'var(--text3)', flexShrink:0, marginLeft:8, background:'var(--surface2)', padding:'2px 6px', borderRadius:4 }}>{node.size}</span>
+            </a>
+          </div>
+        );
+      }
+    });
+  };
 
   return (
     <div className="topicals-sidebar">
@@ -548,253 +809,29 @@ const TopicalsSidebar = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) 
         <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between' }}>
           <div style={{ display:'flex',alignItems:'center',gap:12 }}>
             <div style={{ width:36,height:36,borderRadius:10,background:'var(--surface2)',display:'flex',alignItems:'center',justifyContent:'center' }}>
-              <Compass size={18} color="var(--text)"/>
+              <Library size={18} color="var(--text)"/>
             </div>
             <div>
-              <div style={{ fontSize:16,fontWeight:700,color:'var(--text)' }}>Topical Extraction</div>
-              <div style={{ fontSize:12,color:'var(--text3)' }}>{subjName || 'No Subject Selected'}</div>
+              <div style={{ fontSize:16,fontWeight:700,color:'var(--text)' }}>Library Explorer</div>
+              <div style={{ fontSize:12,color:'var(--text3)' }}>{subjectCode ? subjName : 'All Subjects'}</div>
             </div>
           </div>
           <button className="icon-btn" onClick={onClose}><X size={16}/></button>
         </div>
       </div>
 
-      <div className="custom-sb" style={{ flex:1, overflowY:'auto', padding:'20px 24px', display:'flex', flexDirection:'column', gap:12 }}>
-        {!subjectCode ? (
-          <div style={{ textAlign:'center',padding:'60px 0',color:'var(--text3)' }}>
-            <Compass size={48} style={{ opacity:0.2,marginBottom:16 }}/>
-            <p style={{ fontSize:15,fontWeight:600,marginBottom:8,color:'var(--text)' }}>Select a Subject</p>
-            <p style={{ fontSize:13,lineHeight:1.6 }}>Please select a subject from the top navigation to view topical questions.</p>
-          </div>
-        ) : !syllabus ? (
+      <div className="custom-sb" style={{ flex:1, overflowY:'auto', padding:'20px 24px', display:'flex', flexDirection:'column' }}>
+        {!targetFolder || targetFolder.children?.length === 0 ? (
            <div style={{ textAlign:'center',padding:'60px 0',color:'var(--text3)' }}>
-            <Compass size={48} style={{ opacity:0.2,marginBottom:16 }}/>
-            <p style={{ fontSize:15,fontWeight:600,marginBottom:8,color:'var(--text)' }}>Coming Soon</p>
-            <p style={{ fontSize:13,lineHeight:1.6 }}>Topical mapping is currently available for Computer Science (9618), Physics (9702), and Chemistry (9701).</p>
+            <Folder size={48} style={{ opacity:0.2,marginBottom:16 }}/>
+            <p style={{ fontSize:15,fontWeight:600,marginBottom:8,color:'var(--text)' }}>Folder Empty</p>
+            <p style={{ fontSize:13,lineHeight:1.6 }}>No files indexed for this subject yet. Add PDFs to <span style={{fontFamily:'monospace'}}>/public/library/</span> and run the Python script.</p>
           </div>
         ) : (
-          Object.keys(syllabus).sort().map(pNum => {
-            const paperData = syllabus[pNum];
-            return (
-            <div key={pNum} style={{ background:'var(--surface)',border:'1px solid var(--line2)',borderRadius:14,overflow:'hidden',flexShrink:0 }}>
-              <button 
-                onClick={() => { setExpandedPaper(expandedPaper === pNum ? null : pNum); setExpandedTopic(null); }}
-                style={{ width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'16px',background:'var(--surface2)',border:'none',color:'var(--text)',cursor:'pointer' }}>
-                <div style={{ textAlign:'left' }}>
-                  <div style={{ fontSize:15, fontWeight:700 }}>Paper {pNum}</div>
-                  <div style={{ fontSize:12, color:'var(--text2)', marginTop:4 }}>{paperData.title}</div>
-                </div>
-                {expandedPaper === pNum ? <ChevronUp size={18} color="var(--text3)"/> : <ChevronDown size={18} color="var(--text3)"/>}
-              </button>
-              
-              {expandedPaper === pNum && (
-                <div style={{ padding:'12px',display:'flex',flexDirection:'column',gap:8 }}>
-                  {paperData.topics.map(topic => {
-                    const questions = db?.[pNum]?.topics?.[topic] || [];
-                    return (
-                    <div key={topic} style={{ background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:10,overflow:'hidden' }}>
-                      <button onClick={() => setExpandedTopic(expandedTopic === topic ? null : topic)}
-                        style={{ width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px',background:'transparent',border:'none',color:'var(--text)',fontWeight:600,fontSize:13,cursor:'pointer' }}>
-                        <span style={{ textAlign:'left', paddingRight:12, lineHeight:1.3 }}>{topic}</span>
-                        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                           <span style={{ fontSize:11, background:'var(--surface3)', padding:'4px 8px', borderRadius:100, color:'var(--text2)' }}>
-                             {questions.length}
-                           </span>
-                           {expandedTopic === topic ? <ChevronUp size={16} color="var(--text3)"/> : <ChevronDown size={16} color="var(--text3)"/>}
-                        </div>
-                      </button>
-                      
-                      {expandedTopic === topic && (
-                        <div style={{ padding:'0 12px 12px',display:'flex',flexDirection:'column',gap:8 }}>
-                          {questions.length === 0 ? (
-                            <p style={{ fontSize:12, color:'var(--text3)', textAlign:'center', padding:'12px 0' }}>No questions indexed yet.</p>
-                          ) : (
-                            questions.map((item, idx) => (
-                              <button key={idx} onClick={() => onSelectQuestion(item.paper_id, item.page_number)}
-                                style={{ display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px',background:'var(--surface)',border:'1px solid var(--line2)',borderRadius:8,cursor:'pointer', transition:'border-color 0.2s' }}
-                                onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--text3)'}
-                                onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--line2)'}>
-                                <div style={{ textAlign:'left' }}>
-                                  <div style={{ fontSize:12,fontWeight:700,color:'var(--text)',marginBottom:4 }}>{item.season_year.toUpperCase()} · Var {item.variant}</div>
-                                  <div style={{ fontSize:11,color:'var(--text2)' }}>Question {item.questions.join(', ')}</div>
-                                </div>
-                                <div style={{ fontSize:11,fontWeight:600,color:'var(--text3)',background:'var(--surface2)',padding:'6px 10px',borderRadius:6 }}>Pg {item.page_number}</div>
-                              </button>
-                            ))
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )})}
-                </div>
-              )}
-            </div>
-          )})
+          renderTree(targetFolder.children, subjectCode || 'root')
         )}
       </div>
     </div>
-  );
-};
-
-const NotesSidebar = ({ subjectCode, paperNum, variant, year, season, onClose, isAdmin, onRequestAuth }) => {
-  const key      = noteKey(subjectCode, season, year, paperNum, variant);
-  const subjName = subjectName(subjectCode);
-  const [notes, setNotes]         = useState(() => loadNotes()[key] || []);
-  const [showAdd, setShowAdd]     = useState(false);
-  const [noteTitle, setNoteTitle] = useState('');
-  const [noteBody,  setNoteBody]  = useState('');
-  const [delConfirm, setDelConfirm] = useState(null);
-  const [pendingFiles, setPendingFiles] = useState([]);
-  const [fileErr, setFileErr]     = useState('');
-  const fileRef = useRef(null);
-
-  const persist = (updated) => { setNotes(updated); const all=loadNotes(); all[key]=updated; saveNotes(all); };
-
-  const handleAdd = () => {
-    if (!noteBody.trim() && pendingFiles.length === 0) return;
-    const newNote = {
-      id: Date.now().toString(),
-      title: noteTitle.trim() || `Note ${notes.length + 1}`,
-      content: noteBody.trim(),
-      timestamp: new Date().toLocaleDateString('en-GB', { day:'numeric',month:'short',year:'numeric' }),
-      attachments: pendingFiles,
-    };
-    persist([newNote, ...notes]);
-    setNoteTitle(''); setNoteBody(''); setPendingFiles([]); setShowAdd(false); setFileErr('');
-  };
-
-  const handleFileChange = (e) => {
-    setFileErr('');
-    const files = Array.from(e.target.files);
-    files.forEach(file => {
-      if (!['application/pdf','text/html'].includes(file.type)) { setFileErr('Only PDF and HTML files are supported.'); return; }
-      if (file.size > MAX_FILE_BYTES) { setFileErr(`"${file.name}" exceeds 1.5 MB limit.`); return; }
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPendingFiles(pf => [...pf, { id: Date.now().toString() + Math.random(), name:file.name, type:file.type, data:reader.result, size:file.size }]);
-      };
-      reader.readAsDataURL(file);
-    });
-    e.target.value = '';
-  };
-
-  const removeFile = (id) => setPendingFiles(pf => pf.filter(f => f.id !== id));
-  const handleDelete = (id) => { persist(notes.filter(n=>n.id!==id)); setDelConfirm(null); };
-
-  return (
-    <>
-      <div className="notes-backdrop" onClick={onClose} />
-      <div className="notes-sidebar">
-        <div style={{ padding:'20px 24px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
-          <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12 }}>
-            <div style={{ display:'flex',alignItems:'center',gap:12 }}>
-              <div style={{ width:36,height:36,borderRadius:10,background:'var(--surface2)',display:'flex',alignItems:'center',justifyContent:'center' }}><NotebookPen size={18} color="var(--text)"/></div>
-              <div>
-                <div style={{ fontSize:16,fontWeight:700,color:'var(--text)' }}>Local Notes</div>
-                <div style={{ fontSize:12,color:'var(--text3)' }}>{subjName} · Paper {paperNum}</div>
-              </div>
-            </div>
-            <button className="icon-btn" onClick={onClose}><X size={16}/></button>
-          </div>
-          <div style={{ display:'flex',alignItems:'center',gap:8 }}>
-            <span style={{ fontSize:12,fontWeight:500,color:'var(--text3)' }}>{notes.length} note{notes.length!==1?'s':''}</span>
-            <span style={{ flex:1 }}/>
-            {isAdmin ? (
-              <button onClick={()=>setShowAdd(s=>!s)}
-                style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:8,border:'none',cursor:'pointer',background:'var(--text)',color:'var(--bg)',fontSize:12,fontWeight:600,transition:'all 0.2s' }}>
-                <Plus size={14}/> Add Note
-              </button>
-            ) : (
-              <button onClick={onRequestAuth}
-                style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:8,border:'1px solid var(--line2)',cursor:'pointer',background:'var(--surface2)',color:'var(--text2)',fontSize:12,fontWeight:500,transition:'all 0.2s' }}>
-                <Lock size={14}/> Unlock to add
-              </button>
-            )}
-          </div>
-        </div>
-
-        {showAdd && isAdmin && (
-          <div style={{ padding:'16px 24px',borderBottom:'1px solid var(--line2)',background:'var(--surface2)',flexShrink:0 }}>
-            <input className="n-input" placeholder="Title (optional)" value={noteTitle} onChange={e=>setNoteTitle(e.target.value)} style={{ marginBottom:12 }}/>
-            <textarea className="n-input" placeholder="Write your note here…" value={noteBody} onChange={e=>setNoteBody(e.target.value)} rows={4} style={{ marginBottom:12 }}/>
-
-            <input ref={fileRef} type="file" accept=".pdf,.html,application/pdf,text/html" multiple style={{ display:'none' }} onChange={handleFileChange}/>
-            <button onClick={()=>fileRef.current?.click()}
-              style={{ display:'flex',alignItems:'center',gap:8,padding:'10px 16px',borderRadius:10,border:'1px dashed var(--line2)',cursor:'pointer',background:'transparent',color:'var(--text2)',fontSize:13,width:'100%',justifyContent:'center',marginBottom:12,transition:'all 0.2s' }}>
-              <Paperclip size={14}/> Attach PDF or HTML file
-            </button>
-            {fileErr && <p style={{ fontSize:12,color:'var(--red)',marginBottom:12,display:'flex',alignItems:'center',gap:6 }}><AlertCircle size={14}/>{fileErr}</p>}
-            {pendingFiles.length > 0 && (
-              <div style={{ display:'flex',flexWrap:'wrap',gap:6,marginBottom:12 }}>
-                {pendingFiles.map(f => (
-                  <div key={f.id} style={{ display:'flex',alignItems:'center',gap:6,padding:'4px 10px 4px 8px',borderRadius:8,background:'var(--surface3)',border:'1px solid var(--line2)',fontSize:11,color:'var(--text2)' }}>
-                    <FileText size={12} color="var(--text)"/>
-                    <span>{f.name}</span>
-                    <span style={{ color:'var(--text3)' }}>({fmtBytes(f.size)})</span>
-                    <button onClick={()=>removeFile(f.id)} style={{ background:'none',border:'none',cursor:'pointer',padding:0,display:'flex',alignItems:'center',color:'var(--text3)' }}><X size={12}/></button>
-                  </div>
-                ))}
-              </div>
-            )}
-            <div style={{ display:'flex',gap:12 }}>
-              <button onClick={handleAdd} disabled={!noteBody.trim()&&pendingFiles.length===0}
-                style={{ flex:1,padding:'10px',borderRadius:10,border:'none',cursor:(noteBody.trim()||pendingFiles.length>0)?'pointer':'not-allowed',background:(noteBody.trim()||pendingFiles.length>0)?'var(--text)':'var(--surface)',color:(noteBody.trim()||pendingFiles.length>0)?'var(--bg)':'var(--text3)',fontSize:13,fontWeight:600,transition:'all 0.2s' }}>
-                Save Note
-              </button>
-              <button onClick={()=>{setShowAdd(false);setNoteTitle('');setNoteBody('');setPendingFiles([]);setFileErr('');}}
-                style={{ padding:'10px 16px',borderRadius:10,border:'1px solid var(--line2)',cursor:'pointer',background:'transparent',color:'var(--text2)',fontSize:13,transition:'all 0.2s' }}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-
-        <div className="custom-sb" style={{ flex:1,overflowY:'auto',padding:'20px 24px',display:'flex',flexDirection:'column',gap:16 }}>
-          {notes.length === 0 ? (
-            <div style={{ textAlign:'center',padding:'60px 0',color:'var(--text3)' }}>
-              <FileText size={48} style={{ opacity:0.2,marginBottom:16 }}/>
-              <p style={{ fontSize:15,fontWeight:600,marginBottom:8,color:'var(--text)' }}>No local notes yet</p>
-              <p style={{ fontSize:13, marginBottom: 16 }}>{isAdmin?'Click "Add Note" to get started.':'Unlock the database to start adding notes.'}</p>
-              <p style={{ fontSize:10, color:'var(--text3)', borderTop:'1px solid var(--line)', paddingTop:16, marginTop:16 }}>
-                Static Repo Notes expected format:<br/>
-                <span style={{fontFamily:'Roboto Mono, monospace', marginTop:4, display:'block'}}>/notes/{key}.pdf</span>
-              </p>
-            </div>
-          ) : notes.map(note => (
-            <div key={note.id} className="note-card">
-              <div style={{ display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,marginBottom:note.content?8:0 }}>
-                <span style={{ fontSize:14,fontWeight:600,color:'var(--text)',lineHeight:1.4 }}>{note.title}</span>
-                {isAdmin && (delConfirm===note.id ? (
-                  <div style={{ display:'flex',gap:6,flexShrink:0 }}>
-                    <button onClick={()=>handleDelete(note.id)} style={{ padding:'4px 10px',borderRadius:6,border:'none',cursor:'pointer',background:'var(--red)',color:'#fff',fontSize:11,fontWeight:600 }}>Delete</button>
-                    <button onClick={()=>setDelConfirm(null)} style={{ padding:'4px 10px',borderRadius:6,border:'1px solid var(--line2)',cursor:'pointer',background:'transparent',color:'var(--text2)',fontSize:11 }}>Cancel</button>
-                  </div>
-                ) : (
-                  <button onClick={()=>setDelConfirm(note.id)} className="icon-btn" style={{ width:28,height:28,borderRadius:8,flexShrink:0,border:'none' }}><Trash2 size={14} color="var(--text3)"/></button>
-                ))}
-              </div>
-              {note.content && <p style={{ fontSize:13,color:'var(--text2)',lineHeight:1.6,whiteSpace:'pre-wrap' }}>{note.content}</p>}
-              {note.attachments?.length > 0 && (
-                <div style={{ display:'flex',flexWrap:'wrap',gap:6,marginTop:12 }}>
-                  {note.attachments.map(att => (
-                    <button key={att.id} className="attach-pill" onClick={()=>openBlob(att)}>
-                      <FileText size={12} color={att.type==='application/pdf'?'var(--rose)':'var(--text)'}/>
-                      <span style={{ maxWidth:160,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontSize:11 }}>{att.name}</span>
-                      <ExternalLink size={10} style={{ flexShrink:0 }}/>
-                    </button>
-                  ))}
-                </div>
-              )}
-              <p style={{ fontSize:11,fontWeight:500,color:'var(--text3)',marginTop:12 }}>{note.timestamp}</p>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ padding:'16px 24px',borderTop:'1px solid var(--line2)',flexShrink:0 }}>
-          <p style={{ fontSize:11,fontWeight:500,color:'var(--text3)',textAlign:'center' }}>{isAdmin?'🔓 Admin mode active':'🔒 Read-only mode'}</p>
-        </div>
-      </div>
-    </>
   );
 };
 
@@ -923,13 +960,14 @@ export default function App() {
   const [showContact, setShowContact]   = useState(false);
   const [isViewing,   setIsViewing]     = useState(false);
   const [showNav,     setShowNav]       = useState(true);
-  const [showNotes,   setShowNotes]     = useState(false);
+  const [showLibrary, setShowLibrary]   = useState(false);
   const [showMCQ,     setShowMCQ]       = useState(false);
   const [showTopicals,setShowTopicals]  = useState(false);
   const [isAdmin,     setIsAdmin]       = useState(false);
   const [showPwModal, setShowPwModal]   = useState(false);
 
   const [topicalDb, setTopicalDb] = useState(null);
+  const [libraryDb, setLibraryDb] = useState([]);
   const [targetPage, setTargetPage] = useState(1);
   const [mcqSessionData, setMcqSessionData] = useState({});
 
@@ -941,7 +979,7 @@ export default function App() {
   const [type,    setType]    = useState('qp');
 
   const isComplete    = subject && year && season && paper && variant;
-  const canShowNotes  = !!subject && !!paper;
+  const canShowLibrary  = true; // Library can be accessed globally now
   const canShowMCQ    = MCQ_SUBJECTS.includes(subject) && paper === MCQ_PAPER;
 
   const paperKey = `${subject}_${season}${year ? year.slice(2) : ''}_${paper}_${variant}`;
@@ -960,6 +998,11 @@ export default function App() {
       .then(res => res.json())
       .then(data => setTopicalDb(data))
       .catch(err => console.log('No topical DB generated yet.'));
+
+    fetch('/library_db.json')
+      .then(res => res.json())
+      .then(data => setLibraryDb(data))
+      .catch(err => console.log('No library DB generated yet.'));
   }, []);
 
   const activeFileUrl = useMemo(() => {
@@ -976,9 +1019,12 @@ export default function App() {
 
   useEffect(()=>{ document.title="The Nexus | Workspace"; },[]);
   
+  // FIX: This ensures Library and MCQ sidebars close when parameters change,
+  // but DO NOT forcefully close Topicals. This allows Topicals to snap open smoothly.
   useEffect(()=>{ 
-    setShowNotes(false); setShowMCQ(false); setShowTopicals(false);
-  }, [subject,paper,variant,season,year,type]);
+    setShowLibrary(false); 
+    setShowMCQ(false); 
+  }, [paper,variant,season,year,type]);
 
   const handleLoad = () => { if (!isComplete) return; setTargetPage(1); setIsViewing(true); setShowNav(false); };
   const handleHome = () => { setIsViewing(false); setShowNav(true); };
@@ -994,6 +1040,12 @@ export default function App() {
     setShowTopicals(true);
   };
 
+  const handleSelectLibrary = (subjCode) => {
+    setSubject(subjCode || ''); // Open root if no specific subject provided
+    setShowStartup(false);
+    setShowLibrary(true);
+  };
+
   const handleTopicalSelect = useCallback((paperId, pageNum) => {
     const parts = paperId.replace('.pdf', '').split('_');
     if (parts.length >= 4) {
@@ -1005,30 +1057,32 @@ export default function App() {
       setVariant(parts[3][1]); 
       setTargetPage(pageNum);
       setIsViewing(true);
-      if (window.innerWidth <= 768) setShowTopicals(false);
+      setShowTopicals(false);
     }
   }, []);
 
   if (showStartup) return (
-    <><GlobalStyles dark={dark}/><StartupScreen onSelectExplorer={handleSelectExplorer} onSelectTopicals={handleSelectTopicals} toggleTheme={toggleTheme} dark={dark}/></>
+    <><GlobalStyles dark={dark}/><StartupScreen onSelectExplorer={handleSelectExplorer} onSelectTopicals={handleSelectTopicals} onSelectLibrary={handleSelectLibrary} toggleTheme={toggleTheme} dark={dark}/></>
   );
 
   return (
     <>
       <GlobalStyles dark={dark}/>
       <ContactModal isOpen={showContact} onClose={()=>setShowContact(false)}/>
-      <PasswordModal isOpen={showPwModal} onClose={()=>setShowPwModal(false)} onSuccess={()=>setIsAdmin(true)}/>
 
       <div style={{ display:'flex',flexDirection:'column',height:'100vh',background:'var(--bg)',overflow:'hidden' }}>
 
-        {/* Dynamic Minimal Navbar */}
-        <div style={{ display:'grid',gridTemplateRows:showNav?'1fr':'0fr',transition:'grid-template-rows 0.3s cubic-bezier(0.16,1,0.3,1)',flexShrink:0,zIndex:30 }}>
+        {/* Dynamic Minimal Navbar (TRUE HOVER IMPLEMENTATION) */}
+        <div 
+          style={{ display:'grid',gridTemplateRows:showNav?'1fr':'0fr',transition:'grid-template-rows 0.3s cubic-bezier(0.16,1,0.3,1)',flexShrink:0,zIndex:30 }}
+          onMouseLeave={() => { if(isViewing) setShowNav(false); }}
+        >
           <div style={{ overflow:'hidden',minHeight:0 }}>
             <header className="nav-bar" style={{ padding:'16px 24px', borderBottom:'1px solid var(--line2)' }}>
               <div style={{ maxWidth:1800,margin:'0 auto',display:'flex',flexWrap:'wrap',alignItems:'center',gap:20 }}>
 
                 <div style={{ display:'flex',alignItems:'center',gap:16,marginRight:8 }}>
-                  <button className="icon-btn" onClick={()=>{setShowStartup(true);handleHome();setShowNotes(false);setShowTopicals(false);}} title="Back to Hub" style={{ flexShrink:0 }}><ArrowLeft size={16}/></button>
+                  <button className="icon-btn" onClick={()=>{setShowStartup(true);handleHome();setShowLibrary(false);setShowTopicals(false);}} title="Back to Hub" style={{ flexShrink:0 }}><ArrowLeft size={16}/></button>
                   <div style={{ display:'flex',alignItems:'center',gap:10,cursor:'pointer' }} onClick={handleHome}>
                     <div style={{ width:32, height:32, borderRadius:8, background:'var(--text)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                       <Layers size={16} color="var(--bg)" strokeWidth={2.5}/>
@@ -1043,10 +1097,10 @@ export default function App() {
                 <div style={{ width:1,height:32,background:'var(--line2)',flexShrink:0 }} className="nav-divider"/>
 
                 <div className="custom-sb nav-filters" style={{ display:'flex',alignItems:'flex-end',gap:16,flex:1,overflowX:'auto',paddingBottom:4 }}>
-                  <NexusSelect label="Subject" value={subject} onChange={v=>{setSubject(v);setShowNotes(false);setTargetPage(1);}} options={SUBJECTS.map(s=>({value:s.code,label:`${s.code} · ${s.name}`}))}/>
+                  <NexusSelect label="Subject" value={subject} onChange={v=>{setSubject(v);setShowLibrary(false);setTargetPage(1);}} options={SUBJECTS.map(s=>({value:s.code,label:`${s.code} · ${s.name}`}))}/>
                   <NexusSelect label="Year"    value={year}    onChange={v=>{setYear(v);setTargetPage(1);}}    options={YEARS}/>
                   <NexusSelect label="Season"  value={season}  onChange={v=>{setSeason(v);setTargetPage(1);}}  options={SEASONS.map(s=>({value:s.code,label:s.name}))}/>
-                  <NexusSelect label="Paper"   value={paper}   onChange={v=>{setPaper(v);setShowNotes(false);setTargetPage(1);}} options={PAPERS}/>
+                  <NexusSelect label="Paper"   value={paper}   onChange={v=>{setPaper(v);setShowLibrary(false);setTargetPage(1);}} options={PAPERS}/>
                   <NexusSelect label="Variant" value={variant} onChange={v=>{setVariant(v);setTargetPage(1);}} options={VARIANTS}/>
 
                   <div style={{ display:'flex',flexDirection:'column',gap:6 }}>
@@ -1060,20 +1114,20 @@ export default function App() {
                   <div style={{ display:'flex',flexDirection:'column',gap:6 }}>
                     <span style={{ fontSize:10,fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:4 }}>Tools</span>
                     <div style={{ display:'flex',gap:8 }}>
-                      <button onClick={()=>{setShowTopicals(s=>!s); setShowNotes(false);}}
+                      <button onClick={()=>{setShowTopicals(s=>!s); setShowLibrary(false); setShowMCQ(false);}}
                         style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showTopicals?'var(--text)':'var(--surface2)',color:showTopicals?'var(--bg)':'var(--text)',fontSize:12,fontWeight:600 }}>
                         <Compass size={14}/> Topicals
                       </button>
 
-                      {canShowNotes && (
-                        <button onClick={()=>{setShowNotes(s=>!s); setShowTopicals(false);}}
-                          style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showNotes?'var(--text)':'var(--surface2)',color:showNotes?'var(--bg)':'var(--text)',fontSize:12,fontWeight:600 }}>
-                          <NotebookPen size={14}/> Notes
+                      {canShowLibrary && (
+                        <button onClick={()=>{setShowLibrary(s=>!s); setShowTopicals(false); setShowMCQ(false);}}
+                          style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showLibrary?'var(--text)':'var(--surface2)',color:showLibrary?'var(--bg)':'var(--text)',fontSize:12,fontWeight:600 }}>
+                          <Library size={14}/> Library
                         </button>
                       )}
 
                       {canShowMCQ && (
-                        <button onClick={()=>setShowMCQ(s => !s)}
+                        <button onClick={()=>{setShowMCQ(s=>!s); setShowLibrary(false); setShowTopicals(false);}}
                           style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showMCQ?'var(--text)':'var(--surface2)',color:showMCQ?'var(--bg)':'var(--text)',fontSize:12,fontWeight:600 }}>
                           <ListChecks size={14}/> Solver
                         </button>
@@ -1097,54 +1151,71 @@ export default function App() {
           </div>
         </div>
 
+        {/* Floating Pill Pull Tab */}
         {isViewing && !showNav && (
-          <button className="pull-tab" onClick={()=>setShowNav(true)}>
-            <ChevronDown size={14}/>
-          </button>
+          <div style={{ position:'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', zIndex: 40 }}>
+            <button 
+              className="pull-tab-pill" 
+              onClick={()=>setShowNav(true)} 
+              onMouseEnter={()=>setShowNav(true)}
+            >
+              <ChevronDown size={18} style={{ color: 'var(--text)' }}/>
+            </button>
+          </div>
         )}
 
         {/* Main Workspace Area */}
         <main style={{ flex:1,display:'flex',flexDirection:'column',overflow:'hidden',position:'relative' }}>
-          {isViewing && showNav && <div style={{ position:'absolute',inset:0,zIndex:20,cursor:'pointer',background:'rgba(0,0,0,0.2)',backdropFilter:'blur(2px)' }} onClick={()=>setShowNav(false)}/>}
-
-          {showNotes && canShowNotes && (
-            <NotesSidebar subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} onClose={()=>setShowNotes(false)} isAdmin={isAdmin} onRequestAuth={()=>setShowPwModal(true)}/>
+          
+          {/* Transparent click-to-close handler. */}
+          {isViewing && showNav && (
+            <div 
+              style={{ position:'absolute',inset:0,zIndex:20,cursor:'default' }} 
+              onClick={()=>setShowNav(false)}
+            />
           )}
 
           <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
             
-            {showTopicals && (
-              <TopicalsSidebar subjectCode={subject} topicalDb={topicalDb} onClose={()=>setShowTopicals(false)} onSelectQuestion={handleTopicalSelect}/>
-            )}
-
-            {!isViewing ? (
-              <div className="bg-grid anim-fade" style={{ flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:40,textAlign:'center' }}>
-                <div style={{ position:'absolute',top:'20%',left:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle, var(--accent) 0%, transparent 60%)',opacity:0.05,pointerEvents:'none' }}/>
-                <div style={{ position:'absolute',bottom:'20%',right:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle, var(--teal) 0%, transparent 60%)',opacity:0.05,pointerEvents:'none' }}/>
-                
-                <div style={{ width:80,height:80,borderRadius:24,background:'var(--surface2)',border:'1px solid var(--line2)',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:32,zIndex:1 }}>
-                  <BookOpen size={40} color="var(--text3)" strokeWidth={1.5}/>
-                </div>
-                <h2 style={{ fontSize:32,fontWeight:700,color:'var(--text)',marginBottom:16,zIndex:1 }}>Workspace Ready</h2>
-                <p style={{ color:'var(--text2)',fontSize:16,lineHeight:1.6,maxWidth:460,marginBottom:40,zIndex:1 }}>
-                  Configure your paper in the navigation bar above, then click <strong style={{color:'var(--text)'}}>Load Paper</strong> to open the viewer.
-                </p>
-              </div>
+            {showTopicals ? (
+              <TopicalsPage subjectCode={subject} topicalDb={topicalDb} onClose={()=>setShowTopicals(false)} onSelectQuestion={handleTopicalSelect}/>
             ) : (
-              <div className="anim-fade" style={{ flex:1,display:'flex',overflow:'hidden',position:'relative' }}>
-                <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background:'#e5e7eb' }}>
-                  <iframe src={viewerSrc} style={{ width:'100%',height:'100%',border:'none' }} title="PDF Viewer" allowFullScreen/>
-                </div>
-
-                {showMCQ && canShowMCQ && (
-                  <MCQSolver 
-                    subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} 
-                    onClose={()=>setShowMCQ(false)}
-                    mcqState={currentMcqState} 
-                    updateMcqState={updateMcqState}
-                  />
+              <>
+                {/* Fixed: Library can now open even when a PDF is not actively loaded */}
+                {showLibrary && (
+                  <LibrarySidebar subjectCode={subject} libraryDb={libraryDb} onClose={()=>setShowLibrary(false)} />
                 )}
-              </div>
+
+                {!isViewing ? (
+                  <div className="bg-grid anim-fade" style={{ flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:40,textAlign:'center' }}>
+                    <div style={{ position:'absolute',top:'20%',left:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle, var(--accent) 0%, transparent 60%)',opacity:0.05,pointerEvents:'none' }}/>
+                    <div style={{ position:'absolute',bottom:'20%',right:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle, var(--teal) 0%, transparent 60%)',opacity:0.05,pointerEvents:'none' }}/>
+                    
+                    <div style={{ width:80,height:80,borderRadius:24,background:'var(--surface2)',border:'1px solid var(--line2)',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:32,zIndex:1 }}>
+                      <BookOpen size={40} color="var(--text3)" strokeWidth={1.5}/>
+                    </div>
+                    <h2 style={{ fontSize:32,fontWeight:700,color:'var(--text)',marginBottom:16,zIndex:1 }}>Workspace Ready</h2>
+                    <p style={{ color:'var(--text2)',fontSize:16,lineHeight:1.6,maxWidth:460,marginBottom:40,zIndex:1 }}>
+                      Configure your paper in the navigation bar above, then click <strong style={{color:'var(--text)'}}>Load Paper</strong> to open the viewer.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="anim-fade" style={{ flex:1,display:'flex',overflow:'hidden',position:'relative' }}>
+                    <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background:'#e5e7eb' }}>
+                      <iframe src={viewerSrc} style={{ width:'100%',height:'100%',border:'none' }} title="PDF Viewer" allowFullScreen/>
+                    </div>
+
+                    {showMCQ && canShowMCQ && (
+                      <MCQSolver 
+                        subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} 
+                        onClose={()=>setShowMCQ(false)}
+                        mcqState={currentMcqState} 
+                        updateMcqState={updateMcqState}
+                      />
+                    )}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </main>

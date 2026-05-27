@@ -135,7 +135,7 @@ const MCQ_ANSWER_KEYS = {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const subjectName  = (code) => SUBJECTS.find(s => s.code === code)?.name || code;
 
-// ─── GlobalStyles (Massive Visual Upgrade) ────────────────────────────────────
+// ─── GlobalStyles (Massive Visual Upgrade & Mobile Fixes) ─────────────────────
 const GlobalStyles = ({ dark }) => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap');
@@ -160,7 +160,7 @@ const GlobalStyles = ({ dark }) => (
       --text3:     ${dark ? '#475569' : '#94a3b8'};
       
       /* Vibrant Accents */
-      --accent:    ${dark ? '#6366f1' : '#4f46e5'}; /* Default Indigo */
+      --accent:    ${dark ? '#6366f1' : '#4f46e5'};
       --teal:      ${dark ? '#2dd4bf' : '#0d9488'};
       --amber:     ${dark ? '#fbbf24' : '#d97706'};
       --rose:      ${dark ? '#fb7185' : '#e11d48'};
@@ -180,8 +180,10 @@ const GlobalStyles = ({ dark }) => (
     @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+    @keyframes pulseGlow { 0%{opacity:0.3} 50%{opacity:0.6} 100%{opacity:0.3} }
     @keyframes slideInLeft  { from{transform:translateX(-100%)} to{transform:translateX(0)} }
     @keyframes slideInRight { from{transform:translateX(100%)}  to{transform:translateX(0)} }
+    @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 
     .anim-0 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
     .anim-1 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
@@ -189,7 +191,6 @@ const GlobalStyles = ({ dark }) => (
     .anim-3 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
     .anim-fade { animation: fadeIn 0.4s ease both; }
 
-    /* Glassmorphic Background Grid */
     .bg-grid {
       position: absolute; inset: 0; pointer-events: none; z-index: 0;
       background-image: 
@@ -200,7 +201,6 @@ const GlobalStyles = ({ dark }) => (
       -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
     }
 
-    /* Core UI Elements */
     .glass-panel {
       background: var(--surface);
       backdrop-filter: blur(24px);
@@ -219,7 +219,6 @@ const GlobalStyles = ({ dark }) => (
       animation: shimmer 6s linear infinite;
     }
 
-    /* Form Inputs */
     .nexus-select { appearance:none;background:var(--surface2);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;padding:8px 30px 8px 12px;cursor:pointer;transition:all 0.2s;outline:none; }
     .nexus-select:hover { border-color:var(--text3); }
     .nexus-select:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
@@ -236,12 +235,19 @@ const GlobalStyles = ({ dark }) => (
     .btn-load.ready:active { transform:translateY(0); }
     .btn-load.disabled { background:var(--surface2);color:var(--text3);cursor:not-allowed; }
 
-    /* Modals & Sidebars */
     .modal-overlay { position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);animation:fadeIn 0.2s ease both;padding:16px; }
     .modal-box { background:var(--bg2);border:1px solid var(--line2);border-radius:24px;width:100%;max-width:420px;position:relative;overflow:hidden;animation:fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
 
+    /* Note: Sidebar backdrop filters removed as requested to keep PDF clear */
+    .notes-sidebar { position:absolute;left:0;top:0;bottom:0;width:340px;z-index:50;background:var(--bg2);border-right:1px solid var(--line2);display:flex;flex-direction:column;box-shadow:4px 0 30px rgba(0,0,0,0.2);animation:slideInLeft 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+    .notes-backdrop { position:absolute;inset:0;z-index:49;background:rgba(0,0,0,0.1); }
+
     .topicals-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--line2); display: flex; flex-direction: column; z-index: 10; animation: slideInLeft 0.3s cubic-bezier(0.16,1,0.3,1) both; }
     .mcq-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-left: 1px solid var(--line2); display: flex; flex-direction: column; animation: slideInRight 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+
+    .n-input { width:100%;background:var(--surface);border:1px solid var(--line2);border-radius:10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;padding:12px 14px;outline:none;resize:vertical;transition:all 0.2s; }
+    .n-input:focus { border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
+    .n-input::placeholder { color:var(--text3); }
 
     .mcq-bubble { width:32px;height:32px;border-radius:50%;border:1.5px solid var(--line2);background:transparent;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center; }
     .mcq-bubble:hover { border-color:var(--text2);color:var(--text); }
@@ -250,7 +256,6 @@ const GlobalStyles = ({ dark }) => (
     .mcq-bubble.correct  { background:var(--green);border-color:var(--green);color:#fff; }
     .mcq-bubble.wrong    { background:var(--red);border-color:var(--red);color:#fff; }
 
-    /* Custom scrollbars for sidebars */
     .custom-sb::-webkit-scrollbar { width: 4px; }
     .custom-sb::-webkit-scrollbar-track { background: transparent; }
     .custom-sb::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 4px; }
@@ -259,7 +264,6 @@ const GlobalStyles = ({ dark }) => (
     .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; width: 100%; max-width: 1100px; }
     .featured-card { grid-column: 1 / -1; }
     
-    /* Pull-tab for hover-open */
     .pull-tab-pill {
       position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
       display: flex; align-items: center; justify-content: center;
@@ -269,22 +273,101 @@ const GlobalStyles = ({ dark }) => (
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     .pull-tab-pill:hover { background: var(--surface3); transform: translateX(-50%) translateY(2px); }
+
+    /* TOPICALS LAYOUT CLASSES */
+    .topicals-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); animation: fadeIn 0.3s ease both; }
+    .topicals-header { padding: 14px 28px; border-bottom: 1px solid var(--line2); background: var(--bg2); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .topicals-header-stats { display: flex; align-items: center; gap: 10px; }
+    .topicals-content { flex: 1; display: flex; overflow: hidden; position: relative; }
+    .topicals-papers { width: 210px; flex-shrink: 0; border-right: 1px solid var(--line2); padding: 16px 10px; display: flex; flex-direction: column; gap: 6px; background: var(--bg2); overflow-y: auto; }
+    .topicals-grid { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+    .topicals-grid-inner { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+    .topicals-questions { width: 320px; flex-shrink: 0; border-left: 1px solid var(--line2); display: flex; flex-direction: column; background: var(--bg2); animation: slideInRight 0.25s cubic-bezier(0.16,1,0.3,1) both; }
+
+    /* LIBRARY LAYOUT CLASSES */
+    .library-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--line2); display: flex; flex-direction: column; z-index: 10; animation: slideInLeft 0.3s cubic-bezier(0.16,1,0.3,1) both; }
     
+    /* MCQ LAYOUT CLASSES */
+    .mcq-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-left: 1px solid var(--line2); display: flex; flex-direction: column; animation: slideInRight 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+    
+    /* 📱 MOBILE RESPONSIVE FIXES */
     @media (max-width: 768px) {
+      .nav-bar { padding: 12px 16px !important; }
+      
+      /* Make nav filters scroll horizontally instead of stacking infinitely */
+      .nav-filters { 
+        flex-wrap: nowrap !important; 
+        overflow-x: auto !important; 
+        padding-bottom: 8px !important; 
+        -webkit-overflow-scrolling: touch; 
+      }
+      .nav-filters > div { flex: 0 0 auto; }
+      .nav-filters::-webkit-scrollbar { display: none; } /* Hide scrollbar on mobile nav */
+      
       .tools-grid { grid-template-columns: 1fr; }
       .featured-card { flex-direction: column !important; }
       .topical-visual { justify-content: center !important; padding: 0 24px 24px 24px !important; }
-      .topicals-sidebar { position: absolute !important; z-index: 50; height: 100%; border-right: none !important; box-shadow: 4px 0 30px rgba(0,0,0,0.3); }
-      .mcq-sidebar { position: absolute !important; bottom: 0; left: 0; right: 0; top: auto; width: 100% !important; height: 60vh; border-left: none !important; border-top: 1px solid var(--line2); box-shadow: 0 -10px 40px rgba(0,0,0,0.4); animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both; z-index: 50; border-radius: 20px 20px 0 0; }
+      
+      /* Mobile Sidebars (Library) */
+      .library-sidebar { 
+        position: absolute !important; 
+        top: 0; bottom: 0; left: 0; right: 0;
+        height: auto !important; 
+        width: 100% !important; 
+        max-width: 100% !important;
+        border-right: none !important; 
+        box-shadow: none !important; 
+      }
+
+      /* Mobile Topicals */
+      .topicals-header { flex-direction: column; align-items: flex-start; gap: 16px; padding: 16px; }
+      .topicals-header-stats { width: 100%; justify-content: space-between; }
+      
+      .topicals-content { flex-direction: column !important; display: flex !important; overflow-y: auto !important; }
+      
+      /* Replaced Horizontal Scroll with a clean 2-column Grid */
+      .topicals-papers { 
+        width: 100% !important; 
+        height: auto !important; 
+        display: grid !important; 
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important; 
+        gap: 10px !important;
+        border-right: none !important; 
+        border-bottom: 1px solid var(--line2) !important; 
+        padding: 16px !important; 
+        overflow: visible !important; 
+      }
+      .topicals-papers > p { grid-column: 1 / -1; margin-bottom: 2px !important; padding-left: 2px !important; }
+      .topicals-papers > button { flex: unset !important; width: 100% !important; height: 100% !important; padding: 12px !important; scroll-snap-align: none; }
+      
+      .topicals-grid { width: 100%; overflow: visible; }
+      .topicals-grid-inner { grid-template-columns: 1fr; padding: 16px !important; }
+      
+      .topicals-questions { width: 100%; height: 100%; border-left: none; position: absolute; top: 0; left: 0; z-index: 10; }
+      
+      .mobile-hidden { display: none !important; }
+      
+      /* Mobile MCQ Bottom Sheet */
+      .mcq-sidebar { 
+        position: absolute !important; 
+        bottom: 0; left: 0; right: 0; top: auto; 
+        width: 100% !important; 
+        height: 75vh; 
+        border-left: none !important; 
+        border-top: 1px solid var(--line2); 
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.4); 
+        animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both; 
+        z-index: 50; 
+        border-radius: 20px 20px 0 0; 
+      }
     }
   `}</style>
 );
 
-// ─── StartupScreen (The Redesigned Command Center) ────────────────────────────
+// ─── StartupScreen ────────────────────────────────────────────────────────────
 const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, toggleTheme, dark }) => {
-  const [activeTab, setActiveTab] = useState('9618'); // Default to CS
+  const [activeTab, setActiveTab] = useState('9618');
 
-  // Dynamic Theme Colors based on active subject
   const brandColors = {
     '9618': { hex: 'var(--teal)', name: 'Computer Science', icon: <Terminal size={16}/> },
     '9702': { hex: 'var(--amber)', name: 'Physics', icon: <Zap size={16}/> },
@@ -296,11 +379,9 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
 
   return (
     <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', position:'relative', overflow:'hidden' }}>
-      {/* Dynamic Background Glow */}
       <div style={{ position:'absolute', top:'-20%', left:'50%', transform:'translateX(-50%)', width:'80vw', height:'60vh', background:`radial-gradient(ellipse at top, ${currentBrand.hex} 0%, transparent 60%)`, opacity: dark ? 0.12 : 0.08, pointerEvents:'none', zIndex: 0, transition:'background 0.5s ease' }}/>
       <div className="bg-grid" />
 
-      {/* Minimal Top Nav */}
       <header style={{ padding:'24px 40px', display:'flex', justifyContent:'space-between', alignItems:'center', zIndex:10, position:'relative' }}>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
           <div style={{ width:40, height:40, borderRadius:12, background:'var(--text)', display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -317,7 +398,6 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
         </div>
       </header>
 
-      {/* Main Content */}
       <main style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'0 20px', zIndex:10, position:'relative' }}>
         
         <div className="anim-0" style={{ textAlign:'center', marginBottom:48 }}>
@@ -329,7 +409,6 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
           </p>
         </div>
 
-        {/* Subject Context Toggle */}
         <div className="anim-1" style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:8, background:'var(--surface2)', padding:6, borderRadius:100, border:'1px solid var(--line2)', marginBottom:48, backdropFilter:'blur(20px)' }}>
           {Object.entries(brandColors).map(([code, data]) => {
             const isActive = activeTab === code;
@@ -348,10 +427,9 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
           })}
         </div>
 
-        {/* Modular Tools Grid */}
         <div className="anim-3 tools-grid">
           
-          {/* Tool 1: Jump Back In */}
+          {/* PastPaper Explorer */}
           <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
                onClick={() => onSelectExplorer(activeTab)}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
@@ -368,7 +446,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
             </div>
           </div>
 
-          {/* Tool 2: IDE */}
+          {/* IDE */}
           <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
                onClick={()=>window.open('https://programming-ide.netlify.app/','_blank')}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
@@ -385,7 +463,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
             </div>
           </div>
 
-          {/* Tool 3: Library (Replaces Notes Sidebar) */}
+          {/* Resource Library */}
           <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
                onClick={() => onSelectLibrary(activeTab)}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
@@ -408,16 +486,14 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
             </div>
           </div>
 
-          {/* Tool 4: Topicals (FEATURED WIDE CARD) */}
+          {/* Topical Database (FEATURED WIDE CARD) */}
           <div className="glass-panel featured-card" style={{ padding: 0, borderRadius: 24, cursor: 'pointer', transition: 'all 0.3s', display: 'flex', flexDirection: 'row', overflow: 'hidden', position: 'relative' }}
                onClick={() => onSelectTopicals(activeTab)}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = currentBrand.hex; e.currentTarget.querySelector('.feature-glow').style.opacity = '0.3'; }}
                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.querySelector('.feature-glow').style.opacity = '0.1'; }}>
             
-            {/* Background Glow */}
             <div className="feature-glow" style={{ position:'absolute', top:0, right:0, width:'50%', height:'100%', background:`radial-gradient(ellipse at right, ${currentBrand.hex}, transparent 70%)`, opacity:0.1, transition:'opacity 0.4s', pointerEvents:'none' }} />
 
-            {/* Left Content */}
             <div style={{ flex: 1, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <div style={{ width:48, height:48, borderRadius:14, background:`var(--surface2)`, border:`1px solid var(--line2)`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
                 <Compass size={20} color={currentBrand.hex}/>
@@ -433,7 +509,6 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
               </div>
             </div>
 
-            {/* Right Visual Representation */}
             <div className="topical-visual" style={{ flex: 1, padding: 32, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
               <div style={{ width: '100%', maxWidth: 320, background: 'var(--bg2)', borderRadius: 16, border: '1px solid var(--line2)', padding: 16, boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', marginBottom: 12, display: 'flex', alignItems:'center', gap: 6 }}>
@@ -561,9 +636,9 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
   const ac = selectedPaper ? pColor(selectedPaper) : pColor('1');
 
   return (
-    <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', background:'var(--bg)', animation:'fadeIn 0.3s ease both' }}>
+    <div className="topicals-wrapper">
 
-      <div style={{ padding:'14px 28px', borderBottom:'1px solid var(--line2)', background:'var(--bg2)', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'space-between', gap:24 }}>
+      <div className="topicals-header">
         <div style={{ display:'flex', alignItems:'center', gap:14 }}>
           <div style={{ width:40, height:40, borderRadius:12, background:ac.bg, border:`1px solid ${ac.hex}40`, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <Compass size={20} color={ac.hex}/>
@@ -580,15 +655,19 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
             </div>
           </div>
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          {totalQ > 0 && [{ label:'Questions', val:totalQ }, { label:'Topics', val:totalTopics }].map((s, i) => (
-            <div key={i} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', background:'var(--surface2)', border:'1px solid var(--line2)', borderRadius:8, fontSize:12 }}>
-              <span style={{ fontWeight:800, color:i===0?ac.hex:'var(--text)' }}>{s.val}</span>
-              <span style={{ color:'var(--text3)', fontWeight:500 }}>{s.label}</span>
-            </div>
-          ))}
-          <div style={{ width:1, height:24, background:'var(--line2)' }}/>
-          <button className="icon-btn" onClick={onClose}><X size={16}/></button>
+        <div className="topicals-header-stats">
+          <div style={{ display:'flex', gap: 10 }}>
+            {totalQ > 0 && [{ label:'Questions', val:totalQ }, { label:'Topics', val:totalTopics }].map((s, i) => (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', background:'var(--surface2)', border:'1px solid var(--line2)', borderRadius:8, fontSize:12 }}>
+                <span style={{ fontWeight:800, color:i===0?ac.hex:'var(--text)' }}>{s.val}</span>
+                <span style={{ color:'var(--text3)', fontWeight:500 }}>{s.label}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap: 10 }}>
+            <div style={{ width:1, height:24, background:'var(--line2)' }} className="nav-divider" />
+            <button className="icon-btn" onClick={onClose}><X size={16}/></button>
+          </div>
         </div>
       </div>
 
@@ -604,10 +683,10 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
           <p style={{ fontSize:14, color:'var(--text2)' }}>Topical mapping for {subjName} is not yet available.</p>
         </div>
       ) : (
-        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+        <div className="topicals-content">
 
           {/* Paper Selector */}
-          <div style={{ width:210, flexShrink:0, borderRight:'1px solid var(--line2)', padding:'16px 10px', display:'flex', flexDirection:'column', gap:6, background:'var(--bg2)', overflowY:'auto' }} className="custom-sb">
+          <div className={`topicals-papers custom-sb ${selectedTopic ? 'mobile-hidden' : ''}`}>
             <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text3)', paddingLeft:8, marginBottom:6 }}>Papers</p>
             {papers.map(pNum => {
               const pc = pColor(pNum);
@@ -616,7 +695,7 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
               const pQCount = pData.topics.reduce((a, t) => a + getQs(pNum, t).length, 0);
               return (
                 <button key={pNum} onClick={() => setSelectedPaper(pNum)}
-                  style={{ width:'100%', textAlign:'left', padding:'14px', borderRadius:12, border:`1px solid ${isActive ? pc.hex+'60' : 'var(--line2)'}`, background:isActive ? pc.bg : 'transparent', cursor:'pointer', transition:'all 0.2s' }}
+                  style={{ textAlign:'left', padding:'14px', borderRadius:12, border:`1px solid ${isActive ? pc.hex+'60' : 'var(--line2)'}`, background:isActive ? pc.bg : 'transparent', cursor:'pointer', transition:'all 0.2s' }}
                   onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--surface2)'; }}
                   onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
@@ -634,25 +713,19 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
           </div>
 
           {/* Topics Grid */}
-          <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', minWidth:0 }}>
+          <div className={`topicals-grid ${selectedTopic ? 'mobile-hidden' : ''}`}>
             <div style={{ padding:'14px 20px', borderBottom:'1px solid var(--line2)', background:'var(--bg2)', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
               <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                 {paperInfo && <div style={{ width:4, height:22, borderRadius:2, background:ac.hex, flexShrink:0 }}/>}
                 <span style={{ fontSize:15, fontWeight:700, color:'var(--text)' }}>{paperInfo?.title || 'Select a Paper'}</span>
                 {topics.length > 0 && <span style={{ fontSize:12, color:'var(--text3)', background:'var(--surface2)', padding:'3px 8px', borderRadius:6 }}>{topics.length} topics</span>}
               </div>
-              {selectedTopic && (
-                <button onClick={() => setSelectedTopic(null)}
-                  style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:8, border:'1px solid var(--line2)', background:'var(--surface2)', color:'var(--text2)', cursor:'pointer', fontSize:12, fontWeight:600 }}>
-                  <X size={12}/> Clear
-                </button>
-              )}
             </div>
             <div className="custom-sb" style={{ flex:1, overflowY:'auto', padding:'20px' }}>
               {topics.length === 0 ? (
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', color:'var(--text3)', fontSize:14 }}>Select a paper to view its topics</div>
               ) : (
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(210px, 1fr))', gap:12 }}>
+                <div className="topicals-grid-inner">
                   {topics.map(topic => {
                     const qCount = getQs(selectedPaper, topic).length;
                     const barPct = maxQ > 0 ? (qCount / maxQ) * 100 : 0;
@@ -683,7 +756,7 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
 
           {/* Questions Detail Panel */}
           {selectedTopic && (
-            <div style={{ width:320, flexShrink:0, borderLeft:'1px solid var(--line2)', display:'flex', flexDirection:'column', background:'var(--bg2)', animation:'slideInRight 0.25s cubic-bezier(0.16,1,0.3,1) both' }}>
+            <div className="topicals-questions">
               <div style={{ padding:'16px 20px', borderBottom:'1px solid var(--line2)', flexShrink:0 }}>
                 <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:6 }}>
                   <span style={{ fontSize:13, fontWeight:800, color:'var(--text)', lineHeight:1.4, flex:1, paddingRight:8 }}>{selectedTopic}</span>
@@ -746,13 +819,11 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
   );
 };
 
-// ─── NEW: Library Explorer Sidebar (Replaces old Local Notes) ────────────────
 const LibrarySidebar = ({ subjectCode, libraryDb, onClose }) => {
   const subjName = subjectCode ? subjectName(subjectCode) : null;
   const [expanded, setExpanded] = useState({});
 
   const targetFolder = useMemo(() => {
-    // If no subject is selected, show the entire library root
     if (!subjectCode) return { children: libraryDb }; 
     return libraryDb?.find(f => f.name === subjectCode) || null;
   }, [libraryDb, subjectCode]);
@@ -804,7 +875,7 @@ const LibrarySidebar = ({ subjectCode, libraryDb, onClose }) => {
   };
 
   return (
-    <div className="topicals-sidebar">
+    <div className="library-sidebar">
       <div style={{ padding:'20px 24px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
         <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between' }}>
           <div style={{ display:'flex',alignItems:'center',gap:12 }}>
@@ -963,8 +1034,6 @@ export default function App() {
   const [showLibrary, setShowLibrary]   = useState(false);
   const [showMCQ,     setShowMCQ]       = useState(false);
   const [showTopicals,setShowTopicals]  = useState(false);
-  const [isAdmin,     setIsAdmin]       = useState(false);
-  const [showPwModal, setShowPwModal]   = useState(false);
 
   const [topicalDb, setTopicalDb] = useState(null);
   const [libraryDb, setLibraryDb] = useState([]);
@@ -979,7 +1048,7 @@ export default function App() {
   const [type,    setType]    = useState('qp');
 
   const isComplete    = subject && year && season && paper && variant;
-  const canShowLibrary  = true; // Library can be accessed globally now
+  const canShowLibrary  = true;
   const canShowMCQ    = MCQ_SUBJECTS.includes(subject) && paper === MCQ_PAPER;
 
   const paperKey = `${subject}_${season}${year ? year.slice(2) : ''}_${paper}_${variant}`;
@@ -1019,8 +1088,6 @@ export default function App() {
 
   useEffect(()=>{ document.title="The Nexus | Workspace"; },[]);
   
-  // FIX: This ensures Library and MCQ sidebars close when parameters change,
-  // but DO NOT forcefully close Topicals. This allows Topicals to snap open smoothly.
   useEffect(()=>{ 
     setShowLibrary(false); 
     setShowMCQ(false); 
@@ -1041,7 +1108,7 @@ export default function App() {
   };
 
   const handleSelectLibrary = (subjCode) => {
-    setSubject(subjCode || ''); // Open root if no specific subject provided
+    setSubject(subjCode || ''); 
     setShowStartup(false);
     setShowLibrary(true);
   };
@@ -1072,7 +1139,6 @@ export default function App() {
 
       <div style={{ display:'flex',flexDirection:'column',height:'100vh',background:'var(--bg)',overflow:'hidden' }}>
 
-        {/* Dynamic Minimal Navbar (TRUE HOVER IMPLEMENTATION) */}
         <div 
           style={{ display:'grid',gridTemplateRows:showNav?'1fr':'0fr',transition:'grid-template-rows 0.3s cubic-bezier(0.16,1,0.3,1)',flexShrink:0,zIndex:30 }}
           onMouseLeave={() => { if(isViewing) setShowNav(false); }}
@@ -1151,26 +1217,24 @@ export default function App() {
           </div>
         </div>
 
-        {/* Floating Pill Pull Tab */}
+        {/* Hover-Trigger Pull Tab */}
         {isViewing && !showNav && (
           <div style={{ position:'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', zIndex: 40 }}>
             <button 
               className="pull-tab-pill" 
               onClick={()=>setShowNav(true)} 
-              onMouseEnter={()=>setShowNav(true)}
+              onTouchStart={()=>setShowNav(true)}
             >
               <ChevronDown size={18} style={{ color: 'var(--text)' }}/>
             </button>
           </div>
         )}
 
-        {/* Main Workspace Area */}
         <main style={{ flex:1,display:'flex',flexDirection:'column',overflow:'hidden',position:'relative' }}>
           
-          {/* Transparent click-to-close handler. */}
           {isViewing && showNav && (
             <div 
-              style={{ position:'absolute',inset:0,zIndex:20,cursor:'default' }} 
+              style={{ position:'absolute',inset:0,zIndex:20,cursor:'default',background:'rgba(0,0,0,0.4)',backdropFilter:'blur(2px)' }} 
               onClick={()=>setShowNav(false)}
             />
           )}
@@ -1181,7 +1245,6 @@ export default function App() {
               <TopicalsPage subjectCode={subject} topicalDb={topicalDb} onClose={()=>setShowTopicals(false)} onSelectQuestion={handleTopicalSelect}/>
             ) : (
               <>
-                {/* Fixed: Library can now open even when a PDF is not actively loaded */}
                 {showLibrary && (
                   <LibrarySidebar subjectCode={subject} libraryDb={libraryDb} onClose={()=>setShowLibrary(false)} />
                 )}
