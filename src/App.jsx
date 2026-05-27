@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
-  BookOpen, ChevronDown, ChevronUp, Mail, X, Copy, Check,
+  BookOpen, ChevronDown, ChevronUp, ChevronRight, Mail, X, Copy, Check,
   Play, Github, Terminal, ArrowLeft, Layers, Sun, Moon,
-  NotebookPen, Lock, Plus, Trash2, FileText, Eye, EyeOff,
-  Paperclip, ExternalLink, ListChecks, AlertCircle, Compass
+  FileText, Eye, EyeOff, ListChecks, Compass,
+  Search, Clock, ArrowRight, Activity, Zap, Beaker, Code2, Folder, Library
 } from 'lucide-react';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -24,53 +24,25 @@ const MCQ_PAPER     = '1';
 const MCQ_COUNT     = 40;
 const MCQ_OPTS      = ['A', 'B', 'C', 'D'];
 
+const GITHUB_REPO_URL = "https://github.com/Huzaifa-616/PastPaper-Explorer";
+
 // ─── Topical Taxonomy (Strict Syllabus Mapping) ───────────────────────────────
 const SYLLABUS_STRUCTURE = {
   '9618': {
-    '1': {
-      title: 'AS Level Theory',
-      topics: ['Data Representation', 'Networking', 'Hardware & Processors', 'Logic Gates', 'Assembly Language', 'System Software', 'Security, Privacy & Ethics', 'Databases']
-    },
-    '2': {
-      title: 'AS Problem Solving',
-      topics: ['Algorithm Design', 'Data Structures', 'Programming Concepts', 'Software Development']
-    },
-    '3': {
-      title: 'A Level Advanced Theory',
-      topics: ['Advanced Data Representation', 'Advanced Networking', 'Hardware & Virtual Machines', 'Advanced System Software', 'Artificial Intelligence']
-    },
-    '4': {
-      title: 'A Level Practical',
-      topics: ['Algorithms & Recursion', 'OOP & Paradigms', 'File Processing']
-    }
+    '1': { title: 'AS Level Theory', topics: ['Data Representation', 'Networking', 'Hardware & Processors', 'Logic Gates', 'Assembly Language', 'System Software', 'Security, Privacy & Ethics', 'Databases'] },
+    '2': { title: 'AS Problem Solving', topics: ['Algorithm Design', 'Data Structures', 'Programming Concepts', 'Software Development'] },
+    '3': { title: 'A Level Advanced Theory', topics: ['Advanced Data Representation', 'Advanced Networking', 'Hardware & Virtual Machines', 'Advanced System Software', 'Artificial Intelligence'] },
+    '4': { title: 'A Level Practical', topics: ['Algorithms & Recursion', 'OOP & Paradigms', 'File Processing'] }
   },
   '9702': {
-    '1': {
-      title: 'AS Level Theory (MCQ)',
-      topics: ['Physical Quantities & Units', 'Kinematics', 'Dynamics', 'Forces, Density & Pressure', 'Work, Energy & Power', 'Deformation of Solids', 'Waves & Superposition', 'Electricity & D.C. Circuits', 'Particle Physics']
-    },
-    '2': {
-      title: 'AS Level Structured',
-      topics: ['Physical Quantities & Units', 'Kinematics', 'Dynamics', 'Forces, Density & Pressure', 'Work, Energy & Power', 'Deformation of Solids', 'Waves & Superposition', 'Electricity & D.C. Circuits', 'Particle Physics']
-    },
-    '4': {
-      title: 'A Level Structured',
-      topics: ['Motion in a Circle & Gravitation', 'Thermal Physics & Ideal Gases', 'Oscillations', 'Electric & Magnetic Fields', 'Capacitance & Alternating Current', 'Quantum & Nuclear Physics', 'Medical Physics & Cosmology']
-    }
+    '1': { title: 'AS Level Theory (MCQ)', topics: ['Physical Quantities & Units', 'Kinematics', 'Dynamics', 'Forces, Density & Pressure', 'Work, Energy & Power', 'Deformation of Solids', 'Waves & Superposition', 'Electricity & D.C. Circuits', 'Particle Physics'] },
+    '2': { title: 'AS Level Structured', topics: ['Physical Quantities & Units', 'Kinematics', 'Dynamics', 'Forces, Density & Pressure', 'Work, Energy & Power', 'Deformation of Solids', 'Waves & Superposition', 'Electricity & D.C. Circuits', 'Particle Physics'] },
+    '4': { title: 'A Level Structured', topics: ['Motion in a Circle & Gravitation', 'Thermal Physics & Ideal Gases', 'Oscillations', 'Electric & Magnetic Fields', 'Capacitance & Alternating Current', 'Quantum & Nuclear Physics', 'Medical Physics & Cosmology'] }
   },
   '9701': {
-    '1': {
-      title: 'AS Level Theory (MCQ)',
-      topics: ['Physical: Atoms, Bonding & Stoichiometry', 'Physical: Energetics & Kinetics', 'Physical: Equilibria & Electrochemistry', 'Inorganic: Periodicity & Groups 2/17', 'Organic: Intro & Hydrocarbons', 'Organic: Halogens, Hydroxy & Carbonyls', 'Organic: Carboxylic, Nitrogen & Polymers']
-    },
-    '2': {
-      title: 'AS Level Structured',
-      topics: ['Physical: Atoms, Bonding & Stoichiometry', 'Physical: Energetics & Kinetics', 'Physical: Equilibria & Electrochemistry', 'Inorganic: Periodicity & Groups 2/17', 'Organic: Intro & Hydrocarbons', 'Organic: Halogens, Hydroxy & Carbonyls', 'Organic: Carboxylic, Nitrogen & Polymers']
-    },
-    '4': {
-      title: 'A Level Structured',
-      topics: ['Further Physical: Thermodynamics & Kinetics', 'Further Physical: Equilibria & Electrochemistry', 'Further Inorganic: Transition Elements', 'Further Organic: Arenes & Derivatives', 'Further Organic: Nitrogen Compounds & Polymers', 'Analytical Techniques (NMR & Chromatography)']
-    }
+    '1': { title: 'AS Level Theory (MCQ)', topics: ['Physical: Atoms, Bonding & Stoichiometry', 'Physical: Energetics & Kinetics', 'Physical: Equilibria & Electrochemistry', 'Inorganic: Periodicity & Groups 2/17', 'Organic: Intro & Hydrocarbons', 'Organic: Halogens, Hydroxy & Carbonyls', 'Organic: Carboxylic, Nitrogen & Polymers'] },
+    '2': { title: 'AS Level Structured', topics: ['Physical: Atoms, Bonding & Stoichiometry', 'Physical: Energetics & Kinetics', 'Physical: Equilibria & Electrochemistry', 'Inorganic: Periodicity & Groups 2/17', 'Organic: Intro & Hydrocarbons', 'Organic: Halogens, Hydroxy & Carbonyls', 'Organic: Carboxylic, Nitrogen & Polymers'] },
+    '4': { title: 'A Level Structured', topics: ['Further Physical: Thermodynamics & Kinetics', 'Further Physical: Equilibria & Electrochemistry', 'Further Inorganic: Transition Elements', 'Further Organic: Arenes & Derivatives', 'Further Organic: Nitrogen Compounds & Polymers', 'Analytical Techniques (NMR & Chromatography)'] }
   }
 };
 
@@ -138,7 +110,7 @@ const MCQ_ANSWER_KEYS = {
   '9702_s23_1_2': ['B','D','D','C','B','A','C','B','D','A','B','C','A','A','D','A','B','D','B','B','B','C','D','B','A','A','B','D','C','C','A','D','C','D','A','B','C','C','D','A'],
   '9702_s23_1_3': ['C','A','D','A','C','D','B','B','D','C','B','C','D','A','C','C','D','B','B','A','D','D','B','C','B','A','C','B','D','A','D','B','B','A','A','C','A','D','A','A'],
   '9702_s24_1_1': ['A','A','C','B','B','D','C','C','B','D','A','B','D','A','A','B','B','A','B','B','D','C','C','A','C','A','B','D','B','B','D','D','C','C','C','D','D','B','C','A'],
-  '9702_s24_1_2': ['C','D','A','D','B','B','C','A','C','A','B','C','D','C','D','A','B','C','C','D','C','D','B','B','C','A','D','D','A','C','D','C','B','A','D','A','B','D','C','C'],
+  '9702_s24_1_2': ['C','D','A','D','B','C','C','B','D','C','D','A','C','D','D','B','C','C','A','C','B','A','C','C','C','B','D','B','B','B','A','B','A','B','B','A','D','B','D','C'],
   '9702_s24_1_3': ['C','D','B','A','C','A','D','A','A','C','B','B','C','B','A','D','C','A','B','B','C','C','C','A','D','A','B','D','A','B','D','D','C','A','C','C','D','A','D','B'],
   '9702_s25_1_1': ['C','D','B','B','D','D','C','A','B','C','C','D','B','A','B','C','D','A','A','B','D','C','D','C','C','A','C','B','B','D','A','C','D','D','A','B','C','D','C','B'],
   '9702_s25_1_2': ['D','D','B','C','A','C','A','B','B','C','B','D','C','D','A','A','B','C','B','C','A','B','D','C','B','D','B','D','C','D','C','A','D','C','D','D','A','B','A','B'],
@@ -160,249 +132,353 @@ const MCQ_ANSWER_KEYS = {
   '9702_w25_1_3': ['D','D','B','C','D','D','B','C','C','D','A','A','B','C','C','B','B','C','A','A','D','B','C','A','B','B','D','C','D','A','D','C','A','A','D','D','C','A','A','B'],
 };
 
-const GITHUB_REPO_URL = "https://github.com/Huzaifa-616/PastPaper-Explorer";
-const NOTES_PASSWORD  = "bravo07";
-const NOTES_KEY       = "nexus_notes_v1";
-const MAX_FILE_BYTES  = 1.5 * 1024 * 1024; 
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-const loadNotes    = () => { try { return JSON.parse(localStorage.getItem(NOTES_KEY) || '{}'); } catch { return {}; } };
-const saveNotes    = (n) => localStorage.setItem(NOTES_KEY, JSON.stringify(n));
-const noteKey      = (code, paper) => `${code}_${paper}`;
 const subjectName  = (code) => SUBJECTS.find(s => s.code === code)?.name || code;
-const fmtBytes     = (b) => b < 1024 ? `${b}B` : b < 1048576 ? `${(b/1024).toFixed(1)}KB` : `${(b/1048576).toFixed(1)}MB`;
 
-const openBlob = (att) => {
-  try {
-    const parts  = att.data.split(',');
-    const binary = atob(parts[1]);
-    const bytes  = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    const blob   = new Blob([bytes], { type: att.type });
-    window.open(URL.createObjectURL(blob), '_blank');
-  } catch { alert('Could not open file.'); }
-};
-
-// ─── GlobalStyles ─────────────────────────────────────────────────────────────
+// ─── GlobalStyles (Massive Visual Upgrade) ────────────────────────────────────
 const GlobalStyles = ({ dark }) => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap');
+    
     *, *::before, *::after { box-sizing: border-box; margin: 0; }
+    
     :root {
-      --bg:        ${dark ? '#06060f' : '#f4f6fb'};
-      --bg2:       ${dark ? '#0c0c1c' : '#ffffff'};
-      --surface:   ${dark ? '#10101f' : '#ffffff'};
-      --surface2:  ${dark ? '#181828' : '#eef1f8'};
-      --surface3:  ${dark ? '#1f1f35' : '#e4e9f4'};
-      --line:      ${dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'};
-      --line2:     ${dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'};
-      --accent:    ${dark ? '#4f8ef7' : '#2563eb'};
-      --accent-d:  ${dark ? 'rgba(79,142,247,0.15)' : 'rgba(37,99,235,0.1)'};
-      --accent-g:  ${dark ? 'rgba(79,142,247,0.28)' : 'rgba(37,99,235,0.2)'};
-      --blue:      ${dark ? '#818cf8' : '#6366f1'};
-      --blue-d:    ${dark ? 'rgba(129,140,248,0.12)' : 'rgba(99,102,241,0.08)'};
+      /* Base Colors */
+      --bg:        ${dark ? '#05050A' : '#f8fafc'};
+      --bg2:       ${dark ? '#0a0a14' : '#ffffff'};
+      --surface:   ${dark ? 'rgba(15, 15, 25, 0.6)' : 'rgba(255, 255, 255, 0.8)'};
+      --surface2:  ${dark ? 'rgba(25, 25, 40, 0.8)' : 'rgba(241, 245, 249, 0.9)'};
+      --surface3:  ${dark ? 'rgba(35, 35, 55, 0.9)' : 'rgba(226, 232, 240, 0.9)'};
+      
+      /* Borders & Lines */
+      --line:      ${dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)'};
+      --line2:     ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)'};
+      
+      /* Typography */
+      --text:      ${dark ? '#f8fafc' : '#0f172a'};
+      --text2:     ${dark ? '#94a3b8' : '#64748b'};
+      --text3:     ${dark ? '#475569' : '#94a3b8'};
+      
+      /* Vibrant Accents */
+      --accent:    ${dark ? '#6366f1' : '#4f46e5'}; /* Default Indigo */
+      --teal:      ${dark ? '#2dd4bf' : '#0d9488'};
+      --amber:     ${dark ? '#fbbf24' : '#d97706'};
+      --rose:      ${dark ? '#fb7185' : '#e11d48'};
       --green:     ${dark ? '#34d399' : '#059669'};
-      --green-d:   ${dark ? 'rgba(52,211,153,0.12)' : 'rgba(5,150,105,0.08)'};
       --red:       ${dark ? '#f87171' : '#dc2626'};
-      --red-d:     ${dark ? 'rgba(248,113,113,0.14)' : 'rgba(220,38,38,0.08)'};
-      --orange:    ${dark ? '#fb923c' : '#ea580c'};
-      --orange-d:  ${dark ? 'rgba(251,146,60,0.14)' : 'rgba(234,88,12,0.08)'};
-      --text:      ${dark ? '#e2e8f0' : '#0f172a'};
-      --text2:     ${dark ? '#8a8aaa' : '#64748b'};
-      --text3:     ${dark ? '#4a4a66' : '#94a3b8'};
     }
-    html, body, #root { height: 100%; background: var(--bg); }
-    body { font-family: 'Roboto', sans-serif; color: var(--text); }
-    ::selection { background: var(--accent-d); color: var(--text); }
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 2px; }
 
-    .grid-bg {
-      background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
-      background-size: 52px 52px;
-    }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    html, body, #root { height: 100%; background: var(--bg); }
+    body { font-family: 'Outfit', sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; }
+    
+    ::selection { background: rgba(99, 102, 241, 0.3); color: var(--text); }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 10px; }
+
+    /* Animations */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
     @keyframes slideInLeft  { from{transform:translateX(-100%)} to{transform:translateX(0)} }
     @keyframes slideInRight { from{transform:translateX(100%)}  to{transform:translateX(0)} }
-    @keyframes pulse-ring { 0%{transform:scale(0.95);opacity:0.6} 50%{transform:scale(1.05);opacity:0.2} 100%{transform:scale(0.95);opacity:0.6} }
 
-    .anim-0 { animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) both; }
-    .anim-1 { animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.12s both; }
-    .anim-2 { animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.24s both; }
-    .anim-3 { animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.36s both; }
+    .anim-0 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .anim-1 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+    .anim-2 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+    .anim-3 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
     .anim-fade { animation: fadeIn 0.4s ease both; }
 
-    .tool-card {
-      background:var(--surface); border:1px solid var(--line2); border-radius:16px;
-      padding:36px 32px; cursor:pointer;
-      transition:transform 0.4s cubic-bezier(0.22,1,0.36,1),border-color 0.3s,box-shadow 0.4s;
-      position:relative; overflow:hidden; text-align:left;
+    /* Glassmorphic Background Grid */
+    .bg-grid {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background-image: 
+        linear-gradient(to right, var(--line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(circle at center, black, transparent 80%);
+      -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
     }
-    .tool-card::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:linear-gradient(90deg,transparent,var(--accent),transparent); opacity:0; transition:opacity 0.3s; }
-    .tool-card:hover { transform:translateY(-8px); border-color:var(--accent); }
-    .tool-card:hover::before { opacity:1; }
-    
-    .tool-card.blue:hover { border-color:var(--blue); }
-    .tool-card.blue::before { background:linear-gradient(90deg,transparent,var(--blue),transparent); }
-    
-    .tool-card.green:hover { border-color:var(--green); }
-    .tool-card.green::before { background:linear-gradient(90deg,transparent,var(--green),transparent); }
 
-    .tool-card:hover .cg-a { box-shadow:0 0 60px var(--accent-g); opacity:1; }
-    .tool-card:hover .cg-b { box-shadow:0 0 60px rgba(91,141,245,0.3); opacity:1; }
-    .tool-card:hover .cg-c { box-shadow:0 0 60px rgba(52,211,153,0.25); opacity:1; }
+    /* Core UI Elements */
+    .glass-panel {
+      background: var(--surface);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--line2);
+    }
 
-    .cg-a,.cg-b,.cg-c { position:absolute;inset:0;opacity:0;transition:opacity 0.4s;pointer-events:none;border-radius:16px; }
-    .icon-badge { width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;border:1px solid var(--line2);background:var(--surface2);transition:transform 0.4s cubic-bezier(0.22,1,0.36,1); }
-    .tool-card:hover .icon-badge { transform:scale(1.1) rotate(-3deg); }
+    .icon-btn { display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;border:1px solid var(--line2);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all 0.2s; }
+    .icon-btn:hover { color:var(--text);background:var(--surface3); transform: translateY(-1px); }
 
-    .nexus-select { appearance:none;background:var(--surface2);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:'Roboto',sans-serif;font-size:11px;padding:7px 28px 7px 10px;cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s;outline:none; }
-    .nexus-select:hover { border-color:rgba(79,142,247,0.5); }
-    .nexus-select:focus { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-d); }
+    .shimmer-text { 
+      background: linear-gradient(to right, var(--text) 20%, var(--text2) 40%, var(--text2) 60%, var(--text) 80%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 6s linear infinite;
+    }
+
+    /* Form Inputs */
+    .nexus-select { appearance:none;background:var(--surface2);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;padding:8px 30px 8px 12px;cursor:pointer;transition:all 0.2s;outline:none; }
+    .nexus-select:hover { border-color:var(--text3); }
+    .nexus-select:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
     .nexus-select option { background:var(--bg2);color:var(--text); }
 
-    .tag { display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;border:1px solid var(--line2);background:var(--surface2);font-size:10px;color:var(--text2); }
-
-    .shimmer-text { background:linear-gradient(90deg,var(--accent) 0%,#93c5fd 50%,var(--accent) 100%); background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite; }
-
-    .nav-bar { background:${dark ? 'rgba(6,6,15,0.92)' : 'rgba(244,246,251,0.92)'}; backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line2); }
-
-    .seg-btn { padding:5px 14px;border-radius:6px;font-size:11px;font-family:'Roboto',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;border:none;background:none; }
-    .seg-btn.a-accent { background:var(--accent);color:#fff; }
-    .seg-btn.a-blue   { background:var(--blue);color:#fff; }
-    .seg-btn.a-orange { background:var(--orange);color:#fff; }
+    .seg-btn { padding:6px 16px;border-radius:6px;font-size:11px;font-family:'Outfit',sans-serif;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;background:none; }
+    .seg-btn.a-accent { background:var(--text);color:var(--bg); }
     .seg-btn.inactive { color:var(--text2); }
     .seg-btn.inactive:hover { color:var(--text); }
 
-    .btn-load { display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border-radius:8px;font-size:12px;font-weight:600;font-family:'Roboto',sans-serif;border:none;cursor:pointer;transition:all 0.25s; }
-    .btn-load.ready { background:var(--accent);color:#fff;box-shadow:0 0 20px var(--accent-g); }
-    .btn-load.ready:hover { filter:brightness(1.1);transform:translateY(-1px); }
-    .btn-load.ready:active { transform:scale(0.97); }
+    .btn-load { display:inline-flex;align-items:center;gap:8px;padding:9px 24px;border-radius:10px;font-size:13px;font-weight:600;font-family:'Outfit',sans-serif;border:none;cursor:pointer;transition:all 0.2s; }
+    .btn-load.ready { background:var(--text);color:var(--bg);box-shadow:0 4px 14px rgba(0,0,0,0.2); }
+    .btn-load.ready:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.3); }
+    .btn-load.ready:active { transform:translateY(0); }
     .btn-load.disabled { background:var(--surface2);color:var(--text3);cursor:not-allowed; }
 
-    .icon-btn { display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;border:1px solid var(--line2);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all 0.2s; }
-    .icon-btn:hover { color:var(--text);background:var(--surface); }
+    /* Modals & Sidebars */
+    .modal-overlay { position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);animation:fadeIn 0.2s ease both;padding:16px; }
+    .modal-box { background:var(--bg2);border:1px solid var(--line2);border-radius:24px;width:100%;max-width:420px;position:relative;overflow:hidden;animation:fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
 
-    .pull-tab { display:flex;align-items:center;justify-content:center;width:100%;height:28px;border-bottom:1px solid var(--line2);background:var(--bg);cursor:pointer;gap:8px;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);transition:color 0.2s,background 0.2s;border:none; }
-    .pull-tab:hover { color:var(--accent);background:var(--surface2); }
+    .topicals-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--line2); display: flex; flex-direction: column; z-index: 10; animation: slideInLeft 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+    .mcq-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-left: 1px solid var(--line2); display: flex; flex-direction: column; animation: slideInRight 0.3s cubic-bezier(0.16,1,0.3,1) both; }
 
-    .modal-overlay { position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);animation:fadeIn 0.2s ease both;padding:12px; }
-    .modal-box { background:var(--surface);border:1px solid var(--line2);border-radius:20px;width:100%;max-width:420px;position:relative;overflow:hidden;animation:fadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both; }
-    .modal-strip { height:2px;background:linear-gradient(90deg,var(--accent),var(--blue)); }
-
-    /* Notes sidebar (Absolute Overlay) */
-    .notes-sidebar { position:absolute;left:0;top:0;bottom:0;width:340px;z-index:50;background:var(--surface);border-right:1px solid var(--line2);display:flex;flex-direction:column;box-shadow:4px 0 30px rgba(0,0,0,0.3);animation:slideInLeft 0.3s cubic-bezier(0.22,1,0.36,1) both; }
-    .notes-backdrop { position:absolute;inset:0;z-index:49;background:rgba(0,0,0,0.3); }
-
-    /* Topicals sidebar - Desktop Standard (Inline Left) */
-    .topicals-sidebar { 
-      position: relative; 
-      width: 340px; 
-      flex-shrink: 0;
-      background: var(--surface); 
-      border-right: 1px solid var(--line2); 
-      display: flex; 
-      flex-direction: column; 
-      box-shadow: 4px 0 30px rgba(0,0,0,0.05); 
-      animation: slideInLeft 0.3s cubic-bezier(0.22,1,0.36,1) both; 
-      z-index: 10;
-    }
-    
-    /* MCQ sidebar - Desktop Standard (Inline Right) */
-    .mcq-sidebar { 
-      position: relative; 
-      width: 320px; 
-      flex-shrink: 0;
-      background: var(--surface); 
-      border-left: 1px solid var(--line2); 
-      display: flex; 
-      flex-direction: column; 
-      box-shadow: -4px 0 30px rgba(0,0,0,0.05); 
-      animation: slideInRight 0.3s cubic-bezier(0.22,1,0.36,1) both; 
-    }
-
-    .note-card { background:var(--surface2);border:1px solid var(--line2);border-radius:10px;padding:14px 16px;transition:border-color 0.2s; }
-    .note-card:hover { border-color:var(--accent); }
-
-    .n-input { width:100%;background:var(--surface2);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:'Roboto',sans-serif;font-size:13px;padding:10px 12px;outline:none;resize:vertical;transition:border-color 0.2s,box-shadow 0.2s; }
-    .n-input:focus { border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-d); }
-    .n-input::placeholder { color:var(--text3); }
-
-    .attach-pill { display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:6px;border:1px solid var(--line2);background:var(--surface3);font-size:10px;color:var(--text2);cursor:pointer;transition:all 0.2s;text-decoration:none; }
-    .attach-pill:hover { border-color:var(--accent);color:var(--accent); }
-
-    /* Topical Question Button Hover */
-    .topical-btn { transition: border-color 0.2s; }
-    .topical-btn:hover { border-color: var(--blue) !important; }
-
-    .mcq-bubble { width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line2);background:transparent;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;font-family:'Roboto',sans-serif; }
+    .mcq-bubble { width:32px;height:32px;border-radius:50%;border:1.5px solid var(--line2);background:transparent;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center; }
     .mcq-bubble:hover { border-color:var(--text2);color:var(--text); }
-    .mcq-bubble.sel-mine { background:var(--accent);border-color:var(--accent);color:#fff; }
-    .mcq-bubble.sel-key  { background:var(--orange);border-color:var(--orange);color:#fff; }
+    .mcq-bubble.sel-mine { background:var(--text);border-color:var(--text);color:var(--bg); }
+    .mcq-bubble.sel-key  { background:var(--amber);border-color:var(--amber);color:#fff; }
     .mcq-bubble.correct  { background:var(--green);border-color:var(--green);color:#fff; }
     .mcq-bubble.wrong    { background:var(--red);border-color:var(--red);color:#fff; }
 
-    .logo-mark { width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent) 0%,#93c5fd 100%);display:flex;align-items:center;justify-content:center; }
-    .empty-icon-ring { width:110px;height:110px;border-radius:50%;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;position:relative; }
-    .empty-icon-ring::before { content:'';position:absolute;inset:-10px;border-radius:50%;border:1px dashed var(--line2);animation:pulse-ring 3s ease-in-out infinite; }
-    .deco-line { position:absolute;background:linear-gradient(90deg,transparent,var(--line2),transparent);height:1px;width:60%; }
-    .no-sb { scrollbar-width:none; }
-    .no-sb::-webkit-scrollbar { display:none; }
-
-    @media (max-width: 640px) {
-      .nav-inner { flex-direction:column !important;align-items:stretch !important;gap:10px !important; }
-      .nav-divider { display:none !important; }
-      .nav-brand-text { display:none !important; }
-      .nav-filters { display:grid !important;grid-template-columns:1fr 1fr 1fr !important;gap:8px 10px !important;overflow:visible !important;flex:unset !important;padding-bottom:0 !important; }
-      .nav-filters > div { width:100%; }
-      .nav-filters .nexus-select { width:100%;font-size:10px !important;padding:6px 22px 6px 8px !important; }
-      .seg-btn { padding:5px 8px !important;font-size:10px !important; }
-      .nav-actions { display:flex !important;width:100% !important;margin-left:0 !important;justify-content:space-between !important; }
-      .nav-actions .btn-load { flex:1 !important;justify-content:center !important; }
-      
-      .notes-sidebar, .topicals-sidebar { width:100% !important; }
-      .topicals-sidebar {
-        position: absolute !important;
-        z-index: 50;
-        height: 100%;
-        border-right: none !important;
-      }
-      
-      /* MCQ sidebar - Mobile Bottom Sheet */
-      .mcq-sidebar { 
-        position: absolute !important;
-        bottom: 0; left: 0; right: 0; top: auto;
-        width: 100% !important; 
-        height: 50vh; 
-        border-left: none !important; 
-        border-top: 1px solid var(--line2);
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
-        animation: slideUp 0.3s cubic-bezier(0.22,1,0.36,1) both;
-        z-index: 50; 
-      }
-      .mcq-bubble { width:26px;height:26px;font-size:10px; }
+    /* Custom scrollbars for sidebars */
+    .custom-sb::-webkit-scrollbar { width: 4px; }
+    .custom-sb::-webkit-scrollbar-track { background: transparent; }
+    .custom-sb::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 4px; }
+    .custom-sb:hover::-webkit-scrollbar-thumb { background: var(--text3); }
+    
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; width: 100%; max-width: 1100px; }
+    .featured-card { grid-column: 1 / -1; }
+    
+    /* Pull-tab for hover-open */
+    .pull-tab-pill {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; justify-content: center;
+      width: 48px; height: 28px; border-radius: 14px;
+      background: var(--surface2); border: 1px solid var(--line2);
+      cursor: pointer; transition: all 0.2s; z-index: 40;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .pull-tab-pill:hover { background: var(--surface3); transform: translateX(-50%) translateY(2px); }
+    
+    @media (max-width: 768px) {
+      .tools-grid { grid-template-columns: 1fr; }
+      .featured-card { flex-direction: column !important; }
+      .topical-visual { justify-content: center !important; padding: 0 24px 24px 24px !important; }
+      .topicals-sidebar { position: absolute !important; z-index: 50; height: 100%; border-right: none !important; box-shadow: 4px 0 30px rgba(0,0,0,0.3); }
+      .mcq-sidebar { position: absolute !important; bottom: 0; left: 0; right: 0; top: auto; width: 100% !important; height: 60vh; border-left: none !important; border-top: 1px solid var(--line2); box-shadow: 0 -10px 40px rgba(0,0,0,0.4); animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both; z-index: 50; border-radius: 20px 20px 0 0; }
     }
   `}</style>
 );
 
-// ─── NexusSelect ──────────────────────────────────────────────────────────────
+// ─── StartupScreen (The Redesigned Command Center) ────────────────────────────
+const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, toggleTheme, dark }) => {
+  const [activeTab, setActiveTab] = useState('9618'); // Default to CS
+
+  // Dynamic Theme Colors based on active subject
+  const brandColors = {
+    '9618': { hex: 'var(--teal)', name: 'Computer Science', icon: <Terminal size={16}/> },
+    '9702': { hex: 'var(--amber)', name: 'Physics', icon: <Zap size={16}/> },
+    '9701': { hex: 'var(--rose)', name: 'Chemistry', icon: <Beaker size={16}/> },
+    '9709': { hex: 'var(--accent)', name: 'Mathematics', icon: <Activity size={16}/> }
+  };
+
+  const currentBrand = brandColors[activeTab] || brandColors['9709'];
+
+  return (
+    <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', position:'relative', overflow:'hidden' }}>
+      {/* Dynamic Background Glow */}
+      <div style={{ position:'absolute', top:'-20%', left:'50%', transform:'translateX(-50%)', width:'80vw', height:'60vh', background:`radial-gradient(ellipse at top, ${currentBrand.hex} 0%, transparent 60%)`, opacity: dark ? 0.12 : 0.08, pointerEvents:'none', zIndex: 0, transition:'background 0.5s ease' }}/>
+      <div className="bg-grid" />
+
+      {/* Minimal Top Nav */}
+      <header style={{ padding:'24px 40px', display:'flex', justifyContent:'space-between', alignItems:'center', zIndex:10, position:'relative' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+          <div style={{ width:40, height:40, borderRadius:12, background:'var(--text)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <Layers size={20} color="var(--bg)" strokeWidth={2.5}/>
+          </div>
+          <div>
+            <h1 style={{ fontSize:18, fontWeight:700, letterSpacing:'-0.02em', color:'var(--text)' }}>The Nexus</h1>
+            <p style={{ fontSize:11, fontWeight:500, letterSpacing:'0.1em', color:'var(--text3)', textTransform:'uppercase' }}>Study Environment</p>
+          </div>
+        </div>
+        <div style={{ display:'flex', gap:12 }}>
+          <button className="icon-btn" onClick={toggleTheme}>{dark ? <Sun size={16}/> : <Moon size={16}/>}</button>
+          <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer" className="icon-btn" style={{ textDecoration:'none' }}><Github size={16}/></a>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'0 20px', zIndex:10, position:'relative' }}>
+        
+        <div className="anim-0" style={{ textAlign:'center', marginBottom:48 }}>
+          <h2 className="shimmer-text" style={{ fontSize:'clamp(48px, 8vw, 80px)', fontWeight:800, lineHeight:1, letterSpacing:'-0.03em', marginBottom:24 }}>
+            Master your syllabus.
+          </h2>
+          <p style={{ fontSize:18, color:'var(--text2)', fontWeight:400, maxWidth:600, margin:'0 auto', lineHeight:1.5 }}>
+            A high-performance workspace engineered for Cambridge A-Level students. Search topics, extract papers, and compile code.
+          </p>
+        </div>
+
+        {/* Subject Context Toggle */}
+        <div className="anim-1" style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:8, background:'var(--surface2)', padding:6, borderRadius:100, border:'1px solid var(--line2)', marginBottom:48, backdropFilter:'blur(20px)' }}>
+          {Object.entries(brandColors).map(([code, data]) => {
+            const isActive = activeTab === code;
+            return (
+              <button key={code} onClick={() => setActiveTab(code)}
+                style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 20px', borderRadius:100, border:'none', cursor:'pointer', transition:'all 0.3s cubic-bezier(0.16,1,0.3,1)',
+                  background: isActive ? 'var(--surface)' : 'transparent',
+                  color: isActive ? 'var(--text)' : 'var(--text3)',
+                  fontWeight: isActive ? 600 : 500,
+                  boxShadow: isActive ? `0 4px 20px rgba(0,0,0,0.1), inset 0 0 0 1px ${data.hex}` : 'none'
+                }}>
+                <span style={{ color: isActive ? data.hex : 'currentColor' }}>{data.icon}</span>
+                {data.name}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Modular Tools Grid */}
+        <div className="anim-3 tools-grid">
+          
+          {/* Tool 1: Jump Back In */}
+          <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
+               onClick={() => onSelectExplorer(activeTab)}
+               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
+               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; }}>
+            <div>
+              <div style={{ width:48, height:48, borderRadius:14, background:'var(--surface2)', border:'1px solid var(--line2)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
+                <Layers size={20} color="var(--text)"/>
+              </div>
+              <h3 style={{ fontSize:20, fontWeight:700, marginBottom:8 }}>PastPaper Explorer</h3>
+              <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Search, filter, and load papers instantly with a built-in fast PDF engine.</p>
+            </div>
+            <div style={{ marginTop:24, display:'flex', flexWrap:'wrap', gap:8 }}>
+              {['QP & MS', '16 Years', 'File Attachments'].map(p => <span key={p} style={{ fontSize:11, fontWeight:500, padding:'4px 10px', background:'var(--surface2)', borderRadius:100, border:'1px solid var(--line2)', color:'var(--text3)' }}>{p}</span>)}
+            </div>
+          </div>
+
+          {/* Tool 2: IDE */}
+          <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
+               onClick={()=>window.open('https://programming-ide.netlify.app/','_blank')}
+               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
+               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; }}>
+            <div>
+              <div style={{ width:48, height:48, borderRadius:14, background:'var(--surface2)', border:'1px solid var(--line2)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
+                <Code2 size={20} color="var(--text)"/>
+              </div>
+              <h3 style={{ fontSize:20, fontWeight:700, marginBottom:8 }}>Programming IDE</h3>
+              <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Write, compile, and run code entirely in your browser. Built for 9618.</p>
+            </div>
+             <div style={{ marginTop:24, display:'flex', flexWrap:'wrap', gap:8 }}>
+              {['Python', 'C++', 'Java', 'Visual Basic'].map(p => <span key={p} style={{ fontSize:11, fontWeight:500, padding:'4px 10px', background:'var(--surface2)', borderRadius:100, border:'1px solid var(--line2)', color:'var(--text3)' }}>{p}</span>)}
+            </div>
+          </div>
+
+          {/* Tool 3: Library (Replaces Notes Sidebar) */}
+          <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
+               onClick={() => onSelectLibrary(activeTab)}
+               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
+               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; }}>
+            <div>
+              <div style={{ width:48, height:48, borderRadius:14, background:'var(--surface2)', border:'1px solid var(--line2)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
+                <Library size={20} color="var(--text)"/>
+              </div>
+              <h3 style={{ fontSize:20, fontWeight:700, marginBottom:8 }}>Resource Library</h3>
+              <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Access textbooks, revision notes, and formula sheets directly from your repository.</p>
+            </div>
+            <div style={{ marginTop:24, display:'flex', flexWrap:'wrap', gap:8, alignItems:'center', justifyContent:'space-between' }}>
+              <div style={{ display:'flex', gap:8 }}>
+                {['PDFs', 'Notes', 'Books'].map(p => <span key={p} style={{ fontSize:11, fontWeight:500, padding:'4px 10px', background:'var(--surface2)', borderRadius:100, border:'1px solid var(--line2)', color:'var(--text3)' }}>{p}</span>)}
+              </div>
+              <button onClick={(e) => { e.stopPropagation(); onSelectLibrary(''); }}
+                style={{ fontSize:11, fontWeight:600, padding:'6px 12px', background:'var(--text)', color:'var(--bg)', borderRadius:8, border:'none', cursor:'pointer' }}>
+                Browse All
+              </button>
+            </div>
+          </div>
+
+          {/* Tool 4: Topicals (FEATURED WIDE CARD) */}
+          <div className="glass-panel featured-card" style={{ padding: 0, borderRadius: 24, cursor: 'pointer', transition: 'all 0.3s', display: 'flex', flexDirection: 'row', overflow: 'hidden', position: 'relative' }}
+               onClick={() => onSelectTopicals(activeTab)}
+               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = currentBrand.hex; e.currentTarget.querySelector('.feature-glow').style.opacity = '0.3'; }}
+               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.querySelector('.feature-glow').style.opacity = '0.1'; }}>
+            
+            {/* Background Glow */}
+            <div className="feature-glow" style={{ position:'absolute', top:0, right:0, width:'50%', height:'100%', background:`radial-gradient(ellipse at right, ${currentBrand.hex}, transparent 70%)`, opacity:0.1, transition:'opacity 0.4s', pointerEvents:'none' }} />
+
+            {/* Left Content */}
+            <div style={{ flex: 1, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ width:48, height:48, borderRadius:14, background:`var(--surface2)`, border:`1px solid var(--line2)`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
+                <Compass size={20} color={currentBrand.hex}/>
+              </div>
+              <h3 style={{ fontSize:24, fontWeight:700, marginBottom:8 }}>Topical Database</h3>
+              <p style={{ fontSize:15, color:'var(--text2)', lineHeight:1.6, maxWidth:400, marginBottom: 24 }}>
+                Don't just scan years—target your weaknesses. Dive into a massive database of past paper questions strictly indexed by the official syllabus structure.
+              </p>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                <span style={{ fontSize:13, fontWeight: 600, padding:'8px 16px', background:'var(--text)', borderRadius:10, color:'var(--bg)', display:'inline-flex', alignItems:'center' }}>
+                  Explore Topics <ArrowRight size={14} style={{marginLeft:6}}/>
+                </span>
+              </div>
+            </div>
+
+            {/* Right Visual Representation */}
+            <div className="topical-visual" style={{ flex: 1, padding: 32, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
+              <div style={{ width: '100%', maxWidth: 320, background: 'var(--bg2)', borderRadius: 16, border: '1px solid var(--line2)', padding: 16, boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', marginBottom: 12, display: 'flex', alignItems:'center', gap: 6 }}>
+                  <Layers size={14} color="var(--text3)"/> Paper 1 Topics
+                </div>
+                {[
+                  { t: activeTab==='9701' ? 'Atoms & Stoichiometry' : activeTab==='9702' ? 'Kinematics' : 'Data Representation', q: 42 },
+                  { t: activeTab==='9701' ? 'Energetics & Kinetics' : activeTab==='9702' ? 'Dynamics' : 'Networking', q: 28 },
+                  { t: activeTab==='9701' ? 'Periodicity' : activeTab==='9702' ? 'Waves & Superposition' : 'Hardware & Processors', q: 35 }
+                ].map((mock, i) => (
+                  <div key={i} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 8, marginBottom: 8 }}>
+                    <span style={{ fontSize: 13, color: 'var(--text2)', fontWeight: 500 }}>{mock.t}</span>
+                    <span style={{ fontSize: 11, color: 'var(--text3)', background: 'var(--surface3)', padding: '2px 8px', borderRadius: 12 }}>{mock.q} Qs</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </main>
+      
+      <footer style={{ padding:'24px', textAlign:'center', zIndex:10 }}>
+        <p style={{ fontSize:12, color:'var(--text3)', letterSpacing:'0.05em', fontWeight:500 }}>MUHAMMAD HUZAIFA IMRAN • LAHORE, PAKISTAN</p>
+      </footer>
+    </div>
+  );
+};
+
+// ─── NexusSelect & Modals ───────────────────────────────────────────────────
+
 const NexusSelect = ({ label, value, onChange, options }) => (
-  <div style={{ display:'flex', flexDirection:'column', gap:5 }}>
-    <span style={{ fontSize:9, letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text3)', paddingLeft:2 }}>{label}</span>
+  <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+    <span style={{ fontSize:10, fontWeight:600, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--text3)', paddingLeft:4 }}>{label}</span>
     <div style={{ position:'relative' }}>
       <select value={value} onChange={e => onChange(e.target.value)} className="nexus-select">
         <option value="" disabled>—</option>
         {options.map((opt, i) => { const v = typeof opt==='object'?opt.value:opt; const l = typeof opt==='object'?opt.label:opt; return <option key={i} value={v}>{l}</option>; })}
       </select>
-      <ChevronDown size={11} style={{ position:'absolute',right:8,top:'50%',transform:'translateY(-50%)',color:'var(--text3)',pointerEvents:'none' }} />
+      <ChevronDown size={14} style={{ position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',color:'var(--text3)',pointerEvents:'none' }} />
     </div>
   </div>
 );
 
-// ─── ContactModal ─────────────────────────────────────────────────────────────
 const ContactModal = ({ isOpen, onClose }) => {
   const [copied, setCopied] = useState(false);
   const email = "huzaifa.bravo@gmail.com";
@@ -411,341 +487,354 @@ const ContactModal = ({ isOpen, onClose }) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-box" onClick={e=>e.stopPropagation()}>
-        <div className="modal-strip" />
-        <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',padding:'18px 22px',borderBottom:'1px solid var(--line)' }}>
-          <div style={{ display:'flex',alignItems:'center',gap:10 }}>
-            <div style={{ width:32,height:32,borderRadius:8,background:'var(--accent-d)',display:'flex',alignItems:'center',justifyContent:'center' }}><Mail size={15} color="var(--accent)" /></div>
-            <span style={{ fontSize:18,fontWeight:700,color:'var(--text)' }}>Contact</span>
+        <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',padding:'24px',borderBottom:'1px solid var(--line2)' }}>
+          <div style={{ display:'flex',alignItems:'center',gap:12 }}>
+            <div style={{ width:36,height:36,borderRadius:10,background:'var(--surface2)',display:'flex',alignItems:'center',justifyContent:'center' }}><Mail size={18} color="var(--text)" /></div>
+            <span style={{ fontSize:20,fontWeight:700,color:'var(--text)' }}>Contact</span>
           </div>
-          <button className="icon-btn" onClick={onClose} style={{ borderRadius:'50%',width:28,height:28 }}><X size={14} /></button>
+          <button className="icon-btn" onClick={onClose}><X size={16} /></button>
         </div>
-        <div style={{ padding:'28px 22px 24px',textAlign:'center' }}>
-          <p style={{ color:'var(--text2)',fontSize:14,lineHeight:1.6,marginBottom:22 }}>Questions, feedback, or just want to say hi?<br />Drop a line below.</p>
-          <div style={{ display:'flex',alignItems:'center',gap:8,background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:10,padding:'6px 6px 6px 14px',marginBottom:8 }}>
-            <span style={{ flex:1,fontSize:12,color:'var(--text)',textAlign:'left',fontFamily:'monospace' }}>{email}</span>
+        <div style={{ padding:'32px 24px',textAlign:'center' }}>
+          <p style={{ color:'var(--text2)',fontSize:15,lineHeight:1.6,marginBottom:24 }}>Questions, feedback, or just want to say hi?<br />Drop a line below.</p>
+          <div style={{ display:'flex',alignItems:'center',gap:10,background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:12,padding:'8px 8px 8px 16px',marginBottom:12 }}>
+            <span style={{ flex:1,fontSize:14,color:'var(--text)',textAlign:'left',fontFamily:'Roboto Mono, monospace' }}>{email}</span>
             <button onClick={()=>{navigator.clipboard.writeText(email);setCopied(true);}}
-              style={{ display:'flex',alignItems:'center',gap:5,padding:'7px 12px',borderRadius:7,border:'none',cursor:'pointer',background:copied?'var(--accent)':'var(--surface)',color:copied?'#fff':'var(--text2)',fontSize:11,fontWeight:600,transition:'all 0.2s',boxShadow:copied?'0 0 14px var(--accent-g)':'none' }}>
-              {copied?<><Check size={12}/> Copied</>:<><Copy size={12}/> Copy</>}
+              style={{ display:'flex',alignItems:'center',gap:6,padding:'10px 16px',borderRadius:8,border:'none',cursor:'pointer',background:copied?'var(--text)':'var(--surface3)',color:copied?'var(--bg)':'var(--text)',fontSize:13,fontWeight:600,transition:'all 0.2s' }}>
+              {copied?<><Check size={14}/> Copied</>:<><Copy size={14}/> Copy</>}
             </button>
           </div>
-          <p style={{ fontSize:9,color:'var(--text3)',letterSpacing:'0.08em' }}>{copied?'✦ COPIED TO CLIPBOARD':'CLICK TO COPY ADDRESS'}</p>
         </div>
       </div>
     </div>
   );
 };
 
-// ─── PasswordModal ────────────────────────────────────────────────────────────
-const PasswordModal = ({ isOpen, onClose, onSuccess }) => {
-  const [pw, setPw] = useState(''); const [show, setShow] = useState(false); const [err, setErr] = useState(false);
-  const ref = useRef(null);
-  useEffect(() => { if (isOpen) { setPw(''); setErr(false); setTimeout(()=>ref.current?.focus(),100); } }, [isOpen]);
-  const submit = () => { if (pw===NOTES_PASSWORD) { onSuccess(); onClose(); setPw(''); setErr(false); } else { setErr(true); setPw(''); } };
-  if (!isOpen) return null;
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" style={{ maxWidth:340 }} onClick={e=>e.stopPropagation()}>
-        <div className="modal-strip" />
-        <div style={{ padding:'22px 24px 26px' }}>
-          <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20 }}>
-            <div style={{ display:'flex',alignItems:'center',gap:10 }}>
-              <div style={{ width:34,height:34,borderRadius:9,background:'var(--accent-d)',display:'flex',alignItems:'center',justifyContent:'center' }}><Lock size={16} color="var(--accent)" /></div>
-              <div><div style={{ fontSize:15,fontWeight:700,color:'var(--text)' }}>Admin Access</div><div style={{ fontSize:10,color:'var(--text3)' }}>Enter password to add notes</div></div>
-            </div>
-            <button className="icon-btn" onClick={onClose} style={{ width:28,height:28,borderRadius:'50%' }}><X size={13} /></button>
-          </div>
-          <div style={{ position:'relative',marginBottom:err?8:16 }}>
-            <input ref={ref} type={show?'text':'password'} className="n-input" placeholder="Password" value={pw}
-              onChange={e=>{setPw(e.target.value);setErr(false);}} onKeyDown={e=>e.key==='Enter'&&submit()}
-              style={{ paddingRight:38,borderColor:err?'var(--red)':undefined }} />
-            <button onClick={()=>setShow(s=>!s)} style={{ position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',color:'var(--text3)',padding:4 }}>
-              {show?<EyeOff size={14}/>:<Eye size={14}/>}
-            </button>
-          </div>
-          {err && <p style={{ fontSize:11,color:'var(--red)',marginBottom:12 }}>Incorrect password. Try again.</p>}
-          <button onClick={submit} style={{ width:'100%',padding:'10px',borderRadius:8,border:'none',cursor:'pointer',background:'var(--accent)',color:'#fff',fontSize:13,fontWeight:600,transition:'all 0.2s' }}>Unlock</button>
-        </div>
-      </div>
-    </div>
-  );
-};
+// ─── Sidebars (Topicals, Library, MCQSolver) ────────────────────────────────
 
-// ─── TopicalsSidebar ──────────────────────────────────────────────────────────
-const TopicalsSidebar = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => {
-  const [expandedPaper, setExpandedPaper] = useState(null);
-  const [expandedTopic, setExpandedTopic] = useState(null);
+const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => {
+  const [selectedPaper, setSelectedPaper] = useState(null);
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const [searchQ, setSearchQ] = useState('');
+
   const subjName = subjectCode ? subjectName(subjectCode) : null;
-  
-  // The database is now perfectly structured by Python. React doesn't need to guess.
   const db = topicalDb && subjectCode ? topicalDb[subjectCode] : null;
+  const syllabus = subjectCode ? SYLLABUS_STRUCTURE[subjectCode] : null;
+  const papers = syllabus ? Object.keys(syllabus).sort() : [];
+
+  useEffect(() => {
+    if (syllabus) { setSelectedPaper(Object.keys(syllabus).sort()[0]); setSelectedTopic(null); }
+  }, [subjectCode]);
+
+  useEffect(() => { setSelectedTopic(null); setSearchQ(''); }, [selectedPaper]);
+
+  const getQs = (pNum, topic) => db?.[pNum]?.topics?.[topic] || [];
+
+  const paperInfo = selectedPaper && syllabus ? syllabus[selectedPaper] : null;
+  const topics = paperInfo ? paperInfo.topics : [];
+  const questions = selectedPaper && selectedTopic ? getQs(selectedPaper, selectedTopic) : [];
+  const filteredQuestions = searchQ.trim()
+    ? questions.filter(q => q.season_year.toLowerCase().includes(searchQ.toLowerCase()))
+    : questions;
+
+  const maxQ = useMemo(() => {
+    if (!selectedPaper || !db || !syllabus) return 1;
+    const ts = syllabus[selectedPaper]?.topics || [];
+    return Math.max(1, ...ts.map(t => getQs(selectedPaper, t).length));
+  }, [selectedPaper, db]);
+
+  const totalQ = useMemo(() => {
+    if (!db) return 0;
+    let c = 0;
+    Object.values(db).forEach(p => Object.values(p.topics || {}).forEach(qs => c += qs.length));
+    return c;
+  }, [db]);
+
+  const totalTopics = syllabus ? Object.values(syllabus).reduce((acc, p) => acc + p.topics.length, 0) : 0;
+
+  const PAPER_COLORS = {
+    '1': { hex: '#2dd4bf', bg: 'rgba(45,212,191,0.08)' },
+    '2': { hex: '#818cf8', bg: 'rgba(129,140,248,0.08)' },
+    '3': { hex: '#fbbf24', bg: 'rgba(251,191,36,0.08)' },
+    '4': { hex: '#fb7185', bg: 'rgba(251,113,133,0.08)' },
+  };
+  const pColor = (pNum) => PAPER_COLORS[pNum] || PAPER_COLORS['1'];
+  const ac = selectedPaper ? pColor(selectedPaper) : pColor('1');
+
+  return (
+    <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', background:'var(--bg)', animation:'fadeIn 0.3s ease both' }}>
+
+      <div style={{ padding:'14px 28px', borderBottom:'1px solid var(--line2)', background:'var(--bg2)', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'space-between', gap:24 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+          <div style={{ width:40, height:40, borderRadius:12, background:ac.bg, border:`1px solid ${ac.hex}40`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <Compass size={20} color={ac.hex}/>
+          </div>
+          <div>
+            <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
+              <span style={{ fontSize:17, fontWeight:800, color:'var(--text)' }}>Topic Explorer</span>
+              {subjName && <><span style={{ color:'var(--text3)', fontSize:14 }}>/</span><span style={{ fontSize:14, fontWeight:600, color:ac.hex }}>{subjName}</span></>}
+              {selectedPaper && <><span style={{ color:'var(--text3)', fontSize:14 }}>/</span><span style={{ fontSize:13, fontWeight:600, color:'var(--text2)' }}>Paper {selectedPaper}</span></>}
+              {selectedTopic && <><span style={{ color:'var(--text3)', fontSize:14 }}>/</span><span style={{ fontSize:12, fontWeight:600, color:'var(--text2)', maxWidth:200, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{selectedTopic}</span></>}
+            </div>
+            <div style={{ fontSize:11, color:'var(--text3)', marginTop:2 }}>
+              {totalQ > 0 ? `${totalQ} indexed questions · ${papers.length} papers · ${totalTopics} topics` : 'Browse past paper questions by topic'}
+            </div>
+          </div>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          {totalQ > 0 && [{ label:'Questions', val:totalQ }, { label:'Topics', val:totalTopics }].map((s, i) => (
+            <div key={i} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', background:'var(--surface2)', border:'1px solid var(--line2)', borderRadius:8, fontSize:12 }}>
+              <span style={{ fontWeight:800, color:i===0?ac.hex:'var(--text)' }}>{s.val}</span>
+              <span style={{ color:'var(--text3)', fontWeight:500 }}>{s.label}</span>
+            </div>
+          ))}
+          <div style={{ width:1, height:24, background:'var(--line2)' }}/>
+          <button className="icon-btn" onClick={onClose}><X size={16}/></button>
+        </div>
+      </div>
+
+      {!subjectCode ? (
+        <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:12 }}>
+          <Compass size={56} style={{ opacity:0.15 }}/>
+          <p style={{ fontSize:15, color:'var(--text2)', fontWeight:600 }}>Select a subject from the navigation bar above</p>
+        </div>
+      ) : !syllabus ? (
+        <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:12 }}>
+          <Compass size={56} style={{ opacity:0.15 }}/>
+          <p style={{ fontSize:16, color:'var(--text)', fontWeight:700 }}>Coming Soon</p>
+          <p style={{ fontSize:14, color:'var(--text2)' }}>Topical mapping for {subjName} is not yet available.</p>
+        </div>
+      ) : (
+        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+
+          {/* Paper Selector */}
+          <div style={{ width:210, flexShrink:0, borderRight:'1px solid var(--line2)', padding:'16px 10px', display:'flex', flexDirection:'column', gap:6, background:'var(--bg2)', overflowY:'auto' }} className="custom-sb">
+            <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text3)', paddingLeft:8, marginBottom:6 }}>Papers</p>
+            {papers.map(pNum => {
+              const pc = pColor(pNum);
+              const pData = syllabus[pNum];
+              const isActive = selectedPaper === pNum;
+              const pQCount = pData.topics.reduce((a, t) => a + getQs(pNum, t).length, 0);
+              return (
+                <button key={pNum} onClick={() => setSelectedPaper(pNum)}
+                  style={{ width:'100%', textAlign:'left', padding:'14px', borderRadius:12, border:`1px solid ${isActive ? pc.hex+'60' : 'var(--line2)'}`, background:isActive ? pc.bg : 'transparent', cursor:'pointer', transition:'all 0.2s' }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--surface2)'; }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
+                    <div style={{ width:8, height:8, borderRadius:'50%', background:pc.hex, flexShrink:0 }}/>
+                    <span style={{ fontSize:13, fontWeight:700, color:isActive ? pc.hex : 'var(--text)' }}>Paper {pNum}</span>
+                  </div>
+                  <p style={{ fontSize:11, color:'var(--text3)', lineHeight:1.4, paddingLeft:16, marginBottom:6 }}>{pData.title}</p>
+                  <div style={{ display:'flex', gap:5, paddingLeft:16, flexWrap:'wrap' }}>
+                    <span style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:6, background:'var(--surface2)', color:'var(--text3)' }}>{pData.topics.length} topics</span>
+                    {pQCount > 0 && <span style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:6, background:pc.bg, color:pc.hex }}>{pQCount} Qs</span>}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Topics Grid */}
+          <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', minWidth:0 }}>
+            <div style={{ padding:'14px 20px', borderBottom:'1px solid var(--line2)', background:'var(--bg2)', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                {paperInfo && <div style={{ width:4, height:22, borderRadius:2, background:ac.hex, flexShrink:0 }}/>}
+                <span style={{ fontSize:15, fontWeight:700, color:'var(--text)' }}>{paperInfo?.title || 'Select a Paper'}</span>
+                {topics.length > 0 && <span style={{ fontSize:12, color:'var(--text3)', background:'var(--surface2)', padding:'3px 8px', borderRadius:6 }}>{topics.length} topics</span>}
+              </div>
+              {selectedTopic && (
+                <button onClick={() => setSelectedTopic(null)}
+                  style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:8, border:'1px solid var(--line2)', background:'var(--surface2)', color:'var(--text2)', cursor:'pointer', fontSize:12, fontWeight:600 }}>
+                  <X size={12}/> Clear
+                </button>
+              )}
+            </div>
+            <div className="custom-sb" style={{ flex:1, overflowY:'auto', padding:'20px' }}>
+              {topics.length === 0 ? (
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', color:'var(--text3)', fontSize:14 }}>Select a paper to view its topics</div>
+              ) : (
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(210px, 1fr))', gap:12 }}>
+                  {topics.map(topic => {
+                    const qCount = getQs(selectedPaper, topic).length;
+                    const barPct = maxQ > 0 ? (qCount / maxQ) * 100 : 0;
+                    const isSel = selectedTopic === topic;
+                    return (
+                      <button key={topic} onClick={() => setSelectedTopic(isSel ? null : topic)}
+                        style={{ textAlign:'left', padding:'18px', borderRadius:14, border:`1px solid ${isSel ? ac.hex+'70' : 'var(--line2)'}`, background:isSel ? ac.bg : 'var(--bg2)', cursor:'pointer', transition:'all 0.2s', position:'relative', overflow:'hidden' }}
+                        onMouseEnter={e => { if (!isSel) { e.currentTarget.style.background = 'var(--surface2)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = 'var(--line2)'; } }}
+                        onMouseLeave={e => { if (!isSel) { e.currentTarget.style.background = 'var(--bg2)'; e.currentTarget.style.transform = 'translateY(0)'; } }}>
+                        {isSel && <div style={{ position:'absolute', top:0, right:0, width:'60%', height:'100%', background:`radial-gradient(ellipse at top right, ${ac.hex}20, transparent 70%)`, pointerEvents:'none' }}/>}
+                        <div style={{ fontSize:13, fontWeight:700, color:isSel ? ac.hex : 'var(--text)', marginBottom:12, lineHeight:1.4 }}>{topic}</div>
+                        <div style={{ height:4, borderRadius:4, background:'var(--surface3)', marginBottom:10, overflow:'hidden' }}>
+                          <div style={{ height:'100%', width:`${barPct}%`, background:isSel ? ac.hex : 'var(--line2)', borderRadius:4, transition:'width 0.5s ease' }}/>
+                        </div>
+                        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                          <span style={{ fontSize:12, fontWeight:700, color:qCount > 0 ? (isSel ? ac.hex : 'var(--text2)') : 'var(--text3)' }}>
+                            {qCount > 0 ? `${qCount} question${qCount !== 1 ? 's' : ''}` : 'No data yet'}
+                          </span>
+                          {isSel && <ArrowRight size={13} color={ac.hex}/>}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Questions Detail Panel */}
+          {selectedTopic && (
+            <div style={{ width:320, flexShrink:0, borderLeft:'1px solid var(--line2)', display:'flex', flexDirection:'column', background:'var(--bg2)', animation:'slideInRight 0.25s cubic-bezier(0.16,1,0.3,1) both' }}>
+              <div style={{ padding:'16px 20px', borderBottom:'1px solid var(--line2)', flexShrink:0 }}>
+                <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:6 }}>
+                  <span style={{ fontSize:13, fontWeight:800, color:'var(--text)', lineHeight:1.4, flex:1, paddingRight:8 }}>{selectedTopic}</span>
+                  <button className="icon-btn" style={{ width:28, height:28, flexShrink:0 }} onClick={() => setSelectedTopic(null)}><X size={14}/></button>
+                </div>
+                <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:questions.length > 5 ? 12 : 0 }}>
+                  <div style={{ width:6, height:6, borderRadius:'50%', background:ac.hex }}/>
+                  <span style={{ fontSize:11, color:ac.hex, fontWeight:700 }}>{questions.length} paper{questions.length !== 1 ? 's' : ''} available</span>
+                </div>
+                {questions.length > 5 && (
+                  <div style={{ position:'relative' }}>
+                    <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Filter by season / year…"
+                      style={{ width:'100%', padding:'8px 12px 8px 32px', borderRadius:8, border:'1px solid var(--line2)', background:'var(--surface2)', color:'var(--text)', fontSize:12, outline:'none', fontFamily:'Outfit, sans-serif', transition:'border-color 0.2s' }}
+                      onFocus={e => e.target.style.borderColor = ac.hex}
+                      onBlur={e => e.target.style.borderColor = 'var(--line2)'}/>
+                    <Search size={12} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'var(--text3)', pointerEvents:'none' }}/>
+                  </div>
+                )}
+              </div>
+              <div className="custom-sb" style={{ flex:1, overflowY:'auto', padding:'12px 14px', display:'flex', flexDirection:'column', gap:8 }}>
+                {filteredQuestions.length === 0 ? (
+                  <p style={{ textAlign:'center', color:'var(--text3)', fontSize:13, padding:'24px 0' }}>
+                    {questions.length === 0 ? 'No questions indexed yet.' : 'No results.'}
+                  </p>
+                ) : (
+                  filteredQuestions.map((item, idx) => {
+                    const sCode = item.season_year[0];
+                    const yrSuffix = item.season_year.slice(1);
+                    const sName = { m:'March', s:'Summer', w:'Winter' }[sCode] || sCode.toUpperCase();
+                    return (
+                      <button key={idx} onClick={() => onSelectQuestion(item.paper_id, item.page_number)}
+                        style={{ textAlign:'left', padding:'12px 14px', borderRadius:12, border:'1px solid var(--line2)', background:'var(--bg)', cursor:'pointer', transition:'all 0.15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = ac.hex+'80'; e.currentTarget.style.background = ac.bg; e.currentTarget.style.transform = 'translateX(3px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.style.background = 'var(--bg)'; e.currentTarget.style.transform = 'translateX(0)'; }}>
+                        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:6 }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+                            <span style={{ fontSize:11, fontWeight:700, padding:'3px 8px', borderRadius:6, background:ac.bg, color:ac.hex }}>{sName} 20{yrSuffix}</span>
+                            <span style={{ fontSize:11, fontWeight:600, color:'var(--text3)', padding:'3px 7px', borderRadius:6, background:'var(--surface2)' }}>Var {item.variant}</span>
+                          </div>
+                          <span style={{ fontSize:10, fontWeight:700, color:'var(--text3)' }}>pg {item.page_number}</span>
+                        </div>
+                        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                          <span style={{ fontSize:12, color:'var(--text2)', fontWeight:500 }}>Q {item.questions?.join(', ')}</span>
+                          <ArrowRight size={12} color="var(--text3)"/>
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+              <div style={{ padding:'12px 16px', borderTop:'1px solid var(--line2)', flexShrink:0 }}>
+                <p style={{ fontSize:11, color:'var(--text3)', textAlign:'center' }}>Click any card to open the paper at that page</p>
+              </div>
+            </div>
+          )}
+
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── NEW: Library Explorer Sidebar (Replaces old Local Notes) ────────────────
+const LibrarySidebar = ({ subjectCode, libraryDb, onClose }) => {
+  const subjName = subjectCode ? subjectName(subjectCode) : null;
+  const [expanded, setExpanded] = useState({});
+
+  const targetFolder = useMemo(() => {
+    // If no subject is selected, show the entire library root
+    if (!subjectCode) return { children: libraryDb }; 
+    return libraryDb?.find(f => f.name === subjectCode) || null;
+  }, [libraryDb, subjectCode]);
+
+  const toggleFolder = (path) => {
+    setExpanded(prev => ({ ...prev, [path]: !prev[path] }));
+  };
+
+  const renderTree = (nodes, currentPath = '') => {
+    if (!nodes) return null;
+    return nodes.map((node) => {
+      const nodePath = `${currentPath}/${node.name}`;
+      if (node.type === 'folder') {
+        const isExp = expanded[nodePath];
+        return (
+          <div key={nodePath} style={{ marginBottom: 4 }}>
+            <button onClick={() => toggleFolder(nodePath)}
+              style={{ display:'flex', alignItems:'center', width:'100%', padding:'10px 12px', background: isExp ? 'var(--surface2)' : 'transparent', border:'none', borderRadius:8, color:'var(--text)', cursor:'pointer', transition:'all 0.2s' }}
+              onMouseEnter={e => { if(!isExp) e.currentTarget.style.background = 'var(--surface2)'; }}
+              onMouseLeave={e => { if(!isExp) e.currentTarget.style.background = 'transparent'; }}>
+              {isExp ? <ChevronDown size={16} style={{ marginRight:8, color:'var(--text3)' }}/> : <ChevronRight size={16} style={{ marginRight:8, color:'var(--text3)' }}/>}
+              <Folder size={16} style={{ marginRight:8, color:'var(--accent)' }}/>
+              <span style={{ fontSize:13, fontWeight:600 }}>{node.name}</span>
+            </button>
+            {isExp && (
+              <div style={{ paddingLeft: 12, marginTop: 4, borderLeft:'1px solid var(--line2)', marginLeft: 18 }}>
+                {renderTree(node.children, nodePath)}
+              </div>
+            )}
+          </div>
+        );
+      } else {
+        return (
+          <div key={nodePath} style={{ marginBottom: 4 }}>
+            <a href={node.path} target="_blank" rel="noopener noreferrer"
+              style={{ display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%', padding:'10px 12px', background:'var(--surface)', border:'1px solid var(--line2)', borderRadius:8, color:'var(--text2)', cursor:'pointer', transition:'all 0.2s', textDecoration:'none' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text3)'; e.currentTarget.style.color = 'var(--text)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.style.color = 'var(--text2)'; }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8, overflow:'hidden' }}>
+                <FileText size={14} style={{ flexShrink:0, color:'var(--rose)' }}/>
+                <span style={{ fontSize:12, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', fontWeight:500 }}>{node.name}</span>
+              </div>
+              <span style={{ fontSize:10, color:'var(--text3)', flexShrink:0, marginLeft:8, background:'var(--surface2)', padding:'2px 6px', borderRadius:4 }}>{node.size}</span>
+            </a>
+          </div>
+        );
+      }
+    });
+  };
 
   return (
     <div className="topicals-sidebar">
-      {/* Header */}
-      <div style={{ padding:'16px 18px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
-        <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6 }}>
-          <div style={{ display:'flex',alignItems:'center',gap:9 }}>
-            <div style={{ width:30,height:30,borderRadius:8,background:'var(--green-d)',display:'flex',alignItems:'center',justifyContent:'center' }}>
-              <Compass size={14} color="var(--green)"/>
+      <div style={{ padding:'20px 24px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
+        <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between' }}>
+          <div style={{ display:'flex',alignItems:'center',gap:12 }}>
+            <div style={{ width:36,height:36,borderRadius:10,background:'var(--surface2)',display:'flex',alignItems:'center',justifyContent:'center' }}>
+              <Library size={18} color="var(--text)"/>
             </div>
             <div>
-              <div style={{ fontSize:13,fontWeight:700,color:'var(--text)' }}>Topical Extraction</div>
-              <div style={{ fontSize:10,color:'var(--text3)' }}>{subjName || 'No Subject Selected'}</div>
+              <div style={{ fontSize:16,fontWeight:700,color:'var(--text)' }}>Library Explorer</div>
+              <div style={{ fontSize:12,color:'var(--text3)' }}>{subjectCode ? subjName : 'All Subjects'}</div>
             </div>
           </div>
-          <button className="icon-btn" onClick={onClose} style={{ width:28,height:28,borderRadius:'50%' }}><X size={13}/></button>
+          <button className="icon-btn" onClick={onClose}><X size={16}/></button>
         </div>
       </div>
 
-      {/* Content */}
-      <div style={{ flex:1, minHeight: 0, overflowY:'auto', padding:'14px 18px', display:'flex', flexDirection:'column', gap:8 }}>
-        {!subjectCode ? (
-          <div style={{ textAlign:'center',padding:'48px 0',color:'var(--text3)' }}>
-            <Compass size={36} style={{ opacity:0.3,marginBottom:12 }}/>
-            <p style={{ fontSize:13,marginBottom:6,color:'var(--text)' }}>Select a Subject</p>
-            <p style={{ fontSize:11,lineHeight:1.5 }}>Please select a subject from the top navigation to view topical questions.</p>
-          </div>
-        ) : !db || Object.keys(db).length === 0 ? (
-           <div style={{ textAlign:'center',padding:'48px 0',color:'var(--text3)' }}>
-            <Compass size={36} style={{ opacity:0.3,marginBottom:12 }}/>
-            <p style={{ fontSize:13,marginBottom:6,color:'var(--text)' }}>Coming Soon</p>
-            <p style={{ fontSize:11,lineHeight:1.5 }}>Topical mapping is currently available for Computer Science (9618), Physics (9702), and Chemistry (9701).</p>
+      <div className="custom-sb" style={{ flex:1, overflowY:'auto', padding:'20px 24px', display:'flex', flexDirection:'column' }}>
+        {!targetFolder || targetFolder.children?.length === 0 ? (
+           <div style={{ textAlign:'center',padding:'60px 0',color:'var(--text3)' }}>
+            <Folder size={48} style={{ opacity:0.2,marginBottom:16 }}/>
+            <p style={{ fontSize:15,fontWeight:600,marginBottom:8,color:'var(--text)' }}>Folder Empty</p>
+            <p style={{ fontSize:13,lineHeight:1.6 }}>No files indexed for this subject yet. Add PDFs to <span style={{fontFamily:'monospace'}}>/public/library/</span> and run the Python script.</p>
           </div>
         ) : (
-          
-          // Map through the PRE-STRUCTURED JSON from Python
-          Object.keys(db).sort().map(pNum => {
-            const paperData = db[pNum];
-            const topicKeys = Object.keys(paperData.topics).sort();
-
-            if (topicKeys.length === 0) return null; // Failsafe
-
-            return (
-            <div key={pNum} style={{ background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:10,overflow:'hidden',flexShrink:0 }}>
-              
-              <button 
-                onClick={() => { setExpandedPaper(expandedPaper === pNum ? null : pNum); setExpandedTopic(null); }}
-                style={{ width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 14px',background:'var(--surface3)',border:'none',color:'var(--text)',fontWeight:700,fontSize:13,cursor:'pointer' }}>
-                <div style={{ textAlign:'left' }}>
-                  <div style={{ fontSize:13, fontWeight:700 }}>Paper {pNum}</div>
-                  <div style={{ fontSize:10, color:'var(--text2)', marginTop:2 }}>{paperData.title}</div>
-                </div>
-                {expandedPaper === pNum ? <ChevronUp size={14} color="var(--text3)"/> : <ChevronDown size={14} color="var(--text3)"/>}
-              </button>
-              
-              {expandedPaper === pNum && (
-                <div style={{ padding:'8px',display:'flex',flexDirection:'column',gap:6 }}>
-                  {topicKeys.map(topic => {
-                    const questions = paperData.topics[topic];
-                    
-                    return (
-                    <div key={topic} style={{ background:'var(--surface)',border:'1px solid var(--line2)',borderRadius:8,overflow:'hidden' }}>
-                      
-                      <button onClick={() => setExpandedTopic(expandedTopic === topic ? null : topic)}
-                        style={{ width:'100%',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 12px',background:'transparent',border:'none',color:'var(--text)',fontWeight:600,fontSize:12,cursor:'pointer' }}>
-                        <span style={{ textAlign:'left', paddingRight:10 }}>{topic}</span>
-                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                           <span style={{ fontSize:10, background:'var(--surface3)', padding:'2px 6px', borderRadius:10, color:'var(--text2)' }}>
-                             {questions.length} Qs
-                           </span>
-                           {expandedTopic === topic ? <ChevronUp size={14} color="var(--text3)"/> : <ChevronDown size={14} color="var(--text3)"/>}
-                        </div>
-                      </button>
-                      
-                      {expandedTopic === topic && (
-                        <div style={{ padding:'0 12px 12px',display:'flex',flexDirection:'column',gap:6 }}>
-                            {questions.map((item, idx) => (
-                              <button key={idx} onClick={() => onSelectQuestion(item.paper_id, item.page_number)} className="topical-btn"
-                                style={{ display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 12px',background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:8,cursor:'pointer' }}>
-                                <div style={{ textAlign:'left' }}>
-                                  <div style={{ fontSize:11,fontWeight:600,color:'var(--accent)',marginBottom:2 }}>{item.season_year.toUpperCase()} · Var {item.variant}</div>
-                                  <div style={{ fontSize:10,color:'var(--text2)' }}>Question {item.questions.join(', ')}</div>
-                                </div>
-                                <div style={{ fontSize:10,color:'var(--text3)',background:'var(--surface3)',padding:'3px 6px',borderRadius:4 }}>Pg {item.page_number}</div>
-                              </button>
-                            ))}
-                        </div>
-                      )}
-                    </div>
-                  )})}
-                </div>
-              )}
-            </div>
-          )})
+          renderTree(targetFolder.children, subjectCode || 'root')
         )}
       </div>
     </div>
   );
 };
 
-// ─── NotesSidebar ─────────────────────────────────────────────────────────────
-const NotesSidebar = ({ subjectCode, paperNum, variant, year, season, onClose, isAdmin, onRequestAuth }) => {
-  const key      = noteKey(subjectCode, season, year, paperNum, variant);
-  const subjName = subjectName(subjectCode);
-  const [notes, setNotes]         = useState(() => loadNotes()[key] || []);
-  const [showAdd, setShowAdd]     = useState(false);
-  const [noteTitle, setNoteTitle] = useState('');
-  const [noteBody,  setNoteBody]  = useState('');
-  const [delConfirm, setDelConfirm] = useState(null);
-  const [pendingFiles, setPendingFiles] = useState([]);
-  const [fileErr, setFileErr]     = useState('');
-  const fileRef = useRef(null);
-
-  const persist = (updated) => { setNotes(updated); const all=loadNotes(); all[key]=updated; saveNotes(all); };
-
-  const handleAdd = () => {
-    if (!noteBody.trim() && pendingFiles.length === 0) return;
-    const newNote = {
-      id: Date.now().toString(),
-      title: noteTitle.trim() || `Note ${notes.length + 1}`,
-      content: noteBody.trim(),
-      timestamp: new Date().toLocaleDateString('en-GB', { day:'numeric',month:'short',year:'numeric' }),
-      attachments: pendingFiles,
-    };
-    persist([newNote, ...notes]);
-    setNoteTitle(''); setNoteBody(''); setPendingFiles([]); setShowAdd(false); setFileErr('');
-  };
-
-  const handleFileChange = (e) => {
-    setFileErr('');
-    const files = Array.from(e.target.files);
-    files.forEach(file => {
-      if (!['application/pdf','text/html'].includes(file.type)) { setFileErr('Only PDF and HTML files are supported.'); return; }
-      if (file.size > MAX_FILE_BYTES) { setFileErr(`"${file.name}" exceeds 1.5 MB limit.`); return; }
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPendingFiles(pf => [...pf, { id: Date.now().toString() + Math.random(), name:file.name, type:file.type, data:reader.result, size:file.size }]);
-      };
-      reader.readAsDataURL(file);
-    });
-    e.target.value = '';
-  };
-
-  const removeFile = (id) => setPendingFiles(pf => pf.filter(f => f.id !== id));
-  const handleDelete = (id) => { persist(notes.filter(n=>n.id!==id)); setDelConfirm(null); };
-
-  return (
-    <>
-      <div className="notes-backdrop" onClick={onClose} />
-      <div className="notes-sidebar">
-        {/* Header */}
-        <div style={{ padding:'16px 18px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
-          <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6 }}>
-            <div style={{ display:'flex',alignItems:'center',gap:9 }}>
-              <div style={{ width:30,height:30,borderRadius:8,background:'var(--accent-d)',display:'flex',alignItems:'center',justifyContent:'center' }}><NotebookPen size={14} color="var(--accent)"/></div>
-              <div>
-                <div style={{ fontSize:13,fontWeight:700,color:'var(--text)' }}>Notes</div>
-                <div style={{ fontSize:10,color:'var(--text3)' }}>{subjName} · Paper {paperNum}</div>
-              </div>
-            </div>
-            <button className="icon-btn" onClick={onClose} style={{ width:28,height:28,borderRadius:'50%' }}><X size={13}/></button>
-          </div>
-          <div style={{ display:'flex',alignItems:'center',gap:6,marginTop:10 }}>
-            <span style={{ fontSize:10,color:'var(--text3)' }}>{notes.length} note{notes.length!==1?'s':''}</span>
-            <span style={{ flex:1 }}/>
-            {isAdmin ? (
-              <button onClick={()=>setShowAdd(s=>!s)}
-                style={{ display:'flex',alignItems:'center',gap:6,padding:'6px 12px',borderRadius:7,border:'none',cursor:'pointer',background:'var(--accent)',color:'#fff',fontSize:11,fontWeight:600,transition:'all 0.2s' }}>
-                <Plus size={12}/> Add Note
-              </button>
-            ) : (
-              <button onClick={onRequestAuth}
-                style={{ display:'flex',alignItems:'center',gap:6,padding:'6px 12px',borderRadius:7,border:'1px solid var(--line2)',cursor:'pointer',background:'var(--surface2)',color:'var(--text2)',fontSize:11,transition:'all 0.2s' }}>
-                <Lock size={11}/> Unlock to add
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Add form */}
-        {showAdd && isAdmin && (
-          <div style={{ padding:'14px 18px',borderBottom:'1px solid var(--line2)',background:'var(--surface2)',flexShrink:0 }}>
-            <input className="n-input" placeholder="Title (optional)" value={noteTitle} onChange={e=>setNoteTitle(e.target.value)} style={{ marginBottom:8,height:36,resize:'none' }}/>
-            <textarea className="n-input" placeholder="Write your note here…" value={noteBody} onChange={e=>setNoteBody(e.target.value)} rows={3} style={{ marginBottom:8 }}/>
-
-            {/* File attach */}
-            <input ref={fileRef} type="file" accept=".pdf,.html,application/pdf,text/html" multiple style={{ display:'none' }} onChange={handleFileChange}/>
-            <button onClick={()=>fileRef.current?.click()}
-              style={{ display:'flex',alignItems:'center',gap:6,padding:'6px 12px',borderRadius:7,border:'1px dashed var(--line2)',cursor:'pointer',background:'transparent',color:'var(--text2)',fontSize:11,width:'100%',justifyContent:'center',marginBottom:6,transition:'all 0.2s' }}>
-              <Paperclip size={12}/> Attach PDF or HTML file
-            </button>
-            {fileErr && <p style={{ fontSize:11,color:'var(--red)',marginBottom:6,display:'flex',alignItems:'center',gap:4 }}><AlertCircle size={11}/>{fileErr}</p>}
-            {pendingFiles.length > 0 && (
-              <div style={{ display:'flex',flexWrap:'wrap',gap:5,marginBottom:8 }}>
-                {pendingFiles.map(f => (
-                  <div key={f.id} style={{ display:'flex',alignItems:'center',gap:4,padding:'3px 8px 3px 6px',borderRadius:6,background:'var(--surface3)',border:'1px solid var(--line2)',fontSize:10,color:'var(--text2)' }}>
-                    <FileText size={10} color="var(--accent)"/>
-                    <span>{f.name}</span>
-                    <span style={{ color:'var(--text3)' }}>({fmtBytes(f.size)})</span>
-                    <button onClick={()=>removeFile(f.id)} style={{ background:'none',border:'none',cursor:'pointer',padding:0,display:'flex',alignItems:'center',color:'var(--text3)' }}><X size={10}/></button>
-                  </div>
-                ))}
-              </div>
-            )}
-            <div style={{ display:'flex',gap:8 }}>
-              <button onClick={handleAdd} disabled={!noteBody.trim()&&pendingFiles.length===0}
-                style={{ flex:1,padding:'8px',borderRadius:7,border:'none',cursor:(noteBody.trim()||pendingFiles.length>0)?'pointer':'not-allowed',background:(noteBody.trim()||pendingFiles.length>0)?'var(--accent)':'var(--surface)',color:(noteBody.trim()||pendingFiles.length>0)?'#fff':'var(--text3)',fontSize:12,fontWeight:600,transition:'all 0.2s' }}>
-                Save Note
-              </button>
-              <button onClick={()=>{setShowAdd(false);setNoteTitle('');setNoteBody('');setPendingFiles([]);setFileErr('');}}
-                style={{ padding:'8px 14px',borderRadius:7,border:'1px solid var(--line2)',cursor:'pointer',background:'transparent',color:'var(--text2)',fontSize:12,transition:'all 0.2s' }}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* List */}
-        <div style={{ flex:1,overflowY:'auto',padding:'14px 18px',display:'flex',flexDirection:'column',gap:10 }}>
-          {notes.length === 0 ? (
-            <div style={{ textAlign:'center',padding:'48px 0',color:'var(--text3)' }}>
-              <FileText size={36} style={{ opacity:0.3,marginBottom:12 }}/>
-              <p style={{ fontSize:13,marginBottom:6 }}>No local notes yet</p>
-              <p style={{ fontSize:11, marginBottom: 12 }}>{isAdmin?'Click "Add Note" to get started.':'Unlock to start adding local notes.'}</p>
-              <p style={{ fontSize:9, color:'var(--text3)', borderTop:'1px solid var(--line)', paddingTop:12, marginTop:12 }}>
-                Static Repo Notes expected format:<br/>
-                <span style={{fontFamily:'monospace'}}>/notes/{key}.pdf</span>
-              </p>
-            </div>
-          ) : notes.map(note => (
-            <div key={note.id} className="note-card">
-              <div style={{ display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:8,marginBottom:note.content?6:0 }}>
-                <span style={{ fontSize:12,fontWeight:600,color:'var(--text)',lineHeight:1.3 }}>{note.title}</span>
-                {isAdmin && (delConfirm===note.id ? (
-                  <div style={{ display:'flex',gap:5,flexShrink:0 }}>
-                    <button onClick={()=>handleDelete(note.id)} style={{ padding:'3px 8px',borderRadius:5,border:'none',cursor:'pointer',background:'var(--red)',color:'#fff',fontSize:10,fontWeight:600 }}>Delete</button>
-                    <button onClick={()=>setDelConfirm(null)} style={{ padding:'3px 8px',borderRadius:5,border:'1px solid var(--line2)',cursor:'pointer',background:'transparent',color:'var(--text2)',fontSize:10 }}>Cancel</button>
-                  </div>
-                ) : (
-                  <button onClick={()=>setDelConfirm(note.id)} className="icon-btn" style={{ width:24,height:24,borderRadius:6,flexShrink:0,border:'none' }}><Trash2 size={11} color="var(--text3)"/></button>
-                ))}
-              </div>
-              {note.content && <p style={{ fontSize:12,color:'var(--text2)',lineHeight:1.6,whiteSpace:'pre-wrap' }}>{note.content}</p>}
-              {note.attachments?.length > 0 && (
-                <div style={{ display:'flex',flexWrap:'wrap',gap:5,marginTop:8 }}>
-                  {note.attachments.map(att => (
-                    <button key={att.id} className="attach-pill" onClick={()=>openBlob(att)}>
-                      <FileText size={11} color={att.type==='application/pdf'?'var(--red)':'var(--blue)'}/>
-                      <span style={{ maxWidth:140,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>{att.name}</span>
-                      <ExternalLink size={9} style={{ flexShrink:0 }}/>
-                    </button>
-                  ))}
-                </div>
-              )}
-              <p style={{ fontSize:10,color:'var(--text3)',marginTop:8 }}>{note.timestamp}</p>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ padding:'10px 18px',borderTop:'1px solid var(--line2)',flexShrink:0 }}>
-          <p style={{ fontSize:10,color:'var(--text3)',textAlign:'center' }}>{isAdmin?'🔓 Admin mode · auto-saved locally':'🔒 Read-only — unlock to add notes'}</p>
-        </div>
-      </div>
-    </>
-  );
-};
-
-// ─── MCQ Solver ───────────────────────────────────────────────────────────────
 const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqState, updateMcqState }) => {
   const N = MCQ_COUNT;
   const empty = () => Array(N).fill('');
@@ -753,7 +842,6 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqS
   const msKey       = year && season ? `${subjectCode}_${season}${year.slice(2)}_1_${variant}` : null;
   const hardcodedKey = msKey ? (MCQ_ANSWER_KEYS[msKey] || null) : null;
 
-  // Controlled purely via parent's props
   const mine        = mcqState.choices || empty();
   const keyRevealed = mcqState.revealed || false;
 
@@ -768,7 +856,7 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqS
   const pct      = keyRevealed && keyCount > 0 && answered > 0 ? Math.round(correct / keyCount * 100) : null;
 
   const toggle = useCallback((qi, opt) => {
-    if (keyRevealed) return; // lock bubbles once key is shown
+    if (keyRevealed) return;
     const newChoices = [...mine];
     newChoices[qi] = mine[qi] === opt ? '' : opt;
     updateMcqState({ choices: newChoices });
@@ -780,9 +868,7 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqS
   const getBubbleCls = (qi, opt) => {
     const userPicked = mine[qi] === opt;
     const isCorrectAnswer = key[qi] === opt;
-    if (!keyRevealed) {
-      return 'mcq-bubble' + (userPicked ? ' sel-mine' : '');
-    }
+    if (!keyRevealed) return 'mcq-bubble' + (userPicked ? ' sel-mine' : '');
     if (userPicked && isCorrectAnswer) return 'mcq-bubble correct';
     if (userPicked && !isCorrectAnswer) return 'mcq-bubble wrong';
     if (!userPicked && isCorrectAnswer && mine[qi]) return 'mcq-bubble sel-key';
@@ -791,65 +877,61 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqS
 
   return (
     <div className="mcq-sidebar">
-      {/* ── Header ── */}
-      <div style={{ padding:'14px 16px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
-        <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8 }}>
-          <div style={{ display:'flex',alignItems:'center',gap:9 }}>
-            <div style={{ width:30,height:30,borderRadius:8,background:'var(--orange-d)',display:'flex',alignItems:'center',justifyContent:'center' }}>
-              <ListChecks size={14} color="var(--orange)"/>
+      <div style={{ padding:'20px 24px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
+        <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16 }}>
+          <div style={{ display:'flex',alignItems:'center',gap:12 }}>
+            <div style={{ width:36,height:36,borderRadius:10,background:'var(--surface2)',display:'flex',alignItems:'center',justifyContent:'center' }}>
+              <ListChecks size={18} color="var(--text)"/>
             </div>
             <div>
-              <div style={{ fontSize:13,fontWeight:700,color:'var(--text)' }}>MCQ Solver</div>
-              <div style={{ fontSize:10,color:'var(--text3)' }}>{subjName} · {paperLabel}</div>
+              <div style={{ fontSize:16,fontWeight:700,color:'var(--text)' }}>MCQ Solver</div>
+              <div style={{ fontSize:12,color:'var(--text3)' }}>{subjName} · {paperLabel}</div>
             </div>
           </div>
-          <button className="icon-btn" onClick={onClose} style={{ width:28,height:28,borderRadius:'50%',flexShrink:0 }}><X size={13}/></button>
+          <button className="icon-btn" onClick={onClose}><X size={16}/></button>
         </div>
 
-        {/* Action row */}
-        <div style={{ display:'flex',gap:6 }}>
+        <div style={{ display:'flex',gap:8 }}>
           {hardcodedKey && (
             <button onClick={toggleReveal}
-              style={{ flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:'6px 10px',borderRadius:7,
-                border:`1px solid ${keyRevealed?'var(--line2)':'var(--orange)'}`,cursor:'pointer',transition:'all 0.2s',
-                background: keyRevealed ? 'var(--surface2)' : 'var(--orange-d)',
-                color:      keyRevealed ? 'var(--text2)'   : 'var(--orange)',
-                fontSize:11,fontWeight:600 }}>
-              {keyRevealed ? <><EyeOff size={11}/> Hide Key</> : <><Eye size={11}/> Answer Key</>}
+              style={{ flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:8,padding:'10px',borderRadius:10,
+                border:`1px solid ${keyRevealed?'var(--line2)':'var(--text)'}`,cursor:'pointer',transition:'all 0.2s',
+                background: keyRevealed ? 'var(--surface2)' : 'var(--text)',
+                color:      keyRevealed ? 'var(--text2)'   : 'var(--bg)',
+                fontSize:13,fontWeight:600 }}>
+              {keyRevealed ? <><EyeOff size={14}/> Hide Key</> : <><Eye size={14}/> Check Answers</>}
             </button>
           )}
           <button onClick={clearAll}
-            style={{ padding:'6px 10px',borderRadius:7,border:'1px solid var(--line2)',cursor:'pointer',background:'var(--surface2)',color:'var(--text2)',fontSize:11,transition:'all 0.2s' }}>
+            style={{ padding:'10px 16px',borderRadius:10,border:'1px solid var(--line2)',cursor:'pointer',background:'var(--surface2)',color:'var(--text2)',fontSize:13,fontWeight:600,transition:'all 0.2s' }}>
             Reset
           </button>
         </div>
 
-        {/* Score bar */}
         {keyRevealed && keyCount > 0 && (
-          <div style={{ display:'flex',alignItems:'center',gap:10,padding:'7px 10px',borderRadius:9,background:'var(--surface2)',border:'1px solid var(--line2)',marginTop:8 }}>
-            <span style={{ fontSize:20,fontWeight:700,color:pct>=70?'var(--green)':pct>=50?'var(--orange)':'var(--red)' }}>{correct}</span>
-            <span style={{ fontSize:12,color:'var(--text2)' }}>/ {keyCount}</span>
-            <div style={{ flex:1,height:5,borderRadius:3,background:'var(--surface3)',overflow:'hidden' }}>
-              <div style={{ height:'100%',width:`${pct??0}%`,background:pct>=70?'var(--green)':pct>=50?'var(--orange)':'var(--red)',borderRadius:3,transition:'width 0.5s ease' }}/>
+          <div style={{ display:'flex',alignItems:'center',gap:12,padding:'12px 16px',borderRadius:12,background:'var(--surface2)',border:'1px solid var(--line2)',marginTop:12 }}>
+            <span style={{ fontSize:24,fontWeight:800,color:pct>=70?'var(--green)':pct>=50?'var(--amber)':'var(--red)' }}>{correct}</span>
+            <span style={{ fontSize:14,color:'var(--text2)',fontWeight:500 }}>/ {keyCount}</span>
+            <div style={{ flex:1,height:6,borderRadius:4,background:'var(--surface3)',overflow:'hidden' }}>
+              <div style={{ height:'100%',width:`${pct??0}%`,background:pct>=70?'var(--green)':pct>=50?'var(--amber)':'var(--red)',borderRadius:4,transition:'width 0.5s ease' }}/>
             </div>
-            <span style={{ fontSize:12,fontWeight:600,color:'var(--text2)' }}>{pct??'—'}%</span>
+            <span style={{ fontSize:14,fontWeight:700,color:'var(--text2)' }}>{pct??'—'}%</span>
           </div>
         )}
       </div>
 
-      {/* ── Question grid ── */}
-      <div className="no-sb" style={{ flex:1,overflowY:'auto',padding:'4px 14px 10px' }}>
-        <div style={{ display:'grid',gridTemplateColumns:'24px 1fr',gap:6,padding:'5px 0',borderBottom:'2px solid var(--line2)',marginBottom:2 }}>
-          <span style={{ fontSize:9,color:'var(--text3)',textAlign:'center' }}>Q</span>
-          <span style={{ fontSize:9,letterSpacing:'0.08em',color:keyRevealed?'var(--orange)':'var(--accent)',textAlign:'center' }}>
+      <div className="custom-sb" style={{ flex:1,overflowY:'auto',padding:'8px 24px 24px' }}>
+        <div style={{ display:'grid',gridTemplateColumns:'30px 1fr',gap:12,padding:'12px 0',borderBottom:'2px solid var(--line2)',marginBottom:8 }}>
+          <span style={{ fontSize:11,fontWeight:600,color:'var(--text3)',textAlign:'center' }}>Q</span>
+          <span style={{ fontSize:11,fontWeight:600,letterSpacing:'0.1em',color:keyRevealed?'var(--text)':'var(--text2)',textAlign:'center' }}>
             {keyRevealed ? 'KEY REVEALED' : 'MY ANSWERS'}
           </span>
         </div>
 
         {Array.from({ length: N }, (_, qi) => (
-          <div key={qi} style={{ display:'grid',gridTemplateColumns:'24px 1fr',gap:6,alignItems:'center',padding:'2px 0',borderBottom:'1px solid var(--line)',minHeight:36 }}>
-            <span style={{ fontSize:10,color:'var(--text3)',fontWeight:500,textAlign:'center' }}>{qi+1}</span>
-            <div style={{ display:'flex',gap:3,justifyContent:'center' }}>
+          <div key={qi} style={{ display:'grid',gridTemplateColumns:'30px 1fr',gap:12,alignItems:'center',padding:'6px 0',borderBottom:'1px solid var(--line)',minHeight:44 }}>
+            <span style={{ fontSize:13,color:'var(--text3)',fontWeight:600,textAlign:'center' }}>{qi+1}</span>
+            <div style={{ display:'flex',gap:6,justifyContent:'center' }}>
               {MCQ_OPTS.map(opt => {
                 const cls = getBubbleCls(qi, opt);
                 const isSel = mine[qi]===opt || (keyRevealed && mine[qi] && key[qi]===opt);
@@ -864,85 +946,11 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqS
           </div>
         ))}
       </div>
-
-      {/* ── Footer ── */}
-      <div style={{ padding:'8px 14px',borderTop:'1px solid var(--line2)',flexShrink:0 }}>
-        <p style={{ fontSize:10,color:'var(--text3)',textAlign:'center' }}>
-          {keyRevealed
-            ? <><span style={{color:'var(--green)'}}>■</span> Correct &nbsp;·&nbsp; <span style={{color:'var(--red)'}}>■</span> Wrong &nbsp;·&nbsp; <span style={{color:'var(--orange)'}}>■</span> Answer</>
-            : <>{hardcodedKey ? <>Click <span style={{color:'var(--orange)',fontWeight:600}}>Answer Key</span> to check</> : 'No key available for this paper'}</>
-          }
-        </p>
-      </div>
     </div>
   );
 };
 
-// ─── StartupScreen ────────────────────────────────────────────────────────────
-const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }) => (
-  <div className="grid-bg" style={{ minHeight:'100vh',background:'var(--bg)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'40px 20px',position:'relative',overflow:'hidden' }}>
-    <div style={{ position:'absolute',top:'-15%',left:'-10%',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle,rgba(79,142,247,0.07) 0%,transparent 70%)',pointerEvents:'none' }}/>
-    <div style={{ position:'absolute',bottom:'-15%',right:'-10%',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle,rgba(129,140,248,0.06) 0%,transparent 70%)',pointerEvents:'none' }}/>
-    <div className="deco-line" style={{ top:'15%',left:'20%' }}/>
-    <div className="deco-line" style={{ bottom:'15%',right:'20%' }}/>
-    <button className="icon-btn" onClick={toggleTheme} style={{ position:'absolute',top:24,right:24,zIndex:10 }}>{dark?<Sun size={15}/>:<Moon size={15}/>}</button>
-
-    <div className="anim-0" style={{ display:'flex',alignItems:'center',gap:8,marginBottom:56 }}>
-      <div style={{ width:1,height:20,background:'var(--accent)' }}/>
-      <span style={{ fontSize:10,letterSpacing:'0.2em',textTransform:'uppercase',color:'var(--text2)' }}>Study Tools Hub — A Level</span>
-      <div style={{ width:1,height:20,background:'var(--accent)' }}/>
-    </div>
-
-    <div className="anim-1" style={{ textAlign:'center',marginBottom:64 }}>
-      <h1 className="shimmer-text" style={{ fontFamily:'Roboto',fontWeight:700,fontSize:'clamp(64px,10vw,120px)',lineHeight:0.9,letterSpacing:'-0.02em',marginBottom:20 }}>The Nexus</h1>
-      <p style={{ color:'var(--text2)',fontSize:16,fontWeight:300,letterSpacing:'0.06em' }}>Connect &nbsp;·&nbsp; Compile &nbsp;·&nbsp; Conquer</p>
-    </div>
-
-    {/* Expanded Grid for 3 Tools */}
-    <div className="anim-2" style={{ display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:20,width:'100%',maxWidth:960 }}>
-      
-      {/* 1. PastPaper Explorer */}
-      <button className="tool-card" onClick={onSelectExplorer}>
-        <div className="cg-a"/>
-        <div className="icon-badge" style={{ background:'var(--accent-d)',borderColor:'rgba(79,142,247,0.25)' }}><Layers size={24} color="var(--accent)"/></div>
-        <h2 style={{ fontSize:22,fontWeight:700,color:'var(--text)',marginBottom:10 }}>PastPaper Explorer</h2>
-        <p style={{ color:'var(--text2)',fontSize:13,lineHeight:1.6,marginBottom:20 }}>Access, view, and navigate A-Level past papers with a built-in fast PDF engine.</p>
-        <div style={{ display:'flex',flexWrap:'wrap',gap:6 }}>{['Math','Physics','CS','Chemistry'].map(t=><span className="tag" key={t}>{t}</span>)}</div>
-      </button>
-
-      {/* 2. Topical Questions */}
-      <button className="tool-card green" onClick={onSelectTopicals}>
-        <div className="cg-c"/>
-        <div className="icon-badge" style={{ background:'var(--green-d)',borderColor:'rgba(52,211,153,0.25)' }}><Compass size={24} color="var(--green)"/></div>
-        <h2 style={{ fontSize:22,fontWeight:700,color:'var(--text)',marginBottom:10 }}>Topical Questions</h2>
-        <p style={{ color:'var(--text2)',fontSize:13,lineHeight:1.6,marginBottom:20 }}>Master specific syllabus topics. Questions automatically sorted by Paper and Subject.</p>
-        <div style={{ display:'flex',flexWrap:'wrap',gap:6 }}>{['Paper 1','Paper 2','Paper 3','Paper 4'].map(t=><span className="tag" key={t}>{t}</span>)}</div>
-      </button>
-
-      {/* 3. Programming IDE */}
-      <button className="tool-card blue" onClick={()=>window.open('https://programming-ide.netlify.app/','_blank')}>
-        <div className="cg-b"/>
-        <div className="icon-badge" style={{ background:'var(--blue-d)',borderColor:'rgba(129,140,248,0.25)' }}><Terminal size={24} color="var(--blue)"/></div>
-        <h2 style={{ fontSize:22,fontWeight:700,color:'var(--text)',marginBottom:10 }}>Programming IDE</h2>
-        <p style={{ color:'var(--text2)',fontSize:13,lineHeight:1.6,marginBottom:20 }}>Write, compile, and run code directly in the browser. Tailored for CS 9618.</p>
-        <div style={{ display:'flex',flexWrap:'wrap',gap:6 }}>{['Python','C++','Java','Browser'].map(t=><span className="tag" key={t}>{t}</span>)}</div>
-      </button>
-      
-    </div>
-
-    <div className="anim-3" style={{ marginTop:56,display:'flex',alignItems:'center',gap:16,flexWrap:'wrap',justifyContent:'center' }}>
-      <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer"
-        className="icon-btn" style={{ width:'auto',height:'auto',padding:'7px 14px',gap:7,display:'flex',alignItems:'center',borderRadius:8,textDecoration:'none',fontSize:11 }}>
-        <Github size={13} color="var(--text2)"/>
-        <span style={{ fontSize:10,color:'var(--text2)',letterSpacing:'0.06em' }}>View on GitHub</span>
-      </a>
-      <span style={{ color:'var(--line2)',fontSize:18 }}>·</span>
-      <span style={{ fontSize:10,color:'var(--text3)',letterSpacing:'0.06em' }}>Deployed on Cloudflare</span>
-    </div>
-  </div>
-);
-
-// ─── App ──────────────────────────────────────────────────────────────────────
+// ─── App (Main Controller) ────────────────────────────────────────────────────
 export default function App() {
   const [dark, setDark] = useState(()=>localStorage.getItem('nexusTheme')!=='light');
   useEffect(()=>{ localStorage.setItem('nexusTheme',dark?'dark':'light'); },[dark]);
@@ -952,17 +960,15 @@ export default function App() {
   const [showContact, setShowContact]   = useState(false);
   const [isViewing,   setIsViewing]     = useState(false);
   const [showNav,     setShowNav]       = useState(true);
-  const [showNotes,   setShowNotes]     = useState(false);
+  const [showLibrary, setShowLibrary]   = useState(false);
   const [showMCQ,     setShowMCQ]       = useState(false);
   const [showTopicals,setShowTopicals]  = useState(false);
   const [isAdmin,     setIsAdmin]       = useState(false);
   const [showPwModal, setShowPwModal]   = useState(false);
 
-  // Topical Database State
   const [topicalDb, setTopicalDb] = useState(null);
+  const [libraryDb, setLibraryDb] = useState([]);
   const [targetPage, setTargetPage] = useState(1);
-
-  // MCQ Session State 
   const [mcqSessionData, setMcqSessionData] = useState({});
 
   const [subject, setSubject] = useState('');
@@ -973,15 +979,12 @@ export default function App() {
   const [type,    setType]    = useState('qp');
 
   const isComplete    = subject && year && season && paper && variant;
-  const canShowNotes  = !!subject && !!paper;
+  const canShowLibrary  = true; // Library can be accessed globally now
   const canShowMCQ    = MCQ_SUBJECTS.includes(subject) && paper === MCQ_PAPER;
 
   const paperKey = `${subject}_${season}${year ? year.slice(2) : ''}_${paper}_${variant}`;
   
-  const currentMcqState = mcqSessionData[paperKey] || { 
-    choices: Array(MCQ_COUNT).fill(''), 
-    revealed: false 
-  };
+  const currentMcqState = mcqSessionData[paperKey] || { choices: Array(MCQ_COUNT).fill(''), revealed: false };
 
   const updateMcqState = useCallback((updates) => {
     setMcqSessionData(prev => ({
@@ -990,12 +993,16 @@ export default function App() {
     }));
   }, [paperKey]);
 
-  // Load the Topical JSON Database
   useEffect(() => {
     fetch('/topicals_db.json')
       .then(res => res.json())
       .then(data => setTopicalDb(data))
       .catch(err => console.log('No topical DB generated yet.'));
+
+    fetch('/library_db.json')
+      .then(res => res.json())
+      .then(data => setLibraryDb(data))
+      .catch(err => console.log('No library DB generated yet.'));
   }, []);
 
   const activeFileUrl = useMemo(() => {
@@ -1006,30 +1013,39 @@ export default function App() {
   const viewerSrc = useMemo(() => {
     if (!isComplete) return '';
     let url = `/pdf-viewer/web/viewer.html?file=${encodeURIComponent(activeFileUrl)}`;
-    if (targetPage > 1) {
-      url += `#page=${targetPage}`;
-    }
+    if (targetPage > 1) { url += `#page=${targetPage}`; }
     return url;
   }, [activeFileUrl, targetPage, isComplete]);
 
-  useEffect(()=>{ document.title="The Nexus | Study Tools"; },[]);
+  useEffect(()=>{ document.title="The Nexus | Workspace"; },[]);
   
-  // Close sidebars when manually switching papers
+  // FIX: This ensures Library and MCQ sidebars close when parameters change,
+  // but DO NOT forcefully close Topicals. This allows Topicals to snap open smoothly.
   useEffect(()=>{ 
-    setShowNotes(false); 
+    setShowLibrary(false); 
     setShowMCQ(false); 
-    setShowTopicals(false);
-  }, [subject,paper,variant,season,year,type]);
+  }, [paper,variant,season,year,type]);
 
   const handleLoad = () => { if (!isComplete) return; setTargetPage(1); setIsViewing(true); setShowNav(false); };
   const handleHome = () => { setIsViewing(false); setShowNav(true); };
 
-  const handleSelectTopicals = () => {
+  const handleSelectExplorer = (subjCode) => {
+    if (subjCode) setSubject(subjCode);
+    setShowStartup(false);
+  };
+
+  const handleSelectTopicals = (subjCode) => {
+    if (subjCode) setSubject(subjCode);
     setShowStartup(false);
     setShowTopicals(true);
   };
 
-  // Handler triggered from Topical Sidebar
+  const handleSelectLibrary = (subjCode) => {
+    setSubject(subjCode || ''); // Open root if no specific subject provided
+    setShowStartup(false);
+    setShowLibrary(true);
+  };
+
   const handleTopicalSelect = useCallback((paperId, pageNum) => {
     const parts = paperId.replace('.pdf', '').split('_');
     if (parts.length >= 4) {
@@ -1041,109 +1057,93 @@ export default function App() {
       setVariant(parts[3][1]); 
       setTargetPage(pageNum);
       setIsViewing(true);
-      if (window.innerWidth <= 640) setShowTopicals(false);
+      setShowTopicals(false);
     }
   }, []);
 
   if (showStartup) return (
-    <><GlobalStyles dark={dark}/><StartupScreen onSelectExplorer={()=>setShowStartup(false)} onSelectTopicals={handleSelectTopicals} toggleTheme={toggleTheme} dark={dark}/></>
+    <><GlobalStyles dark={dark}/><StartupScreen onSelectExplorer={handleSelectExplorer} onSelectTopicals={handleSelectTopicals} onSelectLibrary={handleSelectLibrary} toggleTheme={toggleTheme} dark={dark}/></>
   );
 
   return (
     <>
       <GlobalStyles dark={dark}/>
       <ContactModal isOpen={showContact} onClose={()=>setShowContact(false)}/>
-      <PasswordModal isOpen={showPwModal} onClose={()=>setShowPwModal(false)} onSuccess={()=>setIsAdmin(true)}/>
 
       <div style={{ display:'flex',flexDirection:'column',height:'100vh',background:'var(--bg)',overflow:'hidden' }}>
 
-        {/* Nav */}
-        <div style={{ display:'grid',gridTemplateRows:showNav?'1fr':'0fr',transition:'grid-template-rows 0.3s ease',flexShrink:0,zIndex:30 }}>
+        {/* Dynamic Minimal Navbar (TRUE HOVER IMPLEMENTATION) */}
+        <div 
+          style={{ display:'grid',gridTemplateRows:showNav?'1fr':'0fr',transition:'grid-template-rows 0.3s cubic-bezier(0.16,1,0.3,1)',flexShrink:0,zIndex:30 }}
+          onMouseLeave={() => { if(isViewing) setShowNav(false); }}
+        >
           <div style={{ overflow:'hidden',minHeight:0 }}>
-            <header className="nav-bar" style={{ padding:'12px 20px' }}>
-              <div className="nav-inner" style={{ maxWidth:1600,margin:'0 auto',display:'flex',flexWrap:'wrap',alignItems:'center',gap:14 }}>
+            <header className="nav-bar" style={{ padding:'16px 24px', borderBottom:'1px solid var(--line2)' }}>
+              <div style={{ maxWidth:1800,margin:'0 auto',display:'flex',flexWrap:'wrap',alignItems:'center',gap:20 }}>
 
-                {/* Brand */}
-                <div style={{ display:'flex',alignItems:'center',gap:10,marginRight:4 }}>
-                  <button className="icon-btn" onClick={()=>{setShowStartup(true);handleHome();setShowNotes(false);setShowTopicals(false);}} title="Back" style={{ flexShrink:0 }}><ArrowLeft size={14}/></button>
-                  <div style={{ display:'flex',alignItems:'center',gap:8,cursor:'pointer' }} onClick={handleHome}>
-                    <div className="logo-mark"><Layers size={16} color="#fff" strokeWidth={2.2}/></div>
+                <div style={{ display:'flex',alignItems:'center',gap:16,marginRight:8 }}>
+                  <button className="icon-btn" onClick={()=>{setShowStartup(true);handleHome();setShowLibrary(false);setShowTopicals(false);}} title="Back to Hub" style={{ flexShrink:0 }}><ArrowLeft size={16}/></button>
+                  <div style={{ display:'flex',alignItems:'center',gap:10,cursor:'pointer' }} onClick={handleHome}>
+                    <div style={{ width:32, height:32, borderRadius:8, background:'var(--text)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <Layers size={16} color="var(--bg)" strokeWidth={2.5}/>
+                    </div>
                     <div>
-                      <div style={{ fontSize:13,fontWeight:600,color:'var(--text)',lineHeight:1.2 }}>PastPaper Explorer</div>
-                      <div className="nav-brand-text" style={{ fontSize:9,color:'var(--text3)',letterSpacing:'0.1em' }}>STUDY TOOLS</div>
+                      <div style={{ fontSize:15,fontWeight:700,color:'var(--text)',lineHeight:1.1 }}>The Nexus</div>
+                      <div style={{ fontSize:10,fontWeight:600,color:'var(--text3)',letterSpacing:'0.05em' }}>WORKSPACE</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="nav-divider" style={{ width:1,height:32,background:'var(--line2)',flexShrink:0 }}/>
+                <div style={{ width:1,height:32,background:'var(--line2)',flexShrink:0 }} className="nav-divider"/>
 
-                {/* Filters */}
-                <div className="nav-filters no-sb" style={{ display:'flex',alignItems:'flex-end',gap:12,flex:1,overflowX:'auto',paddingBottom:2 }}>
-                  <NexusSelect label="Subject" value={subject} onChange={v=>{setSubject(v);setShowNotes(false);setTargetPage(1);}} options={SUBJECTS.map(s=>({value:s.code,label:`${s.code} · ${s.name}`}))}/>
+                <div className="custom-sb nav-filters" style={{ display:'flex',alignItems:'flex-end',gap:16,flex:1,overflowX:'auto',paddingBottom:4 }}>
+                  <NexusSelect label="Subject" value={subject} onChange={v=>{setSubject(v);setShowLibrary(false);setTargetPage(1);}} options={SUBJECTS.map(s=>({value:s.code,label:`${s.code} · ${s.name}`}))}/>
                   <NexusSelect label="Year"    value={year}    onChange={v=>{setYear(v);setTargetPage(1);}}    options={YEARS}/>
                   <NexusSelect label="Season"  value={season}  onChange={v=>{setSeason(v);setTargetPage(1);}}  options={SEASONS.map(s=>({value:s.code,label:s.name}))}/>
-                  <NexusSelect label="Paper"   value={paper}   onChange={v=>{setPaper(v);setShowNotes(false);setTargetPage(1);}} options={PAPERS}/>
+                  <NexusSelect label="Paper"   value={paper}   onChange={v=>{setPaper(v);setShowLibrary(false);setTargetPage(1);}} options={PAPERS}/>
                   <NexusSelect label="Variant" value={variant} onChange={v=>{setVariant(v);setTargetPage(1);}} options={VARIANTS}/>
 
-                  {/* QP / MS */}
-                  <div className="seg-wrap" style={{ display:'flex',flexDirection:'column',gap:5 }}>
-                    <span style={{ fontSize:9,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:2 }}>Type</span>
-                    <div style={{ display:'flex',background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:8,padding:3,gap:2 }}>
+                  <div style={{ display:'flex',flexDirection:'column',gap:6 }}>
+                    <span style={{ fontSize:10,fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:4 }}>Type</span>
+                    <div style={{ display:'flex',background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:8,padding:4,gap:4 }}>
                       <button className={`seg-btn ${type==='qp'?'a-accent':'inactive'}`} onClick={()=>{setType('qp');setTargetPage(1);}}>QP</button>
-                      <button className={`seg-btn ${type==='ms'?'a-blue':'inactive'}`}   onClick={()=>{setType('ms');setTargetPage(1);}}>MS</button>
+                      <button className={`seg-btn ${type==='ms'?'a-accent':'inactive'}`} onClick={()=>{setType('ms');setTargetPage(1);}}>MS</button>
                     </div>
                   </div>
 
-                  {/* Topicals - Always available to prompt Subject Selection */}
-                  <div style={{ display:'flex',flexDirection:'column',gap:5 }} className="anim-fade">
-                    <span style={{ fontSize:9,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:2 }}>Topics</span>
-                    <button onClick={()=>{setShowTopicals(s=>!s); setShowNotes(false);}}
-                      style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showTopicals?'var(--green)':'var(--green-d)',color:showTopicals?'#fff':'var(--green)',fontSize:11,fontWeight:600 }}>
-                      <Compass size={13}/> {showTopicals?'Close':'Topicals'}
-                    </button>
+                  <div style={{ display:'flex',flexDirection:'column',gap:6 }}>
+                    <span style={{ fontSize:10,fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:4 }}>Tools</span>
+                    <div style={{ display:'flex',gap:8 }}>
+                      <button onClick={()=>{setShowTopicals(s=>!s); setShowLibrary(false); setShowMCQ(false);}}
+                        style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showTopicals?'var(--text)':'var(--surface2)',color:showTopicals?'var(--bg)':'var(--text)',fontSize:12,fontWeight:600 }}>
+                        <Compass size={14}/> Topicals
+                      </button>
+
+                      {canShowLibrary && (
+                        <button onClick={()=>{setShowLibrary(s=>!s); setShowTopicals(false); setShowMCQ(false);}}
+                          style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showLibrary?'var(--text)':'var(--surface2)',color:showLibrary?'var(--bg)':'var(--text)',fontSize:12,fontWeight:600 }}>
+                          <Library size={14}/> Library
+                        </button>
+                      )}
+
+                      {canShowMCQ && (
+                        <button onClick={()=>{setShowMCQ(s=>!s); setShowLibrary(false); setShowTopicals(false);}}
+                          style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showMCQ?'var(--text)':'var(--surface2)',color:showMCQ?'var(--bg)':'var(--text)',fontSize:12,fontWeight:600 }}>
+                          <ListChecks size={14}/> Solver
+                        </button>
+                      )}
+                    </div>
                   </div>
-
-                  {/* Notes */}
-                  {canShowNotes && (
-                    <div style={{ display:'flex',flexDirection:'column',gap:5 }} className="anim-fade">
-                      <span style={{ fontSize:9,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:2 }}>Notes</span>
-                      <button onClick={()=>{setShowNotes(s=>!s); setShowTopicals(false);}}
-                        style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showNotes?'var(--accent)':'var(--accent-d)',color:showNotes?'#fff':'var(--accent)',fontSize:11,fontWeight:600 }}>
-                        <NotebookPen size={13}/> {showNotes?'Close':'Notes'}
-                      </button>
-                    </div>
-                  )}
-
-                  {/* MCQ Solver */}
-                  {canShowMCQ && (
-                    <div style={{ display:'flex',flexDirection:'column',gap:5 }} className="anim-fade">
-                      <span style={{ fontSize:9,letterSpacing:'0.12em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:2 }}>MCQ</span>
-                      <button onClick={()=>setShowMCQ(s => !s)}
-                        style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 12px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showMCQ?'var(--orange)':'var(--orange-d)',color:showMCQ?'#fff':'var(--orange)',fontSize:11,fontWeight:600 }}>
-                        <ListChecks size={13}/> {showMCQ?'Close':'Solver'}
-                      </button>
-                    </div>
-                  )}
-
-                  {/* CS IDE */}
-                  {subject==='9618' && (paper==='2'||paper==='4') && (
-                    <button onClick={()=>window.open('https://programming-ide.netlify.app/','_blank')} className="anim-fade"
-                      style={{ display:'flex',alignItems:'center',gap:6,padding:'7px 14px',borderRadius:8,border:'1px solid var(--blue-d)',background:'var(--blue-d)',color:'var(--blue)',fontSize:11,fontWeight:600,cursor:'pointer',transition:'all 0.2s' }}>
-                      <Terminal size={13}/> IDE
-                    </button>
-                  )}
                 </div>
 
-                {/* Right */}
-                <div className="nav-actions" style={{ display:'flex',alignItems:'center',gap:8,marginLeft:'auto',flexShrink:0 }}>
+                <div className="nav-actions" style={{ display:'flex',alignItems:'center',gap:12,marginLeft:'auto',flexShrink:0 }}>
                   <button className={`btn-load ${isComplete?'ready':'disabled'}`} onClick={handleLoad} disabled={!isComplete}>
-                    <Play size={11} fill="currentColor"/> {isViewing?'Reload':'Load Paper'}
+                    <Play size={14} fill="currentColor"/> {isViewing?'Reload':'Load Paper'}
                   </button>
-                  {isViewing && <button className="icon-btn" onClick={()=>setShowNav(false)} title="Collapse"><ChevronUp size={13}/></button>}
-                  <div style={{ width:1,height:22,background:'var(--line2)' }}/>
-                  <button className="icon-btn" onClick={toggleTheme}>{dark?<Sun size={13}/>:<Moon size={13}/>}</button>
-                  <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer" className="icon-btn" style={{ textDecoration:'none' }}><Github size={13}/></a>
-                  <button className="icon-btn" onClick={()=>setShowContact(true)}><Mail size={13}/></button>
+                  {isViewing && <button className="icon-btn" onClick={()=>setShowNav(false)} title="Collapse Navigation"><ChevronUp size={16}/></button>}
+                  <div style={{ width:1,height:24,background:'var(--line2)' }}/>
+                  <button className="icon-btn" onClick={toggleTheme}>{dark?<Sun size={16}/>:<Moon size={16}/>}</button>
+                  <button className="icon-btn" onClick={()=>setShowContact(true)}><Mail size={16}/></button>
                 </div>
 
               </div>
@@ -1151,64 +1151,71 @@ export default function App() {
           </div>
         </div>
 
-        {/* Pull tab */}
+        {/* Floating Pill Pull Tab */}
         {isViewing && !showNav && (
-          <button className="pull-tab" onClick={()=>setShowNav(true)} onMouseEnter={()=>setShowNav(true)}>
-            <ChevronDown size={11}/> show navigation <ChevronDown size={11}/>
-          </button>
+          <div style={{ position:'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', zIndex: 40 }}>
+            <button 
+              className="pull-tab-pill" 
+              onClick={()=>setShowNav(true)} 
+              onMouseEnter={()=>setShowNav(true)}
+            >
+              <ChevronDown size={18} style={{ color: 'var(--text)' }}/>
+            </button>
+          </div>
         )}
 
-        {/* Main */}
+        {/* Main Workspace Area */}
         <main style={{ flex:1,display:'flex',flexDirection:'column',overflow:'hidden',position:'relative' }}>
-          {isViewing && showNav && <div style={{ position:'absolute',inset:0,zIndex:20,cursor:'pointer' }} onMouseEnter={()=>setShowNav(false)} onClick={()=>setShowNav(false)}/>}
-
-          {showNotes && canShowNotes && (
-            <NotesSidebar subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} onClose={()=>setShowNotes(false)} isAdmin={isAdmin} onRequestAuth={()=>setShowPwModal(true)}/>
+          
+          {/* Transparent click-to-close handler. */}
+          {isViewing && showNav && (
+            <div 
+              style={{ position:'absolute',inset:0,zIndex:20,cursor:'default' }} 
+              onClick={()=>setShowNav(false)}
+            />
           )}
 
-          {/* Horizontal Layout Wrapper for Inline Topicals & PDF Content */}
           <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
             
-            {/* Topicals Sidebar Inline Left */}
-            {showTopicals && (
-              <TopicalsSidebar subjectCode={subject} topicalDb={topicalDb} onClose={()=>setShowTopicals(false)} onSelectQuestion={handleTopicalSelect}/>
-            )}
-
-            {/* Content Area */}
-            {!isViewing ? (
-              <div className="grid-bg anim-fade" style={{ flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:40,textAlign:'center',background:'var(--bg)' }}>
-                <div style={{ position:'absolute',top:'20%',left:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle,rgba(79,142,247,0.04) 0%,transparent 70%)',pointerEvents:'none' }}/>
-                <div style={{ position:'absolute',bottom:'20%',right:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle,rgba(129,140,248,0.04) 0%,transparent 70%)',pointerEvents:'none' }}/>
-                <div className="empty-icon-ring" style={{ marginBottom:32,zIndex:1 }}><BookOpen size={38} color="var(--accent)" strokeWidth={1.5}/></div>
-                <h2 style={{ fontSize:36,fontWeight:700,color:'var(--text)',marginBottom:14,zIndex:1 }}>Ready to study?</h2>
-                <p style={{ color:'var(--text2)',fontSize:15,lineHeight:1.7,maxWidth:420,marginBottom:32,fontWeight:300,zIndex:1 }}>
-                  Configure your paper above — subject, year, season, paper, and variant — then hit&nbsp;
-                  <span style={{ fontSize:12,color:'var(--accent)',background:'var(--accent-d)',padding:'2px 8px',borderRadius:5,whiteSpace:'nowrap' }}>Load Paper</span>
-                  &nbsp;to open the viewer.
-                </p>
-                <div style={{ display:'flex',gap:10,flexWrap:'wrap',justifyContent:'center',zIndex:1 }}>
-                  {['Fast PDF Engine','Full-Screen Viewer','16 Years of Papers','Topical Mode','MCQ Solver','File Attachments'].map(t=>(
-                    <span className="tag" key={t} style={{ fontSize:11 }}><span style={{ color:'var(--accent)',fontSize:8 }}>✦</span> {t}</span>
-                  ))}
-                </div>
-              </div>
+            {showTopicals ? (
+              <TopicalsPage subjectCode={subject} topicalDb={topicalDb} onClose={()=>setShowTopicals(false)} onSelectQuestion={handleTopicalSelect}/>
             ) : (
-              <div className="anim-fade" style={{ flex:1,display:'flex',overflow:'hidden',position:'relative' }}>
-                {/* PDF Container */}
-                <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-                  <iframe src={viewerSrc} style={{ width:'100%',height:'100%',border:'none',background:'#fff' }} title="PDF Viewer" allowFullScreen/>
-                </div>
-
-                {/* MCQ Sidebar Inline Right */}
-                {showMCQ && canShowMCQ && (
-                  <MCQSolver 
-                    subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} 
-                    onClose={()=>setShowMCQ(false)}
-                    mcqState={currentMcqState} 
-                    updateMcqState={updateMcqState}
-                  />
+              <>
+                {/* Fixed: Library can now open even when a PDF is not actively loaded */}
+                {showLibrary && (
+                  <LibrarySidebar subjectCode={subject} libraryDb={libraryDb} onClose={()=>setShowLibrary(false)} />
                 )}
-              </div>
+
+                {!isViewing ? (
+                  <div className="bg-grid anim-fade" style={{ flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:40,textAlign:'center' }}>
+                    <div style={{ position:'absolute',top:'20%',left:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle, var(--accent) 0%, transparent 60%)',opacity:0.05,pointerEvents:'none' }}/>
+                    <div style={{ position:'absolute',bottom:'20%',right:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle, var(--teal) 0%, transparent 60%)',opacity:0.05,pointerEvents:'none' }}/>
+                    
+                    <div style={{ width:80,height:80,borderRadius:24,background:'var(--surface2)',border:'1px solid var(--line2)',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:32,zIndex:1 }}>
+                      <BookOpen size={40} color="var(--text3)" strokeWidth={1.5}/>
+                    </div>
+                    <h2 style={{ fontSize:32,fontWeight:700,color:'var(--text)',marginBottom:16,zIndex:1 }}>Workspace Ready</h2>
+                    <p style={{ color:'var(--text2)',fontSize:16,lineHeight:1.6,maxWidth:460,marginBottom:40,zIndex:1 }}>
+                      Configure your paper in the navigation bar above, then click <strong style={{color:'var(--text)'}}>Load Paper</strong> to open the viewer.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="anim-fade" style={{ flex:1,display:'flex',overflow:'hidden',position:'relative' }}>
+                    <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background:'#e5e7eb' }}>
+                      <iframe src={viewerSrc} style={{ width:'100%',height:'100%',border:'none' }} title="PDF Viewer" allowFullScreen/>
+                    </div>
+
+                    {showMCQ && canShowMCQ && (
+                      <MCQSolver 
+                        subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} 
+                        onClose={()=>setShowMCQ(false)}
+                        mcqState={currentMcqState} 
+                        updateMcqState={updateMcqState}
+                      />
+                    )}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </main>

@@ -1,0 +1,40 @@
+[
+  {
+    "name": "9618",
+    "type": "folder",
+    "children": []
+  },
+  {
+    "name": "9700",
+    "type": "folder",
+    "children": []
+  },
+  {
+    "name": "9701",
+    "type": "folder",
+    "children": [
+      {
+        "name": "Chemistry Syllabus.pdf",
+        "type": "file",
+        "path": "/library/9701/Chemistry Syllabus.pdf",
+        "size": "4.08 MB"
+      }
+    ]
+  },
+  {
+    "name": "9702",
+    "type": "folder",
+    "children": []
+  },
+  {
+    "name": "9709",
+    "type": "folder",
+    "children": []
+  },
+  {
+    "name": "David Watson, Helen Williams - Cambridge International AS and A Levels Computer Science-Hodder Education (2020).pdf",
+    "type": "file",
+    "path": "/library/David Watson, Helen Williams - Cambridge International AS and A Levels Computer Science-Hodder Education (2020).pdf",
+    "size": "28.13 MB"
+  }
+]
