@@ -3,7 +3,8 @@ import {
   BookOpen, ChevronDown, ChevronUp, ChevronRight, Mail, X, Copy, Check,
   Play, Github, Terminal, ArrowLeft, Layers, Sun, Moon,
   FileText, Eye, EyeOff, ListChecks, Compass,
-  Search, Clock, ArrowRight, Activity, Zap, Beaker, Code2, Folder, Library, ExternalLink
+  Search, Clock, ArrowRight, Activity, Zap, Beaker, Code2, Folder, Library, ExternalLink,
+  Atom, Database, Network, Binary, Biohazard, ChevronsLeftRight, FlaskConical, Omega, Radiation, Cpu
 } from 'lucide-react';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -25,6 +26,14 @@ const MCQ_COUNT     = 40;
 const MCQ_OPTS      = ['A', 'B', 'C', 'D'];
 
 const GITHUB_REPO_URL = "https://github.com/Huzaifa-616/PastPaper-Explorer";
+// ─── Dynamic Logo Component ───────────────────────────────────────────────────
+const DYNAMIC_ICONS = [Atom, Database, Network, Binary, Biohazard, ChevronsLeftRight, FlaskConical, Omega, Radiation, Cpu];
+
+const DynamicLogo = ({ size, color, strokeWidth }) => {
+  // Randomly selects one icon from the array every time the page loads
+  const CurrentIcon = useMemo(() => DYNAMIC_ICONS[Math.floor(Math.random() * DYNAMIC_ICONS.length)], []);
+  return <CurrentIcon size={size} color={color} strokeWidth={strokeWidth} />;
+};
 
 // ─── Topical Taxonomy (Strict Syllabus Mapping) ───────────────────────────────
 const SYLLABUS_STRUCTURE = {
@@ -391,7 +400,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
       <header style={{ padding:'24px 40px', display:'flex', justifyContent:'space-between', alignItems:'center', zIndex:10, position:'relative' }}>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
           <div style={{ width:40, height:40, borderRadius:12, background:'var(--text)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <Layers size={20} color="var(--bg)" strokeWidth={2.5}/>
+            <DynamicLogo size={20} color="var(--bg)" strokeWidth={2.5}/>
           </div>
           <div>
             <h1 style={{ fontSize:18, fontWeight:700, letterSpacing:'-0.02em', color:'var(--text)' }}>The Nexus</h1>
@@ -465,7 +474,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
               <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Write, compile, and run code entirely in your browser. Built for 9618.</p>
             </div>
              <div style={{ marginTop:24, display:'flex', flexWrap:'wrap', gap:8 }}>
-              {['Python', 'C++', 'Java', 'Visual Basic'].map(p => <span key={p} style={{ fontSize:11, fontWeight:500, padding:'4px 10px', background:'var(--surface2)', borderRadius:100, border:'1px solid var(--line2)', color:'var(--text3)' }}>{p}</span>)}
+              {['Python', 'Pseudocode'].map(p => <span key={p} style={{ fontSize:11, fontWeight:500, padding:'4px 10px', background:'var(--surface2)', borderRadius:100, border:'1px solid var(--line2)', color:'var(--text3)' }}>{p}</span>)}
             </div>
           </div>
 
@@ -537,6 +546,35 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
 
         </div>
       </main>
+      {/* SEO & Context Block (Hidden elegantly but readable by Google) */}
+      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 20px 40px 20px', zIndex: 10, position: 'relative' }}>
+        <div style={{ padding: 24, borderRadius: 20, background: 'var(--surface2)', border: '1px solid var(--line2)' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 12 }}>About The Nexus: Cambridge A-Level Workspace</h2>
+          <p style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6, marginBottom: 12 }}>
+            The Nexus is an advanced, high-performance study environment specifically engineered for CAIE A-Level and AS-Level students. Designed to eliminate the friction of traditional study methods, it provides instant, zero-latency access to past papers, marking schemes, and an interactive Resource Library.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginTop: 16 }}>
+            <div>
+              <h3 style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Supported Syllabuses</h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 12, color: 'var(--text3)', lineHeight: 1.8 }}>
+                <li>• Computer Science (9618)</li>
+                <li>• Physics (9702)</li>
+                <li>• Chemistry (9701)</li>
+                <li>• Mathematics (9709)</li>
+              </ul>
+            </div>
+            <div>
+              <h3 style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Core Features</h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 12, color: 'var(--text3)', lineHeight: 1.8 }}>
+                <li>• Topical Database & Question Extraction</li>
+                <li>• Automated MCQ Solver with Answer Keys</li>
+                <li>• Built-in Programming IDE (Python, Pseudocode)</li>
+                <li>• Fast PDF Rendering Engine</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <footer style={{ padding:'24px', textAlign:'center', zIndex:10 }}>
         <p style={{ fontSize:12, color:'var(--text3)', letterSpacing:'0.05em', fontWeight:500 }}>MUHAMMAD HUZAIFA IMRAN</p>

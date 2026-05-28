@@ -2,7 +2,26 @@
   {
     "name": "9618",
     "type": "folder",
-    "children": []
+    "children": [
+      {
+        "name": "textfiles",
+        "type": "folder",
+        "children": [
+          {
+            "name": "myfile.txt",
+            "type": "file",
+            "path": "/library/9618/textfiles/myfile.txt",
+            "size": "0.0 MB"
+          }
+        ]
+      },
+      {
+        "name": "David Watson, Helen Williams - Cambridge International AS and A Levels Computer Science-Hodder Education (2020)_compressed.pdf",
+        "type": "file",
+        "path": "/library/9618/David Watson, Helen Williams - Cambridge International AS and A Levels Computer Science-Hodder Education (2020)_compressed.pdf",
+        "size": "15.76 MB"
+      }
+    ]
   },
   {
     "name": "9700",
@@ -30,11 +49,5 @@
     "name": "9709",
     "type": "folder",
     "children": []
-  },
-  {
-    "name": "David Watson, Helen Williams - Cambridge International AS and A Levels Computer Science-Hodder Education (2020).pdf",
-    "type": "file",
-    "path": "/library/David Watson, Helen Williams - Cambridge International AS and A Levels Computer Science-Hodder Education (2020).pdf",
-    "size": "28.13 MB"
   }
 ]
