@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
-  BookOpen, ChevronDown, ChevronUp, Mail, X, Copy, Check,
+  BookOpen, ChevronDown, ChevronUp, ChevronRight, Mail, X, Copy, Check,
   Play, Github, Terminal, ArrowLeft, Layers, Sun, Moon,
-  NotebookPen, Lock, Plus, Trash2, FileText, Eye, EyeOff,
-  Paperclip, ExternalLink, ListChecks, AlertCircle, Compass,
-  Search, Clock, ArrowRight, Activity, Zap, Beaker, Code2
+  FileText, Eye, EyeOff, ListChecks, Compass,
+  Search, Clock, ArrowRight, Activity, Zap, Beaker, Code2, Folder, Library, ExternalLink
 } from 'lucide-react';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -24,6 +23,8 @@ const MCQ_SUBJECTS  = ['9700', '9701', '9702'];
 const MCQ_PAPER     = '1';
 const MCQ_COUNT     = 40;
 const MCQ_OPTS      = ['A', 'B', 'C', 'D'];
+
+const GITHUB_REPO_URL = "https://github.com/Huzaifa-616/PastPaper-Explorer";
 
 // ─── Topical Taxonomy (Strict Syllabus Mapping) ───────────────────────────────
 const SYLLABUS_STRUCTURE = {
@@ -131,30 +132,10 @@ const MCQ_ANSWER_KEYS = {
   '9702_w25_1_3': ['D','D','B','C','D','D','B','C','C','D','A','A','B','C','C','B','B','C','A','A','D','B','C','A','B','B','D','C','D','A','D','C','A','A','D','D','C','A','A','B'],
 };
 
-const GITHUB_REPO_URL = "https://github.com/Huzaifa-616/PastPaper-Explorer";
-const NOTES_PASSWORD  = "bravo07";
-const NOTES_KEY       = "nexus_notes_v1";
-const MAX_FILE_BYTES  = 1.5 * 1024 * 1024; 
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-const loadNotes    = () => { try { return JSON.parse(localStorage.getItem(NOTES_KEY) || '{}'); } catch { return {}; } };
-const saveNotes    = (n) => localStorage.setItem(NOTES_KEY, JSON.stringify(n));
-const noteKey      = (code, paper) => `${code}_${paper}`;
 const subjectName  = (code) => SUBJECTS.find(s => s.code === code)?.name || code;
-const fmtBytes     = (b) => b < 1024 ? `${b}B` : b < 1048576 ? `${(b/1024).toFixed(1)}KB` : `${(b/1048576).toFixed(1)}MB`;
 
-const openBlob = (att) => {
-  try {
-    const parts  = att.data.split(',');
-    const binary = atob(parts[1]);
-    const bytes  = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    const blob   = new Blob([bytes], { type: att.type });
-    window.open(URL.createObjectURL(blob), '_blank');
-  } catch { alert('Could not open file.'); }
-};
-
-// ─── GlobalStyles (Massive Visual Upgrade) ────────────────────────────────────
+// ─── GlobalStyles (Massive Visual Upgrade & Mobile Fixes) ─────────────────────
 const GlobalStyles = ({ dark }) => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap');
@@ -179,7 +160,7 @@ const GlobalStyles = ({ dark }) => (
       --text3:     ${dark ? '#475569' : '#94a3b8'};
       
       /* Vibrant Accents */
-      --accent:    ${dark ? '#6366f1' : '#4f46e5'}; /* Default Indigo */
+      --accent:    ${dark ? '#6366f1' : '#4f46e5'};
       --teal:      ${dark ? '#2dd4bf' : '#0d9488'};
       --amber:     ${dark ? '#fbbf24' : '#d97706'};
       --rose:      ${dark ? '#fb7185' : '#e11d48'};
@@ -199,9 +180,9 @@ const GlobalStyles = ({ dark }) => (
     @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
-    @keyframes pulseGlow { 0%{opacity:0.3} 50%{opacity:0.6} 100%{opacity:0.3} }
     @keyframes slideInLeft  { from{transform:translateX(-100%)} to{transform:translateX(0)} }
     @keyframes slideInRight { from{transform:translateX(100%)}  to{transform:translateX(0)} }
+    @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 
     .anim-0 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
     .anim-1 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
@@ -209,7 +190,6 @@ const GlobalStyles = ({ dark }) => (
     .anim-3 { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
     .anim-fade { animation: fadeIn 0.4s ease both; }
 
-    /* Glassmorphic Background Grid */
     .bg-grid {
       position: absolute; inset: 0; pointer-events: none; z-index: 0;
       background-image: 
@@ -220,7 +200,6 @@ const GlobalStyles = ({ dark }) => (
       -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
     }
 
-    /* Core UI Elements */
     .glass-panel {
       background: var(--surface);
       backdrop-filter: blur(24px);
@@ -239,7 +218,6 @@ const GlobalStyles = ({ dark }) => (
       animation: shimmer 6s linear infinite;
     }
 
-    /* Form Inputs */
     .nexus-select { appearance:none;background:var(--surface2);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;padding:8px 30px 8px 12px;cursor:pointer;transition:all 0.2s;outline:none; }
     .nexus-select:hover { border-color:var(--text3); }
     .nexus-select:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
@@ -256,12 +234,12 @@ const GlobalStyles = ({ dark }) => (
     .btn-load.ready:active { transform:translateY(0); }
     .btn-load.disabled { background:var(--surface2);color:var(--text3);cursor:not-allowed; }
 
-    /* Modals & Sidebars */
     .modal-overlay { position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);animation:fadeIn 0.2s ease both;padding:16px; }
     .modal-box { background:var(--bg2);border:1px solid var(--line2);border-radius:24px;width:100%;max-width:420px;position:relative;overflow:hidden;animation:fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
 
+    /* Note: Sidebar backdrop filters removed as requested to keep PDF clear */
     .notes-sidebar { position:absolute;left:0;top:0;bottom:0;width:340px;z-index:50;background:var(--bg2);border-right:1px solid var(--line2);display:flex;flex-direction:column;box-shadow:4px 0 30px rgba(0,0,0,0.2);animation:slideInLeft 0.3s cubic-bezier(0.16,1,0.3,1) both; }
-    .notes-backdrop { position:absolute;inset:0;z-index:49;background:rgba(0,0,0,0.4);backdrop-filter:blur(2px); }
+    .notes-backdrop { position:absolute;inset:0;z-index:49;background:rgba(0,0,0,0.1); }
 
     .topicals-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--line2); display: flex; flex-direction: column; z-index: 10; animation: slideInLeft 0.3s cubic-bezier(0.16,1,0.3,1) both; }
     .mcq-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-left: 1px solid var(--line2); display: flex; flex-direction: column; animation: slideInRight 0.3s cubic-bezier(0.16,1,0.3,1) both; }
@@ -277,30 +255,144 @@ const GlobalStyles = ({ dark }) => (
     .mcq-bubble.correct  { background:var(--green);border-color:var(--green);color:#fff; }
     .mcq-bubble.wrong    { background:var(--red);border-color:var(--red);color:#fff; }
 
-    /* Custom scrollbars for sidebars */
     .custom-sb::-webkit-scrollbar { width: 4px; }
     .custom-sb::-webkit-scrollbar-track { background: transparent; }
     .custom-sb::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 4px; }
     .custom-sb:hover::-webkit-scrollbar-thumb { background: var(--text3); }
     
-    .tools-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; max-width: 1000px; }
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; width: 100%; max-width: 1100px; }
     .featured-card { grid-column: 1 / -1; }
     
+    .pull-tab-pill {
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; justify-content: center;
+      width: 48px; height: 28px; border-radius: 14px;
+      background: var(--surface2); border: 1px solid var(--line2);
+      cursor: pointer; transition: all 0.2s; z-index: 40;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .pull-tab-pill:hover { background: var(--surface3); transform: translateX(-50%) translateY(2px); }
+
+    /* TOPICALS LAYOUT CLASSES */
+    .topicals-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); animation: fadeIn 0.3s ease both; }
+    .topicals-header { padding: 14px 28px; border-bottom: 1px solid var(--line2); background: var(--bg2); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .topicals-header-stats { display: flex; align-items: center; gap: 10px; }
+    .topicals-content { flex: 1; display: flex; overflow: hidden; position: relative; }
+    .topicals-papers { width: 210px; flex-shrink: 0; border-right: 1px solid var(--line2); padding: 16px 10px; display: flex; flex-direction: column; gap: 6px; background: var(--bg2); overflow-y: auto; }
+    .topicals-grid { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+    .topicals-grid-inner { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+    .topicals-questions { width: 320px; flex-shrink: 0; border-left: 1px solid var(--line2); display: flex; flex-direction: column; background: var(--bg2); animation: slideInRight 0.25s cubic-bezier(0.16,1,0.3,1) both; }
+
+    /* LIBRARY LAYOUT CLASSES */
+    .library-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--line2); display: flex; flex-direction: column; z-index: 10; animation: slideInLeft 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+    .full-lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; width: 100%; align-content: start; }
+    
+    /* MCQ LAYOUT CLASSES */
+    .mcq-sidebar { position: relative; width: 340px; flex-shrink: 0; background: var(--bg2); border-left: 1px solid var(--line2); display: flex; flex-direction: column; animation: slideInRight 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+    
+    /* ── Nav bar base ── */
+    .nav-bar {
+      background: ${dark ? 'rgba(5,5,10,0.92)' : 'rgba(248,250,252,0.92)'};
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    }
+
+    /* 📱 MOBILE RESPONSIVE FIXES */
     @media (max-width: 768px) {
+      /* ── Nav: 2-row layout, no horizontal scroll ── */
+      header.nav-bar { padding: 12px 16px !important; }
+
+      .nav-inner { flex-wrap: wrap !important; gap: 10px 0 !important; align-items: center !important; }
+      .nav-divider { display: none !important; }
+      .nav-brand { flex: 1 !important; min-width: 0 !important; margin-right: 0 !important; }
+      .nav-workspace-label { display: none !important; }
+
+      .nav-actions { margin-left: 0 !important; flex-shrink: 0 !important; gap: 8px !important; }
+      .nav-actions .btn-load { padding: 8px 14px !important; font-size: 11px !important; }
+      .nav-actions .icon-btn { width: 32px !important; height: 32px !important; }
+
+      .nav-filters {
+        order: 9 !important; width: 100% !important; flex: none !important; overflow: visible !important;
+        display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 8px !important;
+        padding: 0 !important; align-items: end !important;
+      }
+      .nav-filters > div { width: 100% !important; min-width: 0 !important; flex: none !important; }
+      .nav-filters .nexus-select { width: 100% !important; font-size: 10px !important; padding: 7px 22px 7px 8px !important; }
+      .nav-filters > div > span { font-size: 8px !important; }
+
+      .nav-type-wrap .seg-btn { padding: 5px 9px !important; font-size: 10px !important; }
+
+      .nav-tools-wrap { grid-column: 1 / -1 !important; }
+      .nav-tools-wrap > div { flex-wrap: wrap !important; gap: 6px !important; }
+      .nav-tools-wrap button { padding: 7px 12px !important; font-size: 11px !important; }
+      
       .tools-grid { grid-template-columns: 1fr; }
       .featured-card { flex-direction: column !important; }
       .topical-visual { justify-content: center !important; padding: 0 24px 24px 24px !important; }
-      .topicals-sidebar { position: absolute !important; z-index: 50; height: 100%; border-right: none !important; box-shadow: 4px 0 30px rgba(0,0,0,0.3); }
-      .mcq-sidebar { position: absolute !important; bottom: 0; left: 0; right: 0; top: auto; width: 100% !important; height: 60vh; border-left: none !important; border-top: 1px solid var(--line2); box-shadow: 0 -10px 40px rgba(0,0,0,0.4); animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both; z-index: 50; border-radius: 20px 20px 0 0; }
+      
+      /* Mobile Sidebars (Library) */
+      .library-sidebar { 
+        position: absolute !important; 
+        top: 0; bottom: 0; left: 0; right: 0;
+        height: auto !important; 
+        width: 100% !important; 
+        max-width: 100% !important;
+        border-right: none !important; 
+        box-shadow: none !important; 
+      }
+
+      /* Mobile Topicals */
+      .topicals-header { flex-direction: column; align-items: flex-start; gap: 16px; padding: 16px; }
+      .topicals-header-stats { width: 100%; justify-content: space-between; }
+      
+      .topicals-content { flex-direction: column !important; display: flex !important; overflow-y: auto !important; }
+      
+      .topicals-papers { 
+        width: 100% !important; 
+        height: auto !important; 
+        display: grid !important; 
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important; 
+        gap: 10px !important;
+        border-right: none !important; 
+        border-bottom: 1px solid var(--line2) !important; 
+        padding: 16px !important; 
+        overflow: visible !important; 
+      }
+      .topicals-papers > p { grid-column: 1 / -1; margin-bottom: 2px !important; padding-left: 2px !important; }
+      .topicals-papers > button { flex: unset !important; width: 100% !important; height: 100% !important; padding: 12px !important; scroll-snap-align: none; }
+      
+      .topicals-grid { width: 100%; overflow: visible; }
+      .topicals-grid-inner { grid-template-columns: 1fr; padding: 16px !important; }
+      
+      .topicals-questions { width: 100%; height: 100%; border-left: none; position: absolute; top: 0; left: 0; z-index: 10; }
+      
+      .mobile-hidden { display: none !important; }
+      
+      /* Mobile MCQ Bottom Sheet */
+      .mcq-sidebar { 
+        position: absolute !important; 
+        bottom: 0; left: 0; right: 0; top: auto; 
+        width: 100% !important; 
+        height: 75vh; 
+        border-left: none !important; 
+        border-top: 1px solid var(--line2); 
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.4); 
+        animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both; 
+        z-index: 50; 
+        border-radius: 20px 20px 0 0; 
+      }
+
+      /* Full Library Mobile */
+      .full-lib-header { padding: 12px 16px !important; flex-wrap: wrap; }
+      .full-lib-main { padding: 16px !important; }
+      .full-lib-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
     }
   `}</style>
 );
 
-// ─── StartupScreen (The Redesigned Command Center) ────────────────────────────
-const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }) => {
-  const [activeTab, setActiveTab] = useState('9618'); // Default to CS
+// ─── StartupScreen ────────────────────────────────────────────────────────────
+const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, toggleTheme, dark }) => {
+  const [activeTab, setActiveTab] = useState('9618');
 
-  // Dynamic Theme Colors based on active subject
   const brandColors = {
     '9618': { hex: 'var(--teal)', name: 'Computer Science', icon: <Terminal size={16}/> },
     '9702': { hex: 'var(--amber)', name: 'Physics', icon: <Zap size={16}/> },
@@ -312,11 +404,9 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }
 
   return (
     <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', position:'relative', overflow:'hidden' }}>
-      {/* Dynamic Background Glow */}
       <div style={{ position:'absolute', top:'-20%', left:'50%', transform:'translateX(-50%)', width:'80vw', height:'60vh', background:`radial-gradient(ellipse at top, ${currentBrand.hex} 0%, transparent 60%)`, opacity: dark ? 0.12 : 0.08, pointerEvents:'none', zIndex: 0, transition:'background 0.5s ease' }}/>
       <div className="bg-grid" />
 
-      {/* Minimal Top Nav */}
       <header style={{ padding:'24px 40px', display:'flex', justifyContent:'space-between', alignItems:'center', zIndex:10, position:'relative' }}>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
           <div style={{ width:40, height:40, borderRadius:12, background:'var(--text)', display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -333,19 +423,17 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }
         </div>
       </header>
 
-      {/* Main Content */}
       <main style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'0 20px', zIndex:10, position:'relative' }}>
         
         <div className="anim-0" style={{ textAlign:'center', marginBottom:48 }}>
           <h2 className="shimmer-text" style={{ fontSize:'clamp(48px, 8vw, 80px)', fontWeight:800, lineHeight:1, letterSpacing:'-0.03em', marginBottom:24 }}>
-            The Nexus
+            Master your syllabus.
           </h2>
           <p style={{ fontSize:18, color:'var(--text2)', fontWeight:400, maxWidth:600, margin:'0 auto', lineHeight:1.5 }}>
-            A workspace engineered for Cambridge A-Level students. Search topics, extract papers, and compile code.
+            A high-performance workspace engineered for Cambridge A-Level students. Search topics, extract papers, and compile code.
           </p>
         </div>
 
-        {/* Subject Context Toggle */}
         <div className="anim-1" style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:8, background:'var(--surface2)', padding:6, borderRadius:100, border:'1px solid var(--line2)', marginBottom:48, backdropFilter:'blur(20px)' }}>
           {Object.entries(brandColors).map(([code, data]) => {
             const isActive = activeTab === code;
@@ -364,10 +452,9 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }
           })}
         </div>
 
-        {/* Modular Tools Grid */}
         <div className="anim-3 tools-grid">
           
-          {/* Tool 1: Jump Back In */}
+          {/* PastPaper Explorer */}
           <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
                onClick={() => onSelectExplorer(activeTab)}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
@@ -384,7 +471,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }
             </div>
           </div>
 
-          {/* Tool 2: IDE */}
+          {/* IDE */}
           <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
                onClick={()=>window.open('https://programming-ide.netlify.app/','_blank')}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
@@ -401,16 +488,37 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }
             </div>
           </div>
 
-          {/* Tool 3: Topicals (FEATURED WIDE CARD) */}
+          {/* Resource Library */}
+          <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
+               onClick={() => onSelectLibrary(activeTab)}
+               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
+               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; }}>
+            <div>
+              <div style={{ width:48, height:48, borderRadius:14, background:'var(--surface2)', border:'1px solid var(--line2)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
+                <Library size={20} color="var(--text)"/>
+              </div>
+              <h3 style={{ fontSize:20, fontWeight:700, marginBottom:8 }}>Resource Library</h3>
+              <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Access textbooks, revision notes, and formula sheets directly from your repository.</p>
+            </div>
+            <div style={{ marginTop:24, display:'flex', flexWrap:'wrap', gap:8, alignItems:'center', justifyContent:'space-between' }}>
+              <div style={{ display:'flex', gap:8 }}>
+                {['PDFs', 'Notes', 'Books'].map(p => <span key={p} style={{ fontSize:11, fontWeight:500, padding:'4px 10px', background:'var(--surface2)', borderRadius:100, border:'1px solid var(--line2)', color:'var(--text3)' }}>{p}</span>)}
+              </div>
+              <button onClick={(e) => { e.stopPropagation(); onSelectLibrary(''); }}
+                style={{ fontSize:11, fontWeight:600, padding:'6px 12px', background:'var(--text)', color:'var(--bg)', borderRadius:8, border:'none', cursor:'pointer' }}>
+                Browse All
+              </button>
+            </div>
+          </div>
+
+          {/* Topical Database (FEATURED WIDE CARD) */}
           <div className="glass-panel featured-card" style={{ padding: 0, borderRadius: 24, cursor: 'pointer', transition: 'all 0.3s', display: 'flex', flexDirection: 'row', overflow: 'hidden', position: 'relative' }}
                onClick={() => onSelectTopicals(activeTab)}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = currentBrand.hex; e.currentTarget.querySelector('.feature-glow').style.opacity = '0.3'; }}
                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.querySelector('.feature-glow').style.opacity = '0.1'; }}>
             
-            {/* Background Glow */}
             <div className="feature-glow" style={{ position:'absolute', top:0, right:0, width:'50%', height:'100%', background:`radial-gradient(ellipse at right, ${currentBrand.hex}, transparent 70%)`, opacity:0.1, transition:'opacity 0.4s', pointerEvents:'none' }} />
 
-            {/* Left Content */}
             <div style={{ flex: 1, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <div style={{ width:48, height:48, borderRadius:14, background:`var(--surface2)`, border:`1px solid var(--line2)`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
                 <Compass size={20} color={currentBrand.hex}/>
@@ -426,7 +534,6 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }
               </div>
             </div>
 
-            {/* Right Visual Representation */}
             <div className="topical-visual" style={{ flex: 1, padding: 32, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', zIndex: 1 }}>
               <div style={{ width: '100%', maxWidth: 320, background: 'var(--bg2)', borderRadius: 16, border: '1px solid var(--line2)', padding: 16, boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', marginBottom: 12, display: 'flex', alignItems:'center', gap: 6 }}>
@@ -451,13 +558,132 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, toggleTheme, dark }
       </main>
       
       <footer style={{ padding:'24px', textAlign:'center', zIndex:10 }}>
-        <p style={{ fontSize:12, color:'var(--text3)', letterSpacing:'0.05em', fontWeight:500 }}>MUHAMMAD HUZAIFA IMRAN</p>
+        <p style={{ fontSize:12, color:'var(--text3)', letterSpacing:'0.05em', fontWeight:500 }}>MUHAMMAD HUZAIFA IMRAN • LAHORE, PAKISTAN</p>
       </footer>
     </div>
   );
 };
 
-// ─── NexusSelect, Modals, and Sidebars ───────────────────────────────────────
+// ─── FULL PAGE LIBRARY VIEW ───────────────────────────────────────────────────
+const FullLibraryPage = ({ initialSubject, libraryDb, onBackToHub, toggleTheme, dark }) => {
+  const [subjectCode, setSubjectCode] = useState(initialSubject || '');
+  const [currentPath, setCurrentPath] = useState([]);
+
+  const brandColors = {
+    '9618': { hex: 'var(--teal)', name: 'Computer Science', icon: <Terminal size={16}/> },
+    '9702': { hex: 'var(--amber)', name: 'Physics', icon: <Zap size={16}/> },
+    '9701': { hex: 'var(--rose)', name: 'Chemistry', icon: <Beaker size={16}/> },
+    '9709': { hex: 'var(--accent)', name: 'Mathematics', icon: <Activity size={16}/> }
+  };
+
+  const currentBrand = brandColors[subjectCode] || { hex: 'var(--text)', name: 'Library' };
+
+  const rootFolder = useMemo(() => libraryDb?.find(f => f.name === subjectCode) || null, [libraryDb, subjectCode]);
+
+  const currentItems = useMemo(() => {
+    if (!subjectCode) return libraryDb || [];
+    let current = rootFolder?.children || [];
+    for (let step of currentPath) {
+      const found = current.find(c => c.name === step && c.type === 'folder');
+      if (found) current = found.children || [];
+      else break;
+    }
+    return current;
+  }, [libraryDb, subjectCode, rootFolder, currentPath]);
+
+  const navigateTo = (idx) => {
+     if (idx === -1) { setSubjectCode(''); setCurrentPath([]); }
+     else if (idx === 0) { setCurrentPath([]); }
+     else { setCurrentPath(prev => prev.slice(0, idx)); }
+  }
+
+  return (
+    <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', position:'relative', overflow:'hidden', background:'var(--bg)' }}>
+      <GlobalStyles dark={dark}/>
+      <div style={{ position:'absolute', top:'-20%', left:'50%', transform:'translateX(-50%)', width:'80vw', height:'60vh', background:`radial-gradient(ellipse at top, ${currentBrand.hex} 0%, transparent 60%)`, opacity: dark ? 0.08 : 0.05, pointerEvents:'none', zIndex: 0, transition:'background 0.5s ease' }}/>
+      <div className="bg-grid" />
+
+      <header className="full-lib-header" style={{ padding:'24px 40px', display:'flex', justifyContent:'space-between', alignItems:'center', zIndex:10, position:'relative', borderBottom:'1px solid var(--line2)', background:'var(--bg2)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:16 }}>
+          <button className="icon-btn" onClick={onBackToHub} title="Back to Hub"><ArrowLeft size={16}/></button>
+          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ width:36, height:36, borderRadius:10, background:'var(--text)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <Library size={18} color="var(--bg)" strokeWidth={2.5}/>
+            </div>
+            <div>
+              <h1 style={{ fontSize:16, fontWeight:700, letterSpacing:'-0.02em', color:'var(--text)' }}>Resource Library</h1>
+              <p style={{ fontSize:10, fontWeight:600, letterSpacing:'0.1em', color:'var(--text3)', textTransform:'uppercase' }}>Expanded View</p>
+            </div>
+          </div>
+        </div>
+        <div style={{ display:'flex', gap:12 }}>
+          <button className="icon-btn" onClick={toggleTheme}>{dark ? <Sun size={16}/> : <Moon size={16}/>}</button>
+        </div>
+      </header>
+
+      <main className="full-lib-main" style={{ flex:1, display:'flex', flexDirection:'column', padding:'32px 40px', zIndex:10, position:'relative', maxWidth: 1400, margin: '0 auto', width: '100%' }}>
+        
+        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom: 32, flexWrap:'wrap' }}>
+           <button onClick={()=>navigateTo(-1)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:16, fontWeight:600, color: !subjectCode ? 'var(--text)' : 'var(--text3)', transition:'color 0.2s' }}>All Subjects</button>
+           {subjectCode && <ChevronRight size={16} color="var(--text3)"/>}
+           {subjectCode && (
+             <button onClick={()=>navigateTo(0)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:16, fontWeight:600, color: currentPath.length === 0 ? currentBrand.hex : 'var(--text3)', transition:'color 0.2s', display:'flex', alignItems:'center', gap:6 }}>
+               {brandColors[subjectCode]?.name || subjectCode}
+             </button>
+           )}
+           {currentPath.map((step, idx) => (
+             <React.Fragment key={idx}>
+               <ChevronRight size={16} color="var(--text3)"/>
+               <button onClick={()=>navigateTo(idx+1)} style={{ background:'none', border:'none', cursor:'pointer', fontSize:16, fontWeight:600, color: idx === currentPath.length - 1 ? 'var(--text)' : 'var(--text3)', transition:'color 0.2s' }}>
+                 {step}
+               </button>
+             </React.Fragment>
+           ))}
+        </div>
+
+        {currentItems.length === 0 ? (
+           <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', color:'var(--text3)', opacity:0.6 }}>
+             <Folder size={64} style={{ marginBottom: 16 }} />
+             <p style={{ fontSize: 16, fontWeight: 600 }}>This folder is empty.</p>
+           </div>
+        ) : (
+          <div className="full-lib-grid">
+            {currentItems.map((item, i) => {
+              if (item.type === 'folder') {
+                 return (
+                   <button key={i} className="glass-panel" onClick={() => { if(!subjectCode) { setSubjectCode(item.name); setCurrentPath([]); } else { setCurrentPath(prev => [...prev, item.name]); } }}
+                      style={{ padding:24, borderRadius:20, cursor:'pointer', transition:'all 0.2s', display:'flex', flexDirection:'column', alignItems:'flex-start', border:'1px solid var(--line2)', background:'var(--surface2)', textAlign:'left' }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = currentBrand.hex; e.currentTarget.style.background = 'var(--surface)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.style.background = 'var(--surface2)'; }}>
+                      <Folder size={32} color={currentBrand.hex} style={{ marginBottom: 16 }} />
+                      <h3 style={{ fontSize:16, fontWeight:700, color:'var(--text)', marginBottom:4 }}>{brandColors[item.name]?.name || item.name}</h3>
+                      <p style={{ fontSize:12, color:'var(--text3)', fontWeight:500 }}>{item.children?.length || 0} items</p>
+                   </button>
+                 )
+              } else {
+                 return (
+                   <a key={i} href={item.path} target="_blank" rel="noopener noreferrer" className="glass-panel"
+                      style={{ padding:24, borderRadius:20, cursor:'pointer', transition:'all 0.2s', display:'flex', flexDirection:'column', alignItems:'flex-start', border:'1px solid var(--line2)', background:'var(--surface2)', textDecoration:'none' }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; e.currentTarget.style.background = 'var(--surface)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.style.background = 'var(--surface2)'; }}>
+                      <FileText size={32} color="var(--rose)" style={{ marginBottom: 16 }} />
+                      <h3 style={{ fontSize:15, fontWeight:600, color:'var(--text)', marginBottom:8, lineHeight:1.4, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>{item.name}</h3>
+                      <div style={{ marginTop:'auto', display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%' }}>
+                        <span style={{ fontSize:11, color:'var(--text3)', background:'var(--surface3)', padding:'4px 8px', borderRadius:6, fontWeight:600 }}>{item.size}</span>
+                        <ExternalLink size={14} color="var(--text3)"/>
+                      </div>
+                   </a>
+                 )
+              }
+            })}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+// ─── NexusSelect & Modals ───────────────────────────────────────────────────
 
 const NexusSelect = ({ label, value, onChange, options }) => (
   <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
@@ -502,38 +728,7 @@ const ContactModal = ({ isOpen, onClose }) => {
   );
 };
 
-const PasswordModal = ({ isOpen, onClose, onSuccess }) => {
-  const [pw, setPw] = useState(''); const [show, setShow] = useState(false); const [err, setErr] = useState(false);
-  const ref = useRef(null);
-  useEffect(() => { if (isOpen) { setPw(''); setErr(false); setTimeout(()=>ref.current?.focus(),100); } }, [isOpen]);
-  const submit = () => { if (pw===NOTES_PASSWORD) { onSuccess(); onClose(); setPw(''); setErr(false); } else { setErr(true); setPw(''); } };
-  if (!isOpen) return null;
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" style={{ maxWidth:360 }} onClick={e=>e.stopPropagation()}>
-        <div style={{ padding:'24px' }}>
-          <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24 }}>
-            <div style={{ display:'flex',alignItems:'center',gap:12 }}>
-              <div style={{ width:36,height:36,borderRadius:10,background:'var(--surface2)',display:'flex',alignItems:'center',justifyContent:'center' }}><Lock size={18} color="var(--text)" /></div>
-              <div><div style={{ fontSize:18,fontWeight:700,color:'var(--text)' }}>Admin Access</div><div style={{ fontSize:12,color:'var(--text3)' }}>Enter password to add notes</div></div>
-            </div>
-            <button className="icon-btn" onClick={onClose}><X size={16} /></button>
-          </div>
-          <div style={{ position:'relative',marginBottom:err?12:20 }}>
-            <input ref={ref} type={show?'text':'password'} className="n-input" placeholder="Password" value={pw}
-              onChange={e=>{setPw(e.target.value);setErr(false);}} onKeyDown={e=>e.key==='Enter'&&submit()}
-              style={{ paddingRight:44,borderColor:err?'var(--red)':undefined }} />
-            <button onClick={()=>setShow(s=>!s)} style={{ position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',color:'var(--text3)' }}>
-              {show?<EyeOff size={16}/>:<Eye size={16}/>}
-            </button>
-          </div>
-          {err && <p style={{ fontSize:12,color:'var(--red)',marginBottom:16 }}>Incorrect password. Try again.</p>}
-          <button onClick={submit} style={{ width:'100%',padding:'14px',borderRadius:10,border:'none',cursor:'pointer',background:'var(--text)',color:'var(--bg)',fontSize:14,fontWeight:600,transition:'all 0.2s' }}>Unlock Database</button>
-        </div>
-      </div>
-    </div>
-  );
-};
+// ─── Sidebars (Topicals, Library, MCQSolver) ────────────────────────────────
 
 const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => {
   const [selectedPaper, setSelectedPaper] = useState(null);
@@ -585,10 +780,9 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
   const ac = selectedPaper ? pColor(selectedPaper) : pColor('1');
 
   return (
-    <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', background:'var(--bg)', animation:'fadeIn 0.3s ease both' }}>
+    <div className="topicals-wrapper">
 
-      {/* ── Header ── */}
-      <div style={{ padding:'14px 28px', borderBottom:'1px solid var(--line2)', background:'var(--bg2)', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'space-between', gap:24 }}>
+      <div className="topicals-header">
         <div style={{ display:'flex', alignItems:'center', gap:14 }}>
           <div style={{ width:40, height:40, borderRadius:12, background:ac.bg, border:`1px solid ${ac.hex}40`, display:'flex', alignItems:'center', justifyContent:'center' }}>
             <Compass size={20} color={ac.hex}/>
@@ -605,19 +799,22 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
             </div>
           </div>
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          {totalQ > 0 && [{ label:'Questions', val:totalQ }, { label:'Topics', val:totalTopics }].map((s, i) => (
-            <div key={i} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', background:'var(--surface2)', border:'1px solid var(--line2)', borderRadius:8, fontSize:12 }}>
-              <span style={{ fontWeight:800, color:i===0?ac.hex:'var(--text)' }}>{s.val}</span>
-              <span style={{ color:'var(--text3)', fontWeight:500 }}>{s.label}</span>
-            </div>
-          ))}
-          <div style={{ width:1, height:24, background:'var(--line2)' }}/>
-          <button className="icon-btn" onClick={onClose}><X size={16}/></button>
+        <div className="topicals-header-stats">
+          <div style={{ display:'flex', gap: 10 }}>
+            {totalQ > 0 && [{ label:'Questions', val:totalQ }, { label:'Topics', val:totalTopics }].map((s, i) => (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', background:'var(--surface2)', border:'1px solid var(--line2)', borderRadius:8, fontSize:12 }}>
+                <span style={{ fontWeight:800, color:i===0?ac.hex:'var(--text)' }}>{s.val}</span>
+                <span style={{ color:'var(--text3)', fontWeight:500 }}>{s.label}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap: 10 }}>
+            <div style={{ width:1, height:24, background:'var(--line2)' }} className="nav-divider" />
+            <button className="icon-btn" onClick={onClose}><X size={16}/></button>
+          </div>
         </div>
       </div>
 
-      {/* ── Body ── */}
       {!subjectCode ? (
         <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:12 }}>
           <Compass size={56} style={{ opacity:0.15 }}/>
@@ -630,10 +827,10 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
           <p style={{ fontSize:14, color:'var(--text2)' }}>Topical mapping for {subjName} is not yet available.</p>
         </div>
       ) : (
-        <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
+        <div className="topicals-content">
 
-          {/* ── Paper Selector ── */}
-          <div style={{ width:210, flexShrink:0, borderRight:'1px solid var(--line2)', padding:'16px 10px', display:'flex', flexDirection:'column', gap:6, background:'var(--bg2)', overflowY:'auto' }} className="custom-sb">
+          {/* Paper Selector */}
+          <div className={`topicals-papers custom-sb ${selectedTopic ? 'mobile-hidden' : ''}`}>
             <p style={{ fontSize:10, fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--text3)', paddingLeft:8, marginBottom:6 }}>Papers</p>
             {papers.map(pNum => {
               const pc = pColor(pNum);
@@ -642,7 +839,7 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
               const pQCount = pData.topics.reduce((a, t) => a + getQs(pNum, t).length, 0);
               return (
                 <button key={pNum} onClick={() => setSelectedPaper(pNum)}
-                  style={{ width:'100%', textAlign:'left', padding:'14px', borderRadius:12, border:`1px solid ${isActive ? pc.hex+'60' : 'var(--line2)'}`, background:isActive ? pc.bg : 'transparent', cursor:'pointer', transition:'all 0.2s' }}
+                  style={{ textAlign:'left', padding:'14px', borderRadius:12, border:`1px solid ${isActive ? pc.hex+'60' : 'var(--line2)'}`, background:isActive ? pc.bg : 'transparent', cursor:'pointer', transition:'all 0.2s' }}
                   onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--surface2)'; }}
                   onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
@@ -659,8 +856,8 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
             })}
           </div>
 
-          {/* ── Topics Grid ── */}
-          <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', minWidth:0 }}>
+          {/* Topics Grid */}
+          <div className={`topicals-grid ${selectedTopic ? 'mobile-hidden' : ''}`}>
             <div style={{ padding:'14px 20px', borderBottom:'1px solid var(--line2)', background:'var(--bg2)', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
               <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                 {paperInfo && <div style={{ width:4, height:22, borderRadius:2, background:ac.hex, flexShrink:0 }}/>}
@@ -678,7 +875,7 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
               {topics.length === 0 ? (
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', color:'var(--text3)', fontSize:14 }}>Select a paper to view its topics</div>
               ) : (
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(210px, 1fr))', gap:12 }}>
+                <div className="topicals-grid-inner">
                   {topics.map(topic => {
                     const qCount = getQs(selectedPaper, topic).length;
                     const barPct = maxQ > 0 ? (qCount / maxQ) * 100 : 0;
@@ -707,9 +904,9 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
             </div>
           </div>
 
-          {/* ── Questions Detail Panel ── */}
+          {/* Questions Detail Panel */}
           {selectedTopic && (
-            <div style={{ width:320, flexShrink:0, borderLeft:'1px solid var(--line2)', display:'flex', flexDirection:'column', background:'var(--bg2)', animation:'slideInRight 0.25s cubic-bezier(0.16,1,0.3,1) both' }}>
+            <div className="topicals-questions">
               <div style={{ padding:'16px 20px', borderBottom:'1px solid var(--line2)', flexShrink:0 }}>
                 <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:6 }}>
                   <span style={{ fontSize:13, fontWeight:800, color:'var(--text)', lineHeight:1.4, flex:1, paddingRight:8 }}>{selectedTopic}</span>
@@ -772,165 +969,90 @@ const TopicalsPage = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) => 
   );
 };
 
-const NotesSidebar = ({ subjectCode, paperNum, variant, year, season, onClose, isAdmin, onRequestAuth }) => {
-  const key      = noteKey(subjectCode, season, year, paperNum, variant);
-  const subjName = subjectName(subjectCode);
-  const [notes, setNotes]         = useState(() => loadNotes()[key] || []);
-  const [showAdd, setShowAdd]     = useState(false);
-  const [noteTitle, setNoteTitle] = useState('');
-  const [noteBody,  setNoteBody]  = useState('');
-  const [delConfirm, setDelConfirm] = useState(null);
-  const [pendingFiles, setPendingFiles] = useState([]);
-  const [fileErr, setFileErr]     = useState('');
-  const fileRef = useRef(null);
+const LibrarySidebar = ({ subjectCode, libraryDb, onClose }) => {
+  const subjName = subjectCode ? subjectName(subjectCode) : null;
+  const [expanded, setExpanded] = useState({});
 
-  const persist = (updated) => { setNotes(updated); const all=loadNotes(); all[key]=updated; saveNotes(all); };
+  const targetFolder = useMemo(() => {
+    if (!subjectCode) return { children: libraryDb }; 
+    return libraryDb?.find(f => f.name === subjectCode) || null;
+  }, [libraryDb, subjectCode]);
 
-  const handleAdd = () => {
-    if (!noteBody.trim() && pendingFiles.length === 0) return;
-    const newNote = {
-      id: Date.now().toString(),
-      title: noteTitle.trim() || `Note ${notes.length + 1}`,
-      content: noteBody.trim(),
-      timestamp: new Date().toLocaleDateString('en-GB', { day:'numeric',month:'short',year:'numeric' }),
-      attachments: pendingFiles,
-    };
-    persist([newNote, ...notes]);
-    setNoteTitle(''); setNoteBody(''); setPendingFiles([]); setShowAdd(false); setFileErr('');
+  const toggleFolder = (path) => {
+    setExpanded(prev => ({ ...prev, [path]: !prev[path] }));
   };
 
-  const handleFileChange = (e) => {
-    setFileErr('');
-    const files = Array.from(e.target.files);
-    files.forEach(file => {
-      if (!['application/pdf','text/html'].includes(file.type)) { setFileErr('Only PDF and HTML files are supported.'); return; }
-      if (file.size > MAX_FILE_BYTES) { setFileErr(`"${file.name}" exceeds 1.5 MB limit.`); return; }
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPendingFiles(pf => [...pf, { id: Date.now().toString() + Math.random(), name:file.name, type:file.type, data:reader.result, size:file.size }]);
-      };
-      reader.readAsDataURL(file);
+  const renderTree = (nodes, currentPath = '') => {
+    if (!nodes) return null;
+    return nodes.map((node) => {
+      const nodePath = `${currentPath}/${node.name}`;
+      if (node.type === 'folder') {
+        const isExp = expanded[nodePath];
+        return (
+          <div key={nodePath} style={{ marginBottom: 4 }}>
+            <button onClick={() => toggleFolder(nodePath)}
+              style={{ display:'flex', alignItems:'center', width:'100%', padding:'10px 12px', background: isExp ? 'var(--surface2)' : 'transparent', border:'none', borderRadius:8, color:'var(--text)', cursor:'pointer', transition:'all 0.2s' }}
+              onMouseEnter={e => { if(!isExp) e.currentTarget.style.background = 'var(--surface2)'; }}
+              onMouseLeave={e => { if(!isExp) e.currentTarget.style.background = 'transparent'; }}>
+              {isExp ? <ChevronDown size={16} style={{ marginRight:8, color:'var(--text3)' }}/> : <ChevronRight size={16} style={{ marginRight:8, color:'var(--text3)' }}/>}
+              <Folder size={16} style={{ marginRight:8, color:'var(--accent)' }}/>
+              <span style={{ fontSize:13, fontWeight:600 }}>{node.name}</span>
+            </button>
+            {isExp && (
+              <div style={{ paddingLeft: 12, marginTop: 4, borderLeft:'1px solid var(--line2)', marginLeft: 18 }}>
+                {renderTree(node.children, nodePath)}
+              </div>
+            )}
+          </div>
+        );
+      } else {
+        return (
+          <div key={nodePath} style={{ marginBottom: 4 }}>
+            <a href={node.path} target="_blank" rel="noopener noreferrer"
+              style={{ display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%', padding:'10px 12px', background:'var(--surface)', border:'1px solid var(--line2)', borderRadius:8, color:'var(--text2)', cursor:'pointer', transition:'all 0.2s', textDecoration:'none' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text3)'; e.currentTarget.style.color = 'var(--text)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.style.color = 'var(--text2)'; }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8, overflow:'hidden' }}>
+                <FileText size={14} style={{ flexShrink:0, color:'var(--rose)' }}/>
+                <span style={{ fontSize:12, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', fontWeight:500 }}>{node.name}</span>
+              </div>
+              <span style={{ fontSize:10, color:'var(--text3)', flexShrink:0, marginLeft:8, background:'var(--surface2)', padding:'2px 6px', borderRadius:4 }}>{node.size}</span>
+            </a>
+          </div>
+        );
+      }
     });
-    e.target.value = '';
   };
-
-  const removeFile = (id) => setPendingFiles(pf => pf.filter(f => f.id !== id));
-  const handleDelete = (id) => { persist(notes.filter(n=>n.id!==id)); setDelConfirm(null); };
 
   return (
-    <>
-      <div className="notes-backdrop" onClick={onClose} />
-      <div className="notes-sidebar">
-        <div style={{ padding:'20px 24px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
-          <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12 }}>
-            <div style={{ display:'flex',alignItems:'center',gap:12 }}>
-              <div style={{ width:36,height:36,borderRadius:10,background:'var(--surface2)',display:'flex',alignItems:'center',justifyContent:'center' }}><NotebookPen size={18} color="var(--text)"/></div>
-              <div>
-                <div style={{ fontSize:16,fontWeight:700,color:'var(--text)' }}>Local Notes</div>
-                <div style={{ fontSize:12,color:'var(--text3)' }}>{subjName} · Paper {paperNum}</div>
-              </div>
+    <div className="library-sidebar">
+      <div style={{ padding:'20px 24px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
+        <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between' }}>
+          <div style={{ display:'flex',alignItems:'center',gap:12 }}>
+            <div style={{ width:36,height:36,borderRadius:10,background:'var(--surface2)',display:'flex',alignItems:'center',justifyContent:'center' }}>
+              <Library size={18} color="var(--text)"/>
             </div>
-            <button className="icon-btn" onClick={onClose}><X size={16}/></button>
-          </div>
-          <div style={{ display:'flex',alignItems:'center',gap:8 }}>
-            <span style={{ fontSize:12,fontWeight:500,color:'var(--text3)' }}>{notes.length} note{notes.length!==1?'s':''}</span>
-            <span style={{ flex:1 }}/>
-            {isAdmin ? (
-              <button onClick={()=>setShowAdd(s=>!s)}
-                style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:8,border:'none',cursor:'pointer',background:'var(--text)',color:'var(--bg)',fontSize:12,fontWeight:600,transition:'all 0.2s' }}>
-                <Plus size={14}/> Add Note
-              </button>
-            ) : (
-              <button onClick={onRequestAuth}
-                style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 14px',borderRadius:8,border:'1px solid var(--line2)',cursor:'pointer',background:'var(--surface2)',color:'var(--text2)',fontSize:12,fontWeight:500,transition:'all 0.2s' }}>
-                <Lock size={14}/> Unlock to add
-              </button>
-            )}
-          </div>
-        </div>
-
-        {showAdd && isAdmin && (
-          <div style={{ padding:'16px 24px',borderBottom:'1px solid var(--line2)',background:'var(--surface2)',flexShrink:0 }}>
-            <input className="n-input" placeholder="Title (optional)" value={noteTitle} onChange={e=>setNoteTitle(e.target.value)} style={{ marginBottom:12 }}/>
-            <textarea className="n-input" placeholder="Write your note here…" value={noteBody} onChange={e=>setNoteBody(e.target.value)} rows={4} style={{ marginBottom:12 }}/>
-
-            <input ref={fileRef} type="file" accept=".pdf,.html,application/pdf,text/html" multiple style={{ display:'none' }} onChange={handleFileChange}/>
-            <button onClick={()=>fileRef.current?.click()}
-              style={{ display:'flex',alignItems:'center',gap:8,padding:'10px 16px',borderRadius:10,border:'1px dashed var(--line2)',cursor:'pointer',background:'transparent',color:'var(--text2)',fontSize:13,width:'100%',justifyContent:'center',marginBottom:12,transition:'all 0.2s' }}>
-              <Paperclip size={14}/> Attach PDF or HTML file
-            </button>
-            {fileErr && <p style={{ fontSize:12,color:'var(--red)',marginBottom:12,display:'flex',alignItems:'center',gap:6 }}><AlertCircle size={14}/>{fileErr}</p>}
-            {pendingFiles.length > 0 && (
-              <div style={{ display:'flex',flexWrap:'wrap',gap:6,marginBottom:12 }}>
-                {pendingFiles.map(f => (
-                  <div key={f.id} style={{ display:'flex',alignItems:'center',gap:6,padding:'4px 10px 4px 8px',borderRadius:8,background:'var(--surface3)',border:'1px solid var(--line2)',fontSize:11,color:'var(--text2)' }}>
-                    <FileText size={12} color="var(--text)"/>
-                    <span>{f.name}</span>
-                    <span style={{ color:'var(--text3)' }}>({fmtBytes(f.size)})</span>
-                    <button onClick={()=>removeFile(f.id)} style={{ background:'none',border:'none',cursor:'pointer',padding:0,display:'flex',alignItems:'center',color:'var(--text3)' }}><X size={12}/></button>
-                  </div>
-                ))}
-              </div>
-            )}
-            <div style={{ display:'flex',gap:12 }}>
-              <button onClick={handleAdd} disabled={!noteBody.trim()&&pendingFiles.length===0}
-                style={{ flex:1,padding:'10px',borderRadius:10,border:'none',cursor:(noteBody.trim()||pendingFiles.length>0)?'pointer':'not-allowed',background:(noteBody.trim()||pendingFiles.length>0)?'var(--text)':'var(--surface)',color:(noteBody.trim()||pendingFiles.length>0)?'var(--bg)':'var(--text3)',fontSize:13,fontWeight:600,transition:'all 0.2s' }}>
-                Save Note
-              </button>
-              <button onClick={()=>{setShowAdd(false);setNoteTitle('');setNoteBody('');setPendingFiles([]);setFileErr('');}}
-                style={{ padding:'10px 16px',borderRadius:10,border:'1px solid var(--line2)',cursor:'pointer',background:'transparent',color:'var(--text2)',fontSize:13,transition:'all 0.2s' }}>
-                Cancel
-              </button>
+            <div>
+              <div style={{ fontSize:16,fontWeight:700,color:'var(--text)' }}>Library Explorer</div>
+              <div style={{ fontSize:12,color:'var(--text3)' }}>{subjectCode ? subjName : 'All Subjects'}</div>
             </div>
           </div>
-        )}
-
-        <div className="custom-sb" style={{ flex:1,overflowY:'auto',padding:'20px 24px',display:'flex',flexDirection:'column',gap:16 }}>
-          {notes.length === 0 ? (
-            <div style={{ textAlign:'center',padding:'60px 0',color:'var(--text3)' }}>
-              <FileText size={48} style={{ opacity:0.2,marginBottom:16 }}/>
-              <p style={{ fontSize:15,fontWeight:600,marginBottom:8,color:'var(--text)' }}>No local notes yet</p>
-              <p style={{ fontSize:13, marginBottom: 16 }}>{isAdmin?'Click "Add Note" to get started.':'Unlock the database to start adding notes.'}</p>
-              <p style={{ fontSize:10, color:'var(--text3)', borderTop:'1px solid var(--line)', paddingTop:16, marginTop:16 }}>
-                Static Repo Notes expected format:<br/>
-                <span style={{fontFamily:'Roboto Mono, monospace', marginTop:4, display:'block'}}>/notes/{key}.pdf</span>
-              </p>
-            </div>
-          ) : notes.map(note => (
-            <div key={note.id} className="note-card">
-              <div style={{ display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,marginBottom:note.content?8:0 }}>
-                <span style={{ fontSize:14,fontWeight:600,color:'var(--text)',lineHeight:1.4 }}>{note.title}</span>
-                {isAdmin && (delConfirm===note.id ? (
-                  <div style={{ display:'flex',gap:6,flexShrink:0 }}>
-                    <button onClick={()=>handleDelete(note.id)} style={{ padding:'4px 10px',borderRadius:6,border:'none',cursor:'pointer',background:'var(--red)',color:'#fff',fontSize:11,fontWeight:600 }}>Delete</button>
-                    <button onClick={()=>setDelConfirm(null)} style={{ padding:'4px 10px',borderRadius:6,border:'1px solid var(--line2)',cursor:'pointer',background:'transparent',color:'var(--text2)',fontSize:11 }}>Cancel</button>
-                  </div>
-                ) : (
-                  <button onClick={()=>setDelConfirm(note.id)} className="icon-btn" style={{ width:28,height:28,borderRadius:8,flexShrink:0,border:'none' }}><Trash2 size={14} color="var(--text3)"/></button>
-                ))}
-              </div>
-              {note.content && <p style={{ fontSize:13,color:'var(--text2)',lineHeight:1.6,whiteSpace:'pre-wrap' }}>{note.content}</p>}
-              {note.attachments?.length > 0 && (
-                <div style={{ display:'flex',flexWrap:'wrap',gap:6,marginTop:12 }}>
-                  {note.attachments.map(att => (
-                    <button key={att.id} className="attach-pill" onClick={()=>openBlob(att)}>
-                      <FileText size={12} color={att.type==='application/pdf'?'var(--rose)':'var(--text)'}/>
-                      <span style={{ maxWidth:160,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontSize:11 }}>{att.name}</span>
-                      <ExternalLink size={10} style={{ flexShrink:0 }}/>
-                    </button>
-                  ))}
-                </div>
-              )}
-              <p style={{ fontSize:11,fontWeight:500,color:'var(--text3)',marginTop:12 }}>{note.timestamp}</p>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ padding:'16px 24px',borderTop:'1px solid var(--line2)',flexShrink:0 }}>
-          <p style={{ fontSize:11,fontWeight:500,color:'var(--text3)',textAlign:'center' }}>{isAdmin?'🔓 Admin mode active':'🔒 Read-only mode'}</p>
+          <button className="icon-btn" onClick={onClose}><X size={16}/></button>
         </div>
       </div>
-    </>
+
+      <div className="custom-sb" style={{ flex:1, overflowY:'auto', padding:'20px 24px', display:'flex', flexDirection:'column' }}>
+        {!targetFolder || targetFolder.children?.length === 0 ? (
+           <div style={{ textAlign:'center',padding:'60px 0',color:'var(--text3)' }}>
+            <Folder size={48} style={{ opacity:0.2,marginBottom:16 }}/>
+            <p style={{ fontSize:15,fontWeight:600,marginBottom:8,color:'var(--text)' }}>Folder Empty</p>
+            <p style={{ fontSize:13,lineHeight:1.6 }}>No files indexed for this subject yet. Add PDFs to <span style={{fontFamily:'monospace'}}>/public/library/</span> and run the Python script.</p>
+          </div>
+        ) : (
+          renderTree(targetFolder.children, subjectCode || 'root')
+        )}
+      </div>
+    </div>
   );
 };
 
@@ -1055,17 +1177,17 @@ export default function App() {
   useEffect(()=>{ localStorage.setItem('nexusTheme',dark?'dark':'light'); },[dark]);
   const toggleTheme = () => setDark(d=>!d);
 
-  const [showStartup, setShowStartup]   = useState(true);
-  const [showContact, setShowContact]   = useState(false);
-  const [isViewing,   setIsViewing]     = useState(false);
-  const [showNav,     setShowNav]       = useState(true);
-  const [showNotes,   setShowNotes]     = useState(false);
-  const [showMCQ,     setShowMCQ]       = useState(false);
-  const [showTopicals,setShowTopicals]  = useState(false);
-  const [isAdmin,     setIsAdmin]       = useState(false);
-  const [showPwModal, setShowPwModal]   = useState(false);
+  const [showStartup, setShowStartup]     = useState(true);
+  const [showFullLibrary, setShowFullLibrary] = useState(false);
+  const [showContact, setShowContact]     = useState(false);
+  const [isViewing,   setIsViewing]       = useState(false);
+  const [showNav,     setShowNav]         = useState(true);
+  const [showLibrary, setShowLibrary]     = useState(false);
+  const [showMCQ,     setShowMCQ]         = useState(false);
+  const [showTopicals,setShowTopicals]    = useState(false);
 
   const [topicalDb, setTopicalDb] = useState(null);
+  const [libraryDb, setLibraryDb] = useState([]);
   const [targetPage, setTargetPage] = useState(1);
   const [mcqSessionData, setMcqSessionData] = useState({});
 
@@ -1077,7 +1199,7 @@ export default function App() {
   const [type,    setType]    = useState('qp');
 
   const isComplete    = subject && year && season && paper && variant;
-  const canShowNotes  = !!subject && !!paper;
+  const canShowLibrary  = true;
   const canShowMCQ    = MCQ_SUBJECTS.includes(subject) && paper === MCQ_PAPER;
 
   const paperKey = `${subject}_${season}${year ? year.slice(2) : ''}_${paper}_${variant}`;
@@ -1096,6 +1218,11 @@ export default function App() {
       .then(res => res.json())
       .then(data => setTopicalDb(data))
       .catch(err => console.log('No topical DB generated yet.'));
+
+    fetch('/library_db.json')
+      .then(res => res.json())
+      .then(data => setLibraryDb(data))
+      .catch(err => console.log('No library DB generated yet.'));
   }, []);
 
   const activeFileUrl = useMemo(() => {
@@ -1112,14 +1239,26 @@ export default function App() {
 
   useEffect(()=>{ document.title="The Nexus | Workspace"; },[]);
   
-  // Close specific paper sidebars on change, but DO NOT forcefully close Topicals
   useEffect(()=>{ 
-    setShowNotes(false); 
+    setShowLibrary(false); 
     setShowMCQ(false); 
   }, [paper,variant,season,year,type]);
 
   const handleLoad = () => { if (!isComplete) return; setTargetPage(1); setIsViewing(true); setShowNav(false); };
-  const handleHome = () => { setIsViewing(false); setShowNav(true); };
+  
+  const handleHome = () => { 
+    setIsViewing(false); 
+    setShowNav(true); 
+  };
+
+  const handleBackToHub = () => {
+    setShowStartup(true);
+    setShowFullLibrary(false);
+    setIsViewing(false);
+    setShowLibrary(false);
+    setShowTopicals(false);
+    setShowMCQ(false);
+  };
 
   const handleSelectExplorer = (subjCode) => {
     if (subjCode) setSubject(subjCode);
@@ -1130,6 +1269,12 @@ export default function App() {
     if (subjCode) setSubject(subjCode);
     setShowStartup(false);
     setShowTopicals(true);
+  };
+
+  const handleSelectLibraryDashboard = (subjCode) => {
+    setSubject(subjCode || ''); 
+    setShowStartup(false);
+    setShowFullLibrary(true);
   };
 
   const handleTopicalSelect = useCallback((paperId, pageNum) => {
@@ -1148,25 +1293,30 @@ export default function App() {
   }, []);
 
   if (showStartup) return (
-    <><GlobalStyles dark={dark}/><StartupScreen onSelectExplorer={handleSelectExplorer} onSelectTopicals={handleSelectTopicals} toggleTheme={toggleTheme} dark={dark}/></>
+    <><GlobalStyles dark={dark}/><StartupScreen onSelectExplorer={handleSelectExplorer} onSelectTopicals={handleSelectTopicals} onSelectLibrary={handleSelectLibraryDashboard} toggleTheme={toggleTheme} dark={dark}/></>
+  );
+
+  if (showFullLibrary) return (
+    <FullLibraryPage initialSubject={subject} libraryDb={libraryDb} onBackToHub={handleBackToHub} toggleTheme={toggleTheme} dark={dark} />
   );
 
   return (
     <>
       <GlobalStyles dark={dark}/>
       <ContactModal isOpen={showContact} onClose={()=>setShowContact(false)}/>
-      <PasswordModal isOpen={showPwModal} onClose={()=>setShowPwModal(false)} onSuccess={()=>setIsAdmin(true)}/>
 
       <div style={{ display:'flex',flexDirection:'column',height:'100vh',background:'var(--bg)',overflow:'hidden' }}>
 
-        {/* Dynamic Minimal Navbar */}
-        <div style={{ display:'grid',gridTemplateRows:showNav?'1fr':'0fr',transition:'grid-template-rows 0.3s cubic-bezier(0.16,1,0.3,1)',flexShrink:0,zIndex:30 }}>
+        <div 
+          style={{ display:'grid',gridTemplateRows:showNav?'1fr':'0fr',transition:'grid-template-rows 0.3s cubic-bezier(0.16,1,0.3,1)',flexShrink:0,zIndex:30 }}
+          onMouseLeave={() => { if(isViewing) setShowNav(false); }}
+        >
           <div style={{ overflow:'hidden',minHeight:0 }}>
             <header className="nav-bar" style={{ padding:'16px 24px', borderBottom:'1px solid var(--line2)' }}>
               <div style={{ maxWidth:1800,margin:'0 auto',display:'flex',flexWrap:'wrap',alignItems:'center',gap:20 }}>
 
                 <div style={{ display:'flex',alignItems:'center',gap:16,marginRight:8 }}>
-                  <button className="icon-btn" onClick={()=>{setShowStartup(true);handleHome();setShowNotes(false);setShowTopicals(false);}} title="Back to Hub" style={{ flexShrink:0 }}><ArrowLeft size={16}/></button>
+                  <button className="icon-btn" onClick={handleBackToHub} title="Back to Hub" style={{ flexShrink:0 }}><ArrowLeft size={16}/></button>
                   <div style={{ display:'flex',alignItems:'center',gap:10,cursor:'pointer' }} onClick={handleHome}>
                     <div style={{ width:32, height:32, borderRadius:8, background:'var(--text)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                       <Layers size={16} color="var(--bg)" strokeWidth={2.5}/>
@@ -1181,10 +1331,10 @@ export default function App() {
                 <div style={{ width:1,height:32,background:'var(--line2)',flexShrink:0 }} className="nav-divider"/>
 
                 <div className="custom-sb nav-filters" style={{ display:'flex',alignItems:'flex-end',gap:16,flex:1,overflowX:'auto',paddingBottom:4 }}>
-                  <NexusSelect label="Subject" value={subject} onChange={v=>{setSubject(v);setShowNotes(false);setTargetPage(1);}} options={SUBJECTS.map(s=>({value:s.code,label:`${s.code} · ${s.name}`}))}/>
+                  <NexusSelect label="Subject" value={subject} onChange={v=>{setSubject(v);setShowLibrary(false);setTargetPage(1);}} options={SUBJECTS.map(s=>({value:s.code,label:`${s.code} · ${s.name}`}))}/>
                   <NexusSelect label="Year"    value={year}    onChange={v=>{setYear(v);setTargetPage(1);}}    options={YEARS}/>
                   <NexusSelect label="Season"  value={season}  onChange={v=>{setSeason(v);setTargetPage(1);}}  options={SEASONS.map(s=>({value:s.code,label:s.name}))}/>
-                  <NexusSelect label="Paper"   value={paper}   onChange={v=>{setPaper(v);setShowNotes(false);setTargetPage(1);}} options={PAPERS}/>
+                  <NexusSelect label="Paper"   value={paper}   onChange={v=>{setPaper(v);setShowLibrary(false);setTargetPage(1);}} options={PAPERS}/>
                   <NexusSelect label="Variant" value={variant} onChange={v=>{setVariant(v);setTargetPage(1);}} options={VARIANTS}/>
 
                   <div style={{ display:'flex',flexDirection:'column',gap:6 }}>
@@ -1198,20 +1348,20 @@ export default function App() {
                   <div style={{ display:'flex',flexDirection:'column',gap:6 }}>
                     <span style={{ fontSize:10,fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:4 }}>Tools</span>
                     <div style={{ display:'flex',gap:8 }}>
-                      <button onClick={()=>{setShowTopicals(s=>!s); setShowNotes(false);}}
+                      <button onClick={()=>{setShowTopicals(s=>!s); setShowLibrary(false); setShowMCQ(false);}}
                         style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showTopicals?'var(--text)':'var(--surface2)',color:showTopicals?'var(--bg)':'var(--text)',fontSize:12,fontWeight:600 }}>
                         <Compass size={14}/> Topicals
                       </button>
 
-                      {canShowNotes && (
-                        <button onClick={()=>{setShowNotes(s=>!s); setShowTopicals(false);}}
-                          style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showNotes?'var(--text)':'var(--surface2)',color:showNotes?'var(--bg)':'var(--text)',fontSize:12,fontWeight:600 }}>
-                          <NotebookPen size={14}/> Notes
+                      {canShowLibrary && (
+                        <button onClick={()=>{setShowLibrary(s=>!s); setShowTopicals(false); setShowMCQ(false);}}
+                          style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showLibrary?'var(--text)':'var(--surface2)',color:showLibrary?'var(--bg)':'var(--text)',fontSize:12,fontWeight:600 }}>
+                          <Library size={14}/> Library
                         </button>
                       )}
 
                       {canShowMCQ && (
-                        <button onClick={()=>setShowMCQ(s => !s)}
+                        <button onClick={()=>{setShowMCQ(s=>!s); setShowLibrary(false); setShowTopicals(false);}}
                           style={{ display:'flex',alignItems:'center',gap:6,padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',transition:'all 0.2s',background:showMCQ?'var(--text)':'var(--surface2)',color:showMCQ?'var(--bg)':'var(--text)',fontSize:12,fontWeight:600 }}>
                           <ListChecks size={14}/> Solver
                         </button>
@@ -1235,52 +1385,69 @@ export default function App() {
           </div>
         </div>
 
+        {/* Hover-Trigger Pull Tab */}
         {isViewing && !showNav && (
-          <button className="pull-tab" onClick={()=>setShowNav(true)}>
-            <ChevronDown size={14}/>
-          </button>
+          <div style={{ position:'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', zIndex: 40 }}>
+            <button 
+              className="pull-tab-pill" 
+              onClick={()=>setShowNav(true)} 
+              onTouchStart={()=>setShowNav(true)}
+            >
+              <ChevronDown size={18} style={{ color: 'var(--text)' }}/>
+            </button>
+          </div>
         )}
 
-        {/* Main Workspace Area */}
         <main style={{ flex:1,display:'flex',flexDirection:'column',overflow:'hidden',position:'relative' }}>
-          {isViewing && showNav && <div style={{ position:'absolute',inset:0,zIndex:20,cursor:'pointer',background:'rgba(0,0,0,0.2)',backdropFilter:'blur(2px)' }} onClick={()=>setShowNav(false)}/>}
-
-          {showNotes && canShowNotes && (
-            <NotesSidebar subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} onClose={()=>setShowNotes(false)} isAdmin={isAdmin} onRequestAuth={()=>setShowPwModal(true)}/>
+          
+          {/* Transparent click-to-close handler. */}
+          {isViewing && showNav && (
+            <div 
+              style={{ position:'absolute',inset:0,zIndex:20,cursor:'default',background:'rgba(0,0,0,0.4)',backdropFilter:'blur(2px)' }} 
+              onClick={()=>setShowNav(false)}
+            />
           )}
 
           <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
             
             {showTopicals ? (
               <TopicalsPage subjectCode={subject} topicalDb={topicalDb} onClose={()=>setShowTopicals(false)} onSelectQuestion={handleTopicalSelect}/>
-            ) : !isViewing ? (
-              <div className="bg-grid anim-fade" style={{ flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:40,textAlign:'center' }}>
-                <div style={{ position:'absolute',top:'20%',left:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle, var(--accent) 0%, transparent 60%)',opacity:0.05,pointerEvents:'none' }}/>
-                <div style={{ position:'absolute',bottom:'20%',right:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle, var(--teal) 0%, transparent 60%)',opacity:0.05,pointerEvents:'none' }}/>
-                
-                <div style={{ width:80,height:80,borderRadius:24,background:'var(--surface2)',border:'1px solid var(--line2)',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:32,zIndex:1 }}>
-                  <BookOpen size={40} color="var(--text3)" strokeWidth={1.5}/>
-                </div>
-                <h2 style={{ fontSize:32,fontWeight:700,color:'var(--text)',marginBottom:16,zIndex:1 }}>Workspace Ready</h2>
-                <p style={{ color:'var(--text2)',fontSize:16,lineHeight:1.6,maxWidth:460,marginBottom:40,zIndex:1 }}>
-                  Configure your paper in the navigation bar above, then click <strong style={{color:'var(--text)'}}>Load Paper</strong> to open the viewer.
-                </p>
-              </div>
             ) : (
-              <div className="anim-fade" style={{ flex:1,display:'flex',overflow:'hidden',position:'relative' }}>
-                <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background:'#e5e7eb' }}>
-                  <iframe src={viewerSrc} style={{ width:'100%',height:'100%',border:'none' }} title="PDF Viewer" allowFullScreen/>
-                </div>
-
-                {showMCQ && canShowMCQ && (
-                  <MCQSolver 
-                    subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} 
-                    onClose={()=>setShowMCQ(false)}
-                    mcqState={currentMcqState} 
-                    updateMcqState={updateMcqState}
-                  />
+              <>
+                {showLibrary && (
+                  <LibrarySidebar subjectCode={subject} libraryDb={libraryDb} onClose={()=>setShowLibrary(false)} />
                 )}
-              </div>
+
+                {!isViewing ? (
+                  <div className="bg-grid anim-fade" style={{ flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:40,textAlign:'center' }}>
+                    <div style={{ position:'absolute',top:'20%',left:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle, var(--accent) 0%, transparent 60%)',opacity:0.05,pointerEvents:'none' }}/>
+                    <div style={{ position:'absolute',bottom:'20%',right:'25%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle, var(--teal) 0%, transparent 60%)',opacity:0.05,pointerEvents:'none' }}/>
+                    
+                    <div style={{ width:80,height:80,borderRadius:24,background:'var(--surface2)',border:'1px solid var(--line2)',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:32,zIndex:1 }}>
+                      <BookOpen size={40} color="var(--text3)" strokeWidth={1.5}/>
+                    </div>
+                    <h2 style={{ fontSize:32,fontWeight:700,color:'var(--text)',marginBottom:16,zIndex:1 }}>Workspace Ready</h2>
+                    <p style={{ color:'var(--text2)',fontSize:16,lineHeight:1.6,maxWidth:460,marginBottom:40,zIndex:1 }}>
+                      Configure your paper in the navigation bar above, then click <strong style={{color:'var(--text)'}}>Load Paper</strong> to open the viewer.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="anim-fade" style={{ flex:1,display:'flex',overflow:'hidden',position:'relative' }}>
+                    <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background:'#e5e7eb' }}>
+                      <iframe src={viewerSrc} style={{ width:'100%',height:'100%',border:'none' }} title="PDF Viewer" allowFullScreen/>
+                    </div>
+
+                    {showMCQ && canShowMCQ && (
+                      <MCQSolver 
+                        subjectCode={subject} paperNum={paper} variant={variant} year={year} season={season} 
+                        onClose={()=>setShowMCQ(false)}
+                        mcqState={currentMcqState} 
+                        updateMcqState={updateMcqState}
+                      />
+                    )}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </main>
