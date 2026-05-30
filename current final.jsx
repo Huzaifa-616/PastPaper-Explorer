@@ -305,14 +305,12 @@ const GlobalStyles = ({ dark }) => (
       backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     }
 
-    /* 📱 RESPONSIVE FIXES (Narrow Desktop, Tablets, Touch Devices) */
+    /* 📱 MOBILE RESPONSIVE FIXES */
     .mobile-only { display: none !important; }
-    
-    @media (max-width: 1024px), (pointer: coarse) {
-      .mobile-only { display: flex !important; }
-      .desktop-only { display: none !important; }
-      /* ── RESTORED: Nav 2-row layout & Grid ── */
+    @media (max-width: 768px) {
+      /* ── Nav: 2-row layout, no horizontal scroll ── */
       header.nav-bar { padding: 12px 16px !important; }
+      
 
       .nav-inner { flex-wrap: wrap !important; gap: 10px 0 !important; align-items: center !important; }
       .nav-divider { display: none !important; }
@@ -325,9 +323,7 @@ const GlobalStyles = ({ dark }) => (
 
       .nav-filters {
         order: 9 !important; width: 100% !important; flex: none !important; overflow: visible !important;
-        display: grid !important; 
-        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)) !important; 
-        gap: 8px !important;
+        display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 8px !important;
         padding: 0 !important; align-items: end !important;
       }
       .nav-filters > div { width: 100% !important; min-width: 0 !important; flex: none !important; }
@@ -339,45 +335,35 @@ const GlobalStyles = ({ dark }) => (
       .nav-tools-wrap { grid-column: 1 / -1 !important; }
       .nav-tools-wrap > div { flex-wrap: wrap !important; gap: 6px !important; }
       .nav-tools-wrap button { padding: 7px 12px !important; font-size: 11px !important; }
-      /* ───────────────────────────────────────── */
-
-      /* Bottom Sheet MCQ Solver (Fixes overlap & animation wobble) */
-      .mcq-sidebar { 
-        position: absolute !important; 
-        bottom: 0; left: 0; right: 0; top: auto; 
-        width: 100% !important; 
-        height: var(--sheet-height, 50vh) !important; 
-        border-left: none !important; 
-        border-top: 1px solid var(--line2); 
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.8); 
-        z-index: 50; 
-        border-radius: 20px 20px 0 0; 
-        /* FIX: Locks the entrance animation so it doesn't jump to the right when dragged */
-        animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both !important; 
-      }
       
-      /* FIX: Only handles height transition, no animation re-triggering */
-      .mcq-sidebar.snap-anim {
-        transition: height 0.3s cubic-bezier(0.16,1,0.3,1) !important;
+      .tools-grid { grid-template-columns: 1fr; }
+      .featured-card { flex-direction: column !important; }
+      .topical-visual { justify-content: center !important; padding: 0 24px 24px 24px !important; }
+      
+      /* Mobile Sidebars (Library & Topicals inside Workspace) */
+      .library-sidebar, .topicals-sidebar { 
+        position: absolute !important; 
+        top: 0; bottom: 0; left: 0; right: 0;
+        height: auto !important; 
+        width: 100% !important; 
+        max-width: 100% !important;
+        border-right: none !important; 
+        box-shadow: none !important; 
       }
 
-      .drag-handle {
-        width: 100%; height: 24px; align-items: center; justify-content: center; 
-        cursor: grab; flex-shrink: 0; padding-top: 8px; touch-action: none;
-      }
-      .drag-bar {
-        width: 40px; height: 5px; border-radius: 4px; background: var(--text3); opacity: 0.5;
-      }
-      .drag-handle:active .drag-bar { opacity: 0.8; }
-
-      /* Mobile Topicals Expanded View */
+      /* Mobile Topicals Expanded View (Dashboard) */
       .topicals-content { flex-direction: column !important; display: flex !important; overflow-y: auto !important; }
       
       .topicals-papers { 
-        width: 100% !important; height: auto !important; display: grid !important; 
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important; gap: 10px !important;
-        border-right: none !important; border-bottom: 1px solid var(--line2) !important; 
-        padding: 16px !important; overflow: visible !important; 
+        width: 100% !important; 
+        height: auto !important; 
+        display: grid !important; 
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important; 
+        gap: 10px !important;
+        border-right: none !important; 
+        border-bottom: 1px solid var(--line2) !important; 
+        padding: 16px !important; 
+        overflow: visible !important; 
       }
       .topicals-papers > p { grid-column: 1 / -1; margin-bottom: 2px !important; padding-left: 2px !important; }
       .topicals-papers > button { flex: unset !important; width: 100% !important; height: 100% !important; padding: 12px !important; scroll-snap-align: none; }
@@ -389,10 +375,60 @@ const GlobalStyles = ({ dark }) => (
       
       .mobile-hidden { display: none !important; }
       
+      
+      /* Smooth opening, but disables transition while user is actively dragging */
+      .mcq-sidebar.snap-anim {
+        transition: height 0.3s cubic-bezier(0.16,1,0.3,1);
+        animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both; 
+      }
+
+      /* Drag Bar Styling */
+      .drag-handle {
+        width: 100%; height: 24px; align-items: center; justify-content: center; 
+        cursor: grab; flex-shrink: 0; padding-top: 8px; touch-action: none;
+      }
+      .drag-bar {
+        width: 40px; height: 5px; border-radius: 4px; background: var(--text3); opacity: 0.5;
+      }
+      .drag-handle:active .drag-bar { opacity: 0.8; }
+
       /* Full Page Mobile Headers */
       .full-lib-header { padding: 12px 16px !important; flex-wrap: wrap; }
       .full-lib-main { padding: 16px !important; }
       .full-lib-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    }
+    /* 📱 UNIVERSAL TOUCH DEVICES (Phones, Tablets, Touch-Screens) */
+    @media (pointer: coarse) {
+      .mobile-only { display: flex !important; }
+      
+      /* Touch MCQ Bottom Sheet (Draggable) */
+      .mcq-sidebar { 
+        position: absolute !important; 
+        bottom: 0; left: 0; right: 0; top: auto; 
+        width: 100% !important; 
+        height: var(--sheet-height, 50vh) !important; 
+        border-left: none !important; 
+        border-top: 1px solid var(--line2); 
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.8); /* Slightly darker shadow for large screens */
+        z-index: 50; 
+        border-radius: 20px 20px 0 0; 
+      }
+      
+      /* Smooth opening, disables transition during drag */
+      .mcq-sidebar.snap-anim {
+        transition: height 0.3s cubic-bezier(0.16,1,0.3,1);
+        animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both; 
+      }
+
+      /* Drag Bar Styling */
+      .drag-handle {
+        width: 100%; height: 24px; align-items: center; justify-content: center; 
+        cursor: grab; flex-shrink: 0; padding-top: 8px; touch-action: none;
+      }
+      .drag-bar {
+        width: 40px; height: 5px; border-radius: 4px; background: var(--text3); opacity: 0.5;
+      }
+      .drag-handle:active .drag-bar { opacity: 0.8; }
     }
   `}</style>
 );
@@ -1248,25 +1284,24 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqS
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    const handlePointerMove = (e) => {
+    const handleTouchMove = (e) => {
       if (!isDragging) return;
-      let vh = ((window.innerHeight - e.clientY) / window.innerHeight) * 100;
-      if (vh < 20) vh = 20; 
-      if (vh > 90) vh = 90; 
+      const touchY = e.touches[0].clientY;
+      // Calculate height percentage relative to screen
+      let vh = ((window.innerHeight - touchY) / window.innerHeight) * 100;
+      if (vh < 20) vh = 20; // Minimum shrink limit
+      if (vh > 90) vh = 90; // Maximum expand limit
       setSheetHeight(vh);
     };
-    
-    const handlePointerUp = () => setIsDragging(false);
+    const handleTouchEnd = () => setIsDragging(false);
 
     if (isDragging) {
-      window.addEventListener('pointermove', handlePointerMove);
-      window.addEventListener('pointerup', handlePointerUp);
-      window.addEventListener('pointercancel', handlePointerUp); // Added failsafe
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      window.addEventListener('touchend', handleTouchEnd);
     }
     return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('pointercancel', handlePointerUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
   }, [isDragging]);
   // ----------------------
@@ -1294,15 +1329,8 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqS
   return (
     <div className={`mcq-sidebar ${!isDragging ? 'snap-anim' : ''}`} style={{ '--sheet-height': `${sheetHeight}vh` }}>
       
-      {/* Universal Drag Handle Bar */}
-      <div 
-        className="drag-handle mobile-only" 
-        onPointerDown={(e) => { 
-          e.preventDefault(); 
-          e.target.setPointerCapture(e.pointerId); // Locks the drag event exactly to your mouse/finger
-          setIsDragging(true); 
-        }}
-      >
+      {/* NEW: Mobile Drag Handle Bar */}
+      <div className="drag-handle mobile-only" onTouchStart={() => setIsDragging(true)}>
         <div className="drag-bar" />
       </div>
 
@@ -1528,10 +1556,9 @@ export default function App() {
         >
           <div style={{ overflow:'hidden',minHeight:0 }}>
             <header className="nav-bar" style={{ padding:'16px 24px', borderBottom:'1px solid var(--line2)' }}>
-              
-              <div className="nav-inner" style={{ maxWidth:1800,margin:'0 auto',display:'flex',alignItems:'center',gap:20 }}>
+              <div style={{ maxWidth:1800,margin:'0 auto',display:'flex',flexWrap:'wrap',alignItems:'center',gap:20 }}>
 
-                <div className="nav-brand" style={{ display:'flex',alignItems:'center',gap:16,marginRight:8 }}>
+                <div style={{ display:'flex',alignItems:'center',gap:16,marginRight:8 }}>
                   <button className="icon-btn" onClick={handleBackToHub} title="Back to Hub" style={{ flexShrink:0 }}><ArrowLeft size={16}/></button>
                   <div style={{ display:'flex',alignItems:'center',gap:10,cursor:'pointer' }} onClick={handleHome}>
                     <div style={{ width:32, height:32, borderRadius:8, background:'var(--text)', display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -1539,7 +1566,7 @@ export default function App() {
                     </div>
                     <div>
                       <div style={{ fontSize:15,fontWeight:700,color:'var(--text)',lineHeight:1.1 }}>The Nexus</div>
-                      <div className="nav-workspace-label" style={{ fontSize:10,fontWeight:600,color:'var(--text3)',letterSpacing:'0.05em' }}>WORKSPACE</div>
+                      <div style={{ fontSize:10,fontWeight:600,color:'var(--text3)',letterSpacing:'0.05em' }}>WORKSPACE</div>
                     </div>
                   </div>
                 </div>
@@ -1555,13 +1582,13 @@ export default function App() {
 
                   <div style={{ display:'flex',flexDirection:'column',gap:6 }}>
                     <span style={{ fontSize:10,fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:4 }}>Type</span>
-                    <div className="nav-type-wrap" style={{ display:'flex',background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:8,padding:4,gap:4 }}>
+                    <div style={{ display:'flex',background:'var(--surface2)',border:'1px solid var(--line2)',borderRadius:8,padding:4,gap:4 }}>
                       <button className={`seg-btn ${type==='qp'?'a-accent':'inactive'}`} onClick={()=>{setType('qp');setTargetPage(1);}}>QP</button>
                       <button className={`seg-btn ${type==='ms'?'a-accent':'inactive'}`} onClick={()=>{setType('ms');setTargetPage(1);}}>MS</button>
                     </div>
                   </div>
 
-                  <div className="nav-tools-wrap" style={{ display:'flex',flexDirection:'column',gap:6 }}>
+                  <div style={{ display:'flex',flexDirection:'column',gap:6 }}>
                     <span style={{ fontSize:10,fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--text3)',paddingLeft:4 }}>Tools</span>
                     <div style={{ display:'flex',gap:8 }}>
                       <button onClick={()=>{setShowTopicals(s=>!s); setShowLibrary(false); setShowMCQ(false);}}
