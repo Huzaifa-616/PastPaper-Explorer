@@ -15,8 +15,8 @@ const SUBJECTS = [
   { code: '9702', name: 'Physics' },
   { code: '9700', name: 'Biology' },
   { code: '9231', name: 'Further Mathematics' },
-];
-const YEARS         = Array.from({ length: 16 }, (_, i) => (2026 - i).toString());
+];                                // update this after adding more pastpapers
+const YEARS         = Array.from({ length: 7 }, (_, i) => (2026 - i).toString());
 const SEASONS       = [{ code: 'm', name: 'March' }, { code: 's', name: 'Summer' }, { code: 'w', name: 'Winter' }];
 const PAPERS        = ['1', '2', '3', '4', '5', '6'];
 const VARIANTS      = ['1', '2', '3'];
