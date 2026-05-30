@@ -375,20 +375,6 @@ const GlobalStyles = ({ dark }) => (
       
       .mobile-hidden { display: none !important; }
       
-      /* Mobile MCQ Bottom Sheet (Draggable) */
-      .mobile-only { display: flex !important; }
-      
-      .mcq-sidebar { 
-        position: absolute !important; 
-        bottom: 0; left: 0; right: 0; top: auto; 
-        width: 100% !important; 
-        height: var(--sheet-height, 50vh) !important; 
-        border-left: none !important; 
-        border-top: 1px solid var(--line2); 
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.4); 
-        z-index: 50; 
-        border-radius: 20px 20px 0 0; 
-      }
       
       /* Smooth opening, but disables transition while user is actively dragging */
       .mcq-sidebar.snap-anim {
@@ -410,6 +396,39 @@ const GlobalStyles = ({ dark }) => (
       .full-lib-header { padding: 12px 16px !important; flex-wrap: wrap; }
       .full-lib-main { padding: 16px !important; }
       .full-lib-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    }
+    /* 📱 UNIVERSAL TOUCH DEVICES (Phones, Tablets, Touch-Screens) */
+    @media (pointer: coarse) {
+      .mobile-only { display: flex !important; }
+      
+      /* Touch MCQ Bottom Sheet (Draggable) */
+      .mcq-sidebar { 
+        position: absolute !important; 
+        bottom: 0; left: 0; right: 0; top: auto; 
+        width: 100% !important; 
+        height: var(--sheet-height, 50vh) !important; 
+        border-left: none !important; 
+        border-top: 1px solid var(--line2); 
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.8); /* Slightly darker shadow for large screens */
+        z-index: 50; 
+        border-radius: 20px 20px 0 0; 
+      }
+      
+      /* Smooth opening, disables transition during drag */
+      .mcq-sidebar.snap-anim {
+        transition: height 0.3s cubic-bezier(0.16,1,0.3,1);
+        animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both; 
+      }
+
+      /* Drag Bar Styling */
+      .drag-handle {
+        width: 100%; height: 24px; align-items: center; justify-content: center; 
+        cursor: grab; flex-shrink: 0; padding-top: 8px; touch-action: none;
+      }
+      .drag-bar {
+        width: 40px; height: 5px; border-radius: 4px; background: var(--text3); opacity: 0.5;
+      }
+      .drag-handle:active .drag-bar { opacity: 0.8; }
     }
   `}</style>
 );
