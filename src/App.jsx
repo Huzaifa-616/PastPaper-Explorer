@@ -306,9 +306,11 @@ const GlobalStyles = ({ dark }) => (
     }
 
     /* 📱 MOBILE RESPONSIVE FIXES */
+    .mobile-only { display: none !important; }
     @media (max-width: 768px) {
       /* ── Nav: 2-row layout, no horizontal scroll ── */
       header.nav-bar { padding: 12px 16px !important; }
+      
 
       .nav-inner { flex-wrap: wrap !important; gap: 10px 0 !important; align-items: center !important; }
       .nav-divider { display: none !important; }
@@ -373,19 +375,36 @@ const GlobalStyles = ({ dark }) => (
       
       .mobile-hidden { display: none !important; }
       
-      /* Mobile MCQ Bottom Sheet */
+      /* Mobile MCQ Bottom Sheet (Draggable) */
+      .mobile-only { display: flex !important; }
+      
       .mcq-sidebar { 
         position: absolute !important; 
         bottom: 0; left: 0; right: 0; top: auto; 
         width: 100% !important; 
-        height: 75vh; 
+        height: var(--sheet-height, 50vh) !important; 
         border-left: none !important; 
         border-top: 1px solid var(--line2); 
         box-shadow: 0 -10px 40px rgba(0,0,0,0.4); 
-        animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both; 
         z-index: 50; 
         border-radius: 20px 20px 0 0; 
       }
+      
+      /* Smooth opening, but disables transition while user is actively dragging */
+      .mcq-sidebar.snap-anim {
+        transition: height 0.3s cubic-bezier(0.16,1,0.3,1);
+        animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1) both; 
+      }
+
+      /* Drag Bar Styling */
+      .drag-handle {
+        width: 100%; height: 24px; align-items: center; justify-content: center; 
+        cursor: grab; flex-shrink: 0; padding-top: 8px; touch-action: none;
+      }
+      .drag-bar {
+        width: 40px; height: 5px; border-radius: 4px; background: var(--text3); opacity: 0.5;
+      }
+      .drag-handle:active .drag-bar { opacity: 0.8; }
 
       /* Full Page Mobile Headers */
       .full-lib-header { padding: 12px 16px !important; flex-wrap: wrap; }
@@ -1241,6 +1260,33 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqS
   const keyCount = key.filter(Boolean).length;
   const pct      = keyRevealed && keyCount > 0 && answered > 0 ? Math.round(correct / keyCount * 100) : null;
 
+  // --- NEW DRAG LOGIC ---
+  const [sheetHeight, setSheetHeight] = useState(50); // Starts at 50vh on mobile
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const handleTouchMove = (e) => {
+      if (!isDragging) return;
+      const touchY = e.touches[0].clientY;
+      // Calculate height percentage relative to screen
+      let vh = ((window.innerHeight - touchY) / window.innerHeight) * 100;
+      if (vh < 20) vh = 20; // Minimum shrink limit
+      if (vh > 90) vh = 90; // Maximum expand limit
+      setSheetHeight(vh);
+    };
+    const handleTouchEnd = () => setIsDragging(false);
+
+    if (isDragging) {
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      window.addEventListener('touchend', handleTouchEnd);
+    }
+    return () => {
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging]);
+  // ----------------------
+
   const toggle = useCallback((qi, opt) => {
     if (keyRevealed) return;
     const newChoices = [...mine];
@@ -1262,7 +1308,13 @@ const MCQSolver = ({ subjectCode, paperNum, variant, year, season, onClose, mcqS
   };
 
   return (
-    <div className="mcq-sidebar">
+    <div className={`mcq-sidebar ${!isDragging ? 'snap-anim' : ''}`} style={{ '--sheet-height': `${sheetHeight}vh` }}>
+      
+      {/* NEW: Mobile Drag Handle Bar */}
+      <div className="drag-handle mobile-only" onTouchStart={() => setIsDragging(true)}>
+        <div className="drag-bar" />
+      </div>
+
       <div style={{ padding:'20px 24px',borderBottom:'1px solid var(--line2)',flexShrink:0 }}>
         <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16 }}>
           <div style={{ display:'flex',alignItems:'center',gap:12 }}>
