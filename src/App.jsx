@@ -304,9 +304,12 @@ const GlobalStyles = ({ dark }) => (
       background: ${dark ? 'rgba(5,5,10,0.92)' : 'rgba(248,250,252,0.92)'};
       backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     }
-
+    .mobile-only { display: none !important; }
+    
     /* 📱 MOBILE RESPONSIVE FIXES */
     @media (max-width: 768px) {
+      .mobile-only { display: flex !important; }
+      .desktop-only { display: none !important; }
       /* ── Nav: 2-row layout, no horizontal scroll ── */
       header.nav-bar { padding: 12px 16px !important; }
 
@@ -1557,26 +1560,44 @@ export default function App() {
           </div>
         </div>
 
-        {/* Hover-Trigger Pull Tab */}
-        {isViewing && !showNav && (
-          <div style={{ position:'absolute', top: 12, left: '50%', transform: 'translateX(-50%)', zIndex: 40 }}>
-            <button 
-              className="pull-tab-pill" 
-              onClick={()=>setShowNav(true)} 
-              onTouchStart={()=>setShowNav(true)}
+        {/* 1. Slim Black Horizontal Bar with Left Arrow (Desktop Only) */}
+            <div 
+              className="desktop-only"
+              style={{ 
+                position: 'absolute', top: 0, left: 0, right: 0, height: '6px', 
+                backgroundColor: '#000000', 
+                zIndex: 41, cursor: 'pointer', opacity: 0.6, transition: 'opacity 0.2s'
+              }}
+              onMouseEnter={() => setShowNav(true)}
+              onMouseOver={(e) => e.target.style.opacity = '1'}
+              onMouseOut={(e) => e.target.style.opacity = '0.6'}
             >
-              <ChevronDown size={18} style={{ color: 'var(--text)' }}/>
-            </button>
-          </div>
-        )}
+              {/* The little drop-down tab holding the arrow on the top left */}
+              <div style={{
+                position: 'absolute',
+                left: '24px', /* Move this number up or down to shift the arrow left/right */
+                top: 0,
+                backgroundColor: '#000000',
+                padding: '2px 8px 4px 8px',
+                borderBottomLeftRadius: '6px',
+                borderBottomRightRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+              }}>
+                <ChevronDown size={14} style={{ color: '#ffffff' }} />
+              </div>
+            </div>
 
         <main style={{ flex:1,display:'flex',flexDirection:'column',overflow:'hidden',position:'relative' }}>
           
-          {/* Transparent click-to-close handler. */}
+          {/* Invisible Hit-Detector (Closes Nav when cursor returns to PDF) */}
           {isViewing && showNav && (
             <div 
-              style={{ position:'absolute',inset:0,zIndex:20,cursor:'default',background:'rgba(0,0,0,0.4)',backdropFilter:'blur(2px)' }} 
-              onClick={()=>setShowNav(false)}
+              style={{ position:'absolute', inset:0, zIndex:20, cursor:'default' }} 
+              onMouseEnter={() => setShowNav(false)}
+              onClick={() => setShowNav(false)}
             />
           )}
 
