@@ -1572,13 +1572,6 @@ export default function App() {
 
         <main style={{ flex:1,display:'flex',flexDirection:'column',overflow:'hidden',position:'relative' }}>
           
-          {/* Transparent click-to-close handler. */}
-          {isViewing && showNav && (
-            <div 
-              style={{ position:'absolute',inset:0,zIndex:20,cursor:'default',background:'rgba(0,0,0,0.4)',backdropFilter:'blur(2px)' }} 
-              onClick={()=>setShowNav(false)}
-            />
-          )}
 
           <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
             
