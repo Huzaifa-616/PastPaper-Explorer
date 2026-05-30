@@ -1587,9 +1587,11 @@ export default function App() {
                 </div>
 
                 <div className="nav-actions" style={{ display:'flex',alignItems:'center',gap:12,marginLeft:'auto',flexShrink:0 }}>
-                  <button className={`btn-load ${isComplete?'ready':'disabled'}`} onClick={handleLoad} disabled={!isComplete}>
-                    <Play size={14} fill="currentColor"/> {isViewing?'Reload':'Load Paper'}
-                  </button>
+                  {!isViewing && (
+                    <button className={`btn-load ${isComplete?'ready':'disabled'}`} onClick={handleLoad} disabled={!isComplete}>
+                      <Play size={14} fill="currentColor"/> Load Paper
+                    </button>
+                  )}
                   {isViewing && <button className="icon-btn" onClick={()=>setShowNav(false)} title="Collapse Navigation"><ChevronUp size={16}/></button>}
                   <div style={{ width:1,height:24,background:'var(--line2)' }}/>
                   <button className="icon-btn" onClick={toggleTheme}>{dark?<Sun size={16}/>:<Moon size={16}/>}</button>
