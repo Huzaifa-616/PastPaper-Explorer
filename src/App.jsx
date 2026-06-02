@@ -488,7 +488,10 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
               <div style={{ width:48, height:48, borderRadius:14, background:'var(--surface2)', border:'1px solid var(--line2)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
                 <Code2 size={20} color="var(--text)"/>
               </div>
-              <h3 style={{ fontSize:20, fontWeight:700, marginBottom:8 }}>Programming IDE</h3>
+              <h3 style={{ fontSize:20, fontWeight:700, marginBottom:8, display:'flex', alignItems:'center' }}>
+                  Programming IDE
+                  <span style={{ fontSize:10, fontWeight:700, padding:'3px 8px', background:'rgba(251, 191, 36, 0.1)', color:'var(--amber)', border:'1px solid var(--amber)', borderRadius:6, marginLeft:10, letterSpacing:'0.05em', textTransform:'uppercase' }}>In Development</span>
+              </h3>
               <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Write, compile, and run code entirely in your browser. Built for 9618.</p>
             </div>
              <div style={{ marginTop:24, display:'flex', flexWrap:'wrap', gap:8 }}>
@@ -531,7 +534,10 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
               <div style={{ width:48, height:48, borderRadius:14, background:`var(--surface2)`, border:`1px solid var(--line2)`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}>
                 <Compass size={20} color={currentBrand.hex}/>
               </div>
-              <h3 style={{ fontSize:24, fontWeight:700, marginBottom:8 }}>Topical Database</h3>
+              <h3 style={{ fontSize:24, fontWeight:700, marginBottom:8, display:'flex', alignItems:'center' }}>
+                Topical Database
+                <span style={{ fontSize:10, fontWeight:700, padding:'3px 8px', background:'rgba(251, 191, 36, 0.1)', color:'var(--amber)', border:'1px solid var(--amber)', borderRadius:6, marginLeft:12, letterSpacing:'0.05em', textTransform:'uppercase' }}>In Development</span>
+              </h3>
               <p style={{ fontSize:15, color:'var(--text2)', lineHeight:1.6, maxWidth:400, marginBottom: 24 }}>
                 Don't just scan years—target your weaknesses. Dive into a massive database of past paper questions strictly indexed by the official syllabus structure.
               </p>
