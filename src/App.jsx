@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, useNavigate, useParams, Navigate } from 'react-router-dom';
 import GlobalStyles from './styles/GlobalStyles';
+import PWAStatus from './components/PWAStatus';
 import { useTheme } from './hooks/useTheme';
 import { useDatabases } from './hooks/useDatabases';
 import { SYLLABUS_STRUCTURE } from './config/syllabus';
@@ -79,6 +80,7 @@ export default function App() {
   return (
     <>
       <GlobalStyles dark={dark} />
+      <PWAStatus />
       <Routes>
         <Route path="/" element={<HubRoute dark={dark} toggleTheme={toggleTheme} />} />
         <Route path="/papers" element={<ExplorerPage dark={dark} toggleTheme={toggleTheme} />} />
