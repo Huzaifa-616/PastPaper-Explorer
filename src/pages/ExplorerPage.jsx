@@ -11,6 +11,7 @@ import TopicalsSidebar from '../components/TopicalsSidebar';
 import LibrarySidebar from '../components/LibrarySidebar';
 import MCQSolver from '../components/MCQSolver';
 import { useDatabases } from '../hooks/useDatabases';
+import { paperUrl } from '../config/assets';
 import { useMcqSession } from '../hooks/useMcqSession';
 
 // ─── URL helpers ──────────────────────────────────────────────────────────────
@@ -87,7 +88,7 @@ const ExplorerPage = ({ toggleTheme, dark }) => {
 
   const activeFileUrl = useMemo(() => {
     if (!isViewing) return '';
-    return `/papers/${subject}_${season}${year.slice(2)}_${type}_${paper}${variant}.pdf`;
+    return paperUrl(subject, season, year.slice(2), type, paper, variant);
   }, [subject, year, season, paper, variant, type, isViewing]);
 
   const viewerSrc = useMemo(() => {

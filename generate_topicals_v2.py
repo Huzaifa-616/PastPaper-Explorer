@@ -42,6 +42,7 @@ from PIL import Image
 from syllabus_taxonomy import SYLLABUS
 
 USE_WEBP = "--webp" in sys.argv
+UPLOAD_R2 = "--upload-r2" in sys.argv
 _args = [a for a in sys.argv[1:] if not a.startswith("--")]
 PAPERS_DIR = _args[0] if len(_args) > 0 else "./public/papers"
 PUBLIC_DIR = _args[1] if len(_args) > 1 else "./public"
@@ -293,6 +294,16 @@ def build():
     print(f"\nDone. {stats['papers']} papers, {stats['questions']} questions sliced, "
           f"{stats['classified']} classified ({stats['classified']*100//max(stats['questions'],1)}%).")
     print(f"Images in {IMG_DIR}/, database at {OUTPUT_JSON}")
+
+    if UPLOAD_R2:
+        print("\nUploading slices to R2...")
+        try:
+            from r2_upload import upload_folder
+            upload_folder(IMG_DIR, "topicals")
+        except SystemExit:
+            print("R2 upload skipped (see message above).")
+        except Exception as e:
+            print(f"R2 upload error: {e}")
 
 
 if __name__ == "__main__":
