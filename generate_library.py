@@ -1,9 +1,11 @@
 import os
 import json
+import sys
 
 # Define where to look and where to save
 LIBRARY_DIR = "./public/library"
 OUTPUT_JSON = "./public/library_db.json"
+UPLOAD_R2 = "--upload-r2" in sys.argv
 
 def build_tree(dir_path):
     tree = []
@@ -81,6 +83,16 @@ def generate_database():
     tot_files, tot_folders = count_items(database)
     print(f"Success! Indexed {tot_files} files across {tot_folders} folders.")
     print(f"Library database saved to {OUTPUT_JSON}")
+
+    if UPLOAD_R2:
+        print("\nUploading library files to R2...")
+        try:
+            from r2_upload import upload_folder
+            upload_folder(LIBRARY_DIR, "library")
+        except SystemExit:
+            print("R2 upload skipped (see message above).")
+        except Exception as e:
+            print(f"R2 upload error: {e}")
 
 if __name__ == "__main__":
     generate_database()

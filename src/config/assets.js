@@ -24,4 +24,12 @@ export const sliceUrl = (imgPath) => {
   return R2 ? `${R2}/${clean}` : `/${clean}`;
 };
 
+// Library file (textbook / notes / formula sheet), given the "path" stored in
+// library_db.json (which looks like "/library/9618/book.pdf").
+export const libraryUrl = (filePath) => {
+  if (!filePath) return '';
+  const clean = filePath.replace(/^\//, '');
+  return R2 ? `${R2}/${encodeURI(clean)}` : `/${encodeURI(clean)}`;
+};
+
 export const R2_BASE = R2;

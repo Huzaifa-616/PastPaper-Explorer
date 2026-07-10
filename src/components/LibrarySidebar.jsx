@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ChevronDown, ChevronRight, FileText, Folder, Library, X } from 'lucide-react';
 import { subjectName } from '../config/constants';
+import { libraryUrl } from '../config/assets';
 
 const LibrarySidebar = ({ subjectCode, libraryDb, onClose }) => {
   const subjName = subjectCode ? subjectName(subjectCode) : null;
@@ -41,7 +42,7 @@ const LibrarySidebar = ({ subjectCode, libraryDb, onClose }) => {
       } else {
         return (
           <div key={nodePath} style={{ marginBottom: 4 }}>
-            <a href={node.path} target="_blank" rel="noopener noreferrer"
+            <a href={libraryUrl(node.path)} target="_blank" rel="noopener noreferrer"
               style={{ display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%', padding:'10px 12px', background:'var(--surface)', border:'1px solid var(--line2)', borderRadius:8, color:'var(--text2)', cursor:'pointer', transition:'all 0.2s', textDecoration:'none' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text3)'; e.currentTarget.style.color = 'var(--text)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.style.color = 'var(--text2)'; }}>
