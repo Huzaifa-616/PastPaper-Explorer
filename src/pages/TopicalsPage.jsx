@@ -13,7 +13,9 @@ const FullTopicalsPage = ({ initialSubject, topicalDb, onBackToHub, toggleTheme,
     '9618': { hex: 'var(--teal)', name: 'Computer Science', icon: <Terminal size={16}/> },
     '9702': { hex: 'var(--amber)', name: 'Physics', icon: <Zap size={16}/> },
     '9701': { hex: 'var(--rose)', name: 'Chemistry', icon: <Beaker size={16}/> },
-    '9709': { hex: 'var(--accent)', name: 'Mathematics', icon: <Activity size={16}/> }
+    '9700': { hex: 'var(--teal)', name: 'Biology', icon: <Activity size={16}/> },
+    '9709': { hex: 'var(--accent)', name: 'Mathematics', icon: <Activity size={16}/> },
+    '9231': { hex: 'var(--accent)', name: 'Further Mathematics', icon: <Activity size={16}/> }
   };
 
   const currentBrand = brandColors[subjectCode] || { hex: 'var(--text)', name: 'Topicals' };
@@ -112,14 +114,27 @@ const FullTopicalsPage = ({ initialSubject, topicalDb, onBackToHub, toggleTheme,
 
         {!subjectCode ? (
            <div className="full-lib-grid" style={{ overflowY:'auto', paddingBottom:40 }}>
-             {SUBJECTS.filter(s => ['9618', '9702', '9701'].includes(s.code)).map((s, i) => (
+             {SUBJECTS.filter(s => SYLLABUS_STRUCTURE[s.code]).sort((a,b) => {
+                 // Sciences + CS first (keyword classification is reliable),
+                 // then Maths / Further Maths (keyword-based, lower confidence).
+                 const order = ['9618','9702','9701','9700','9709','9231'];
+                 return order.indexOf(a.code) - order.indexOf(b.code);
+               }).map((s, i) => (
                <button key={i} className="glass-panel" onClick={() => setSubjectCode(s.code)}
                   style={{ padding:24, borderRadius:20, cursor:'pointer', transition:'all 0.2s', display:'flex', flexDirection:'column', alignItems:'flex-start', border:'1px solid var(--line2)', background:'var(--surface2)', textAlign:'left' }}
                   onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text)'; e.currentTarget.style.background = 'var(--surface)'; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.style.background = 'var(--surface2)'; }}>
                   <Compass size={32} color="var(--text2)" style={{ marginBottom: 16 }} />
                   <h3 style={{ fontSize:16, fontWeight:700, color:'var(--text)', marginBottom:4 }}>{s.name}</h3>
-                  <p style={{ fontSize:12, color:'var(--text3)', fontWeight:500 }}>Code {s.code}</p>
+                  {(() => {
+                    const subj = topicalDb?.[s.code];
+                    const count = subj ? Object.values(subj).reduce((n,p)=> n + Object.values(p.topics||{}).reduce((m,arr)=>m+arr.length,0), 0) : 0;
+                    return (
+                      <p style={{ fontSize:12, color: count ? 'var(--text3)' : 'var(--text3)', fontWeight:500, opacity: count ? 1 : 0.7 }}>
+                        {count ? `${count} questions · Code ${s.code}` : `Coming soon · Code ${s.code}`}
+                      </p>
+                    );
+                  })()}
                </button>
              ))}
            </div>

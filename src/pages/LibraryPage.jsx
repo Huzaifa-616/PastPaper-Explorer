@@ -9,7 +9,9 @@ const FullLibraryPage = ({ initialSubject, libraryDb, onBackToHub, toggleTheme, 
     '9618': { hex: 'var(--teal)', name: 'Computer Science', icon: <Terminal size={16}/> },
     '9702': { hex: 'var(--amber)', name: 'Physics', icon: <Zap size={16}/> },
     '9701': { hex: 'var(--rose)', name: 'Chemistry', icon: <Beaker size={16}/> },
-    '9709': { hex: 'var(--accent)', name: 'Mathematics', icon: <Activity size={16}/> }
+    '9700': { hex: 'var(--green)', name: 'Biology', icon: <Activity size={16}/> },
+    '9709': { hex: 'var(--accent)', name: 'Mathematics', icon: <Activity size={16}/> },
+    '9231': { hex: 'var(--accent)', name: 'Further Mathematics', icon: <Activity size={16}/> },
   };
 
   const currentBrand = brandColors[subjectCode] || { hex: 'var(--text)', name: 'Library' };
@@ -17,7 +19,15 @@ const FullLibraryPage = ({ initialSubject, libraryDb, onBackToHub, toggleTheme, 
   const rootFolder = useMemo(() => libraryDb?.find(f => f.name === subjectCode) || null, [libraryDb, subjectCode]);
 
   const currentItems = useMemo(() => {
-    if (!subjectCode) return libraryDb || [];
+    if (!subjectCode) {
+      // Always show ALL supported subjects. Merge real library folders with
+      // placeholders for subjects that have no files yet, so the grid is
+      // complete and consistent (never silently missing a subject).
+      const existing = new Map((libraryDb || []).map(f => [f.name, f]));
+      return Object.keys(brandColors).map(code =>
+        existing.get(code) || { name: code, type: 'folder', children: [], _empty: true }
+      );
+    }
     let current = rootFolder?.children || [];
     for (let step of currentPath) {
       const found = current.find(c => c.name === step && c.type === 'folder');
@@ -91,9 +101,9 @@ const FullLibraryPage = ({ initialSubject, libraryDb, onBackToHub, toggleTheme, 
                       style={{ padding:24, borderRadius:20, cursor:'pointer', transition:'all 0.2s', display:'flex', flexDirection:'column', alignItems:'flex-start', border:'1px solid var(--line2)', background:'var(--surface2)', textAlign:'left' }}
                       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = currentBrand.hex; e.currentTarget.style.background = 'var(--surface)'; }}
                       onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.style.background = 'var(--surface2)'; }}>
-                      <Folder size={32} color={currentBrand.hex} style={{ marginBottom: 16 }} />
+                      <Folder size={32} color={item._empty ? 'var(--text3)' : (brandColors[item.name]?.hex || currentBrand.hex)} style={{ marginBottom: 16 }} />
                       <h3 style={{ fontSize:16, fontWeight:700, color:'var(--text)', marginBottom:4 }}>{brandColors[item.name]?.name || item.name}</h3>
-                      <p style={{ fontSize:12, color:'var(--text3)', fontWeight:500 }}>{item.children?.length || 0} items</p>
+                      <p style={{ fontSize:12, color:'var(--text3)', fontWeight:500 }}>{item._empty ? 'Coming soon' : `${item.children?.length || 0} items`}</p>
                    </button>
                  )
               } else {

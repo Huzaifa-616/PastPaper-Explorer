@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
-import { Activity, ArrowRight, Beaker, Code2, Compass, Github, Layers, Library, Moon, Search, Sun, Terminal, Zap } from 'lucide-react';
+import { SYLLABUS_STRUCTURE } from '../config/syllabus';
+import { Activity, ArrowRight, Beaker, Code2, Compass, Github, Layers, Library, Moon, Omega, Search, Sun, Terminal, Zap } from 'lucide-react';
 import { GITHUB_REPO_URL } from '../config/constants';
 import DynamicLogo from '../components/DynamicLogo';
 
 const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, toggleTheme, dark, onOpenIndexer }) => {
-  const [activeTab, setActiveTab] = useState('9618');
+  const [activeTab, setActiveTab] = useState(() => {
+    try { const s = JSON.parse(localStorage.getItem('nexusSettings')); if (s?.defaultSubject) return s.defaultSubject; } catch { /* ignore */ }
+    return '9618';
+  });
 
   const brandColors = {
     '9618': { hex: 'var(--teal)', name: 'Computer Science', icon: <Terminal size={16}/> },
     '9702': { hex: 'var(--amber)', name: 'Physics', icon: <Zap size={16}/> },
     '9701': { hex: 'var(--rose)', name: 'Chemistry', icon: <Beaker size={16}/> },
-    '9709': { hex: 'var(--accent)', name: 'Mathematics', icon: <Activity size={16}/> }
+    '9700': { hex: 'var(--green)', name: 'Biology', icon: <Activity size={16}/> },
+    '9709': { hex: 'var(--accent)', name: 'Mathematics', icon: <Activity size={16}/> },
+    '9231': { hex: 'var(--accent)', name: 'Further Mathematics', icon: <Omega size={16}/> }
   };
 
   const currentBrand = brandColors[activeTab] || brandColors['9709'];
@@ -158,11 +164,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', marginBottom: 12, display: 'flex', alignItems:'center', gap: 6 }}>
                   <Layers size={14} color="var(--text3)"/> Paper 1 Topics
                 </div>
-                {[
-                  { t: activeTab==='9701' ? 'Atoms & Stoichiometry' : activeTab==='9702' ? 'Kinematics' : 'Data Representation', q: 42 },
-                  { t: activeTab==='9701' ? 'Energetics & Kinetics' : activeTab==='9702' ? 'Dynamics' : 'Networking', q: 28 },
-                  { t: activeTab==='9701' ? 'Periodicity' : activeTab==='9702' ? 'Waves & Superposition' : 'Hardware & Processors', q: 35 }
-                ].map((mock, i) => (
+                {(SYLLABUS_STRUCTURE[activeTab]?.['1']?.topics || SYLLABUS_STRUCTURE[activeTab]?.[Object.keys(SYLLABUS_STRUCTURE[activeTab]||{})[0]]?.topics || []).slice(0,3).map((t,i)=>({t, q: [42,28,35][i]})).map((mock, i) => (
                   <div key={i} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding: '10px 12px', background: 'var(--surface2)', borderRadius: 8, marginBottom: 8 }}>
                     <span style={{ fontSize: 13, color: 'var(--text2)', fontWeight: 500 }}>{mock.t}</span>
                     <span style={{ fontSize: 11, color: 'var(--text3)', background: 'var(--surface3)', padding: '2px 8px', borderRadius: 12 }}>{mock.q} Qs</span>
@@ -186,10 +188,9 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
             <div>
               <h3 style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Supported Syllabuses</h3>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 12, color: 'var(--text3)', lineHeight: 1.8 }}>
-                <li>• Computer Science (9618)</li>
-                <li>• Physics (9702)</li>
-                <li>• Chemistry (9701)</li>
-                <li>• Mathematics (9709)</li>
+                {Object.keys(brandColors).map(code => (
+                  <li key={code}>• {brandColors[code].name} ({code})</li>
+                ))}
               </ul>
             </div>
             <div>
