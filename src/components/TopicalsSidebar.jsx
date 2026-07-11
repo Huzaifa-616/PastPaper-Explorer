@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, Compass, X, ExternalLink, Flag, Check } from 'l
 import { subjectName } from '../config/constants';
 import { SYLLABUS_STRUCTURE } from '../config/syllabus';
 import { sliceUrl } from '../config/assets';
+import { sendFlag } from '../utils/flags';
 
 // Session-local "wrong topic?" flags, persisted so a student's own reports
 // survive a refresh. A later phase can POST these for your review.
@@ -11,7 +12,7 @@ const loadFlags = () => { try { return JSON.parse(localStorage.getItem(FLAG_KEY)
 const saveFlag = (id) => { const f = loadFlags(); f[id] = Date.now(); try { localStorage.setItem(FLAG_KEY, JSON.stringify(f)); } catch { /* ignore */ } };
 
 // A single question rendered as its actual sliced image — the hero of the card.
-const QuestionCard = ({ item, onOpen }) => {
+const QuestionCard = ({ item, topic, onOpen }) => {
   const flagId = `${item.paper_id}-${item.question}`;
   const [flagged, setFlagged] = useState(() => !!loadFlags()[flagId]);
   const [loaded, setLoaded] = useState(false);
@@ -30,7 +31,7 @@ const QuestionCard = ({ item, onOpen }) => {
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:4 }}>
           <button title={flagged ? 'Reported — thank you' : 'Wrong topic? Let us know'}
-            onClick={() => { if (!flagged) { saveFlag(flagId); setFlagged(true); } }}
+            onClick={() => { if (!flagged) { saveFlag(flagId); setFlagged(true); sendFlag(item.paper_id, item.question, topic || ''); } }}
             className="icon-btn" style={{ width:28, height:28, color: flagged ? 'var(--teal)' : 'var(--text3)' }}>
             {flagged ? <Check size={13} /> : <Flag size={13} />}
           </button>
@@ -133,7 +134,7 @@ const TopicalsSidebar = ({ subjectCode, topicalDb, onClose, onSelectQuestion }) 
                             <p style={{ fontSize:12, color:'var(--text3)', textAlign:'center', padding:'12px 0' }}>No questions indexed for this topic yet.</p>
                           ) : (
                             questions.map((item, idx) => (
-                              <QuestionCard key={`${item.paper_id}-${item.question}-${idx}`} item={item} onOpen={openInPaper} />
+                              <QuestionCard key={`${item.paper_id}-${item.question}-${idx}`} item={item} topic={topic} onOpen={openInPaper} />
                             ))
                           )}
                         </div>

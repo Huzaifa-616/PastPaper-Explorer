@@ -1,14 +1,23 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "pastpaperexplorer",
+  "main": "worker.js",
   "compatibility_date": "2026-05-24",
   "observability": {
     "enabled": true
   },
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
   },
+  "kv_namespaces": [
+    {
+      "binding": "FLAGS",
+      "id": "PASTE_YOUR_KV_NAMESPACE_ID_HERE"
+    }
+  ],
   "compatibility_flags": [
     "nodejs_compat"
   ]

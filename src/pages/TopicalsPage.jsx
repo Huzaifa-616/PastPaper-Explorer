@@ -4,6 +4,7 @@ import { SUBJECTS, subjectName } from '../config/constants';
 import { SYLLABUS_STRUCTURE } from '../config/syllabus';
 
 import WeakTopics from '../components/WeakTopics';
+import { sendFlag } from '../utils/flags';
 
 const FullTopicalsPage = ({ initialSubject, topicalDb, onBackToHub, toggleTheme, dark, onSelectQuestion }) => {
   const [subjectCode, setSubjectCode] = useState(initialSubject || '');
@@ -31,6 +32,11 @@ const FullTopicalsPage = ({ initialSubject, topicalDb, onBackToHub, toggleTheme,
   }, [subjectCode]);
 
   useEffect(() => { setSelectedTopic(null); setSearchQ(''); }, [selectedPaper]);
+
+  const reportFlag = (paperId, question, topic) => {
+    const q = parseInt(question, 10);
+    if (paperId && q && topic) sendFlag(paperId, q, topic);
+  };
 
   const getQs = (pNum, topic) => db?.[pNum]?.topics?.[topic] || [];
 
@@ -280,7 +286,22 @@ const FullTopicalsPage = ({ initialSubject, topicalDb, onBackToHub, toggleTheme,
                           </div>
                           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                             <span style={{ fontSize:12, color:'var(--text2)', fontWeight:500 }}>Q {item.questions?.join(', ')}</span>
-                            <ArrowRight size={12} color="var(--text3)"/>
+                            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                              <span
+                                title="Wrong topic? Report it"
+                                role="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const q = item.question ?? item.questions?.[0];
+                                  reportFlag(item.paper_id, q, selectedTopic);
+                                  e.currentTarget.textContent = '✓';
+                                  e.currentTarget.style.color = 'var(--green)';
+                                  e.currentTarget.style.cursor = 'default';
+                                }}
+                                style={{ fontSize:11, color:'var(--text3)', cursor:'pointer', padding:'2px 4px', userSelect:'none' }}
+                              >⚑</span>
+                              <ArrowRight size={12} color="var(--text3)"/>
+                            </div>
                           </div>
                         </button>
                       );
