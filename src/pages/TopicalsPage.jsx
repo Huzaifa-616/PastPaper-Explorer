@@ -3,6 +3,8 @@ import { Activity, ArrowLeft, ArrowRight, Beaker, ChevronRight, Compass, Moon, S
 import { SUBJECTS, subjectName } from '../config/constants';
 import { SYLLABUS_STRUCTURE } from '../config/syllabus';
 
+import WeakTopics from '../components/WeakTopics';
+
 const FullTopicalsPage = ({ initialSubject, topicalDb, onBackToHub, toggleTheme, dark, onSelectQuestion }) => {
   const [subjectCode, setSubjectCode] = useState(initialSubject || '');
   const [selectedPaper, setSelectedPaper] = useState(null);
@@ -145,6 +147,16 @@ const FullTopicalsPage = ({ initialSubject, topicalDb, onBackToHub, toggleTheme,
              <p style={{ fontSize:14, color:'var(--text2)' }}>Topical mapping for {subjName} is not yet available.</p>
            </div>
         ) : (
+          <div style={{ display:'flex', flexDirection:'column', flex:1, minHeight:0 }}>
+          <WeakTopics
+            topicalDb={topicalDb}
+            subjectCode={subjectCode}
+            onJumpToTopic={(topic) => {
+              // find the paper containing this topic, then select both
+              const pNum = Object.keys(syllabus || {}).find(p => (syllabus[p]?.topics || []).includes(topic));
+              if (pNum) { setSelectedPaper(pNum); setTimeout(() => setSelectedTopic(topic), 0); }
+            }}
+          />
           <div className="topicals-content glass-panel" style={{ borderRadius:20, border:'1px solid var(--line2)', overflow:'hidden', display:'flex', flex:1 }}>
             
             {/* Paper Selector */}
@@ -277,6 +289,7 @@ const FullTopicalsPage = ({ initialSubject, topicalDb, onBackToHub, toggleTheme,
                 </div>
               </div>
             )}
+          </div>
           </div>
         )}
       </main>
