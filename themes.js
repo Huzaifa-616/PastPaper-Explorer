@@ -1,0 +1,75 @@
+// ─── The Nexus Theme Gallery ──────────────────────────────────────────────────
+// Each theme defines the COMPLETE variable set GlobalStyles interpolates.
+// 'midnight' and 'daylight' are the app's original dark/light — existing users
+// see zero change by default.
+
+export const THEMES = {
+  midnight: {
+    name: 'Midnight', isDark: true,
+    bg: '#05050A', bg2: '#0a0a14',
+    surface: 'rgba(15, 15, 25, 0.6)', surface2: 'rgba(25, 25, 40, 0.8)', surface3: 'rgba(35, 35, 55, 0.9)',
+    line: 'rgba(255,255,255,0.05)', line2: 'rgba(255,255,255,0.1)',
+    text: '#f8fafc', text2: '#94a3b8', text3: '#475569',
+    accent: '#6366f1', teal: '#2dd4bf', amber: '#fbbf24', rose: '#fb7185',
+    green: '#34d399', red: '#f87171',
+    navBg: 'rgba(5,5,10,0.92)', glow: 'rgba(0,0,0,0.3)',
+  },
+  daylight: {
+    name: 'Daylight', isDark: false,
+    bg: '#f8fafc', bg2: '#ffffff',
+    surface: 'rgba(255, 255, 255, 0.8)', surface2: 'rgba(241, 245, 249, 0.9)', surface3: 'rgba(226, 232, 240, 0.9)',
+    line: 'rgba(0,0,0,0.06)', line2: 'rgba(0,0,0,0.12)',
+    text: '#0f172a', text2: '#64748b', text3: '#94a3b8',
+    accent: '#4f46e5', teal: '#0d9488', amber: '#d97706', rose: '#e11d48',
+    green: '#059669', red: '#dc2626',
+    navBg: 'rgba(248,250,252,0.92)', glow: 'rgba(0,0,0,0.12)',
+  },
+  amoled: {
+    name: 'AMOLED', isDark: true,
+    bg: '#000000', bg2: '#050505',
+    surface: 'rgba(12, 12, 12, 0.85)', surface2: 'rgba(22, 22, 22, 0.9)', surface3: 'rgba(34, 34, 34, 0.95)',
+    line: 'rgba(255,255,255,0.06)', line2: 'rgba(255,255,255,0.12)',
+    text: '#fafafa', text2: '#9ca3af', text3: '#4b5563',
+    accent: '#818cf8', teal: '#2dd4bf', amber: '#fbbf24', rose: '#fb7185',
+    green: '#34d399', red: '#f87171',
+    navBg: 'rgba(0,0,0,0.92)', glow: 'rgba(129,140,248,0.35)',
+  },
+  ocean: {
+    name: 'Ocean', isDark: true,
+    bg: '#040d14', bg2: '#081720',
+    surface: 'rgba(10, 25, 36, 0.65)', surface2: 'rgba(16, 38, 53, 0.85)', surface3: 'rgba(24, 52, 71, 0.9)',
+    line: 'rgba(125,211,252,0.06)', line2: 'rgba(125,211,252,0.13)',
+    text: '#f0f9ff', text2: '#7dd3fc99', text3: '#38536b',
+    accent: '#38bdf8', teal: '#2dd4bf', amber: '#fbbf24', rose: '#fb7185',
+    green: '#34d399', red: '#f87171',
+    navBg: 'rgba(4,13,20,0.92)', glow: 'rgba(56,189,248,0.35)',
+  },
+  forest: {
+    name: 'Forest', isDark: true,
+    bg: '#060b07', bg2: '#0a130c',
+    surface: 'rgba(14, 26, 17, 0.7)', surface2: 'rgba(21, 38, 25, 0.85)', surface3: 'rgba(30, 52, 35, 0.9)',
+    line: 'rgba(134,239,172,0.06)', line2: 'rgba(134,239,172,0.12)',
+    text: '#f0fdf4', text2: '#86efac99', text3: '#3f5c47',
+    accent: '#4ade80', teal: '#2dd4bf', amber: '#fbbf24', rose: '#fb7185',
+    green: '#34d399', red: '#f87171',
+    navBg: 'rgba(6,11,7,0.92)', glow: 'rgba(74,222,128,0.3)',
+  },
+  sepia: {
+    name: 'Sepia', isDark: false,
+    bg: '#f7f1e3', bg2: '#fffbf0',
+    surface: 'rgba(255, 251, 240, 0.85)', surface2: 'rgba(240, 230, 210, 0.9)', surface3: 'rgba(228, 215, 189, 0.9)',
+    line: 'rgba(120,80,20,0.08)', line2: 'rgba(120,80,20,0.16)',
+    text: '#3d2f1e', text2: '#7a6a52', text3: '#a89a82',
+    accent: '#b45309', teal: '#0f766e', amber: '#b45309', rose: '#be123c',
+    green: '#15803d', red: '#b91c1c',
+    navBg: 'rgba(247,241,227,0.92)', glow: 'rgba(180,83,9,0.18)',
+  },
+};
+
+export const THEME_IDS = Object.keys(THEMES);
+export const FONT_SCALES = [
+  { id: 0.875, label: 'Small' },
+  { id: 1,     label: 'Default' },
+  { id: 1.125, label: 'Large' },
+  { id: 1.25,  label: 'XL' },
+];

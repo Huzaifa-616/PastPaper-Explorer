@@ -1,8 +1,10 @@
-import React from 'react';
 import { Routes, Route, useNavigate, useParams, Navigate } from 'react-router-dom';
 import GlobalStyles from './styles/GlobalStyles';
 import PWAStatus from './components/PWAStatus';
-import { useTheme } from './hooks/useTheme';
+import SettingsModal from './components/SettingsModal';
+import { Settings as SettingsGear } from 'lucide-react';
+import React, { useState } from 'react';
+import { useSettings } from './hooks/useSettings';
 import { useDatabases } from './hooks/useDatabases';
 import { SYLLABUS_STRUCTURE } from './config/syllabus';
 import HubPage from './pages/HubPage';
@@ -75,12 +77,19 @@ const IndexerRoute = () => {
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
-  const { dark, toggleTheme } = useTheme();
+  const { settings, setSetting, resetSettings, theme, dark, toggleTheme } = useSettings();
+  const [showSettings, setShowSettings] = useState(false);
 
   return (
     <>
-      <GlobalStyles dark={dark} />
+      <GlobalStyles theme={theme} fontScale={settings.fontScale} />
       <PWAStatus />
+      <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)}
+        settings={settings} setSetting={setSetting} resetSettings={resetSettings} />
+      <button className="icon-btn" title="Settings" onClick={() => setShowSettings(true)}
+        style={{ position: 'fixed', bottom: 16, left: 16, zIndex: 9998, boxShadow: '0 4px 16px rgba(0,0,0,0.25)' }}>
+        <SettingsGear size={16} />
+      </button>
       <Routes>
         <Route path="/" element={<HubRoute dark={dark} toggleTheme={toggleTheme} />} />
         <Route path="/papers" element={<ExplorerPage dark={dark} toggleTheme={toggleTheme} />} />

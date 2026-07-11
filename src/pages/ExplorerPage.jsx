@@ -13,6 +13,7 @@ import MCQSolver from '../components/MCQSolver';
 import { useDatabases } from '../hooks/useDatabases';
 import { paperUrl } from '../config/assets';
 import { useMcqSession } from '../hooks/useMcqSession';
+import { getSetting } from '../hooks/useSettings';
 
 // ─── URL helpers ──────────────────────────────────────────────────────────────
 // Deep-link format:  /papers/9702/s23/qp/12?page=5
@@ -45,7 +46,7 @@ const ExplorerPage = ({ toggleTheme, dark }) => {
 
   const urlSelection = parseParams(params);
   const targetPage = parseInt(searchParams.get('page') || '1', 10) || 1;
-  const initialSubject = searchParams.get('subject') || '';
+  const initialSubject = searchParams.get('subject') || getSetting('defaultSubject') || '';
 
   const { topicalDb, libraryDb } = useDatabases();
 
@@ -273,7 +274,7 @@ const ExplorerPage = ({ toggleTheme, dark }) => {
               </div>
             ) : (
               <div className="anim-fade" style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
-                <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: '#e5e7eb' }}>
+                <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: 'var(--surface3)' }}>
                   <iframe src={viewerSrc} style={{ width: '100%', height: '100%', border: 'none' }} title="PDF Viewer" allowFullScreen />
                 </div>
 
