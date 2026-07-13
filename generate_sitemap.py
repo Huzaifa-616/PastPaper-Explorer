@@ -24,7 +24,7 @@ except ImportError:
     pass
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
-SITE_URL = os.environ.get("SITE_URL", "https://YOUR-DOMAIN-HERE.com").rstrip("/")
+SITE_URL = os.environ.get("SITE_URL", "https://thenexustools.com").rstrip("/")
 PAPERS_DIR = "./public/papers"
 OUT = "./public/sitemap.xml"
 ROBOTS = "./public/robots.txt"
