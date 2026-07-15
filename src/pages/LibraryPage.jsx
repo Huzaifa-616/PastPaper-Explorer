@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Activity, ArrowLeft, Beaker, ChevronRight, ExternalLink, FileText, Folder, Library, Moon, Sun, Terminal, Zap } from 'lucide-react';
+import { libraryUrl } from '../config/assets';
 
 const FullLibraryPage = ({ initialSubject, libraryDb, onBackToHub, toggleTheme, dark }) => {
   const [subjectCode, setSubjectCode] = useState(initialSubject || '');
@@ -108,7 +109,7 @@ const FullLibraryPage = ({ initialSubject, libraryDb, onBackToHub, toggleTheme, 
                  )
               } else {
                  return (
-                   <a key={i} href={item.path} target="_blank" rel="noopener noreferrer" className="glass-panel"
+                    <a key={i} href={libraryUrl(item.path)} target="_blank" rel="noopener noreferrer" className="glass-panel"                      
                       style={{ padding:24, borderRadius:20, cursor:'pointer', transition:'all 0.2s', display:'flex', flexDirection:'column', alignItems:'flex-start', border:'1px solid var(--line2)', background:'var(--surface2)', textDecoration:'none' }}
                       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; e.currentTarget.style.background = 'var(--surface)'; }}
                       onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; e.currentTarget.style.background = 'var(--surface2)'; }}>
