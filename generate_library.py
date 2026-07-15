@@ -1,87 +1,133 @@
+"""
+The Nexus - Library Indexer
+===========================
+Scans ./public/library and writes ./public/library_db.json for the app.
+
+  python generate_library.py                # index only
+  python generate_library.py --upload-r2    # index AND sync the files to R2
+
+Indexes EVERY real file (PDFs, Word, PowerPoint, images, code, archives...),
+skipping only junk/system files. Each entry carries a `kind` so the UI can
+show a proper icon.
+"""
+
 import os
 import json
 import sys
 
-# Define where to look and where to save
 LIBRARY_DIR = "./public/library"
 OUTPUT_JSON = "./public/library_db.json"
 UPLOAD_R2 = "--upload-r2" in sys.argv
 
+# ── Junk that should never appear in a student's library ─────────────────────
+IGNORED_NAMES = {'.ds_store', 'thumbs.db', 'desktop.ini', '.gitkeep', '.gitignore'}
+IGNORED_EXTS = {'.tmp', '.part', '.crdownload', '.swp', '.lock'}
+
+def is_ignored(name):
+    low = name.lower()
+    if low in IGNORED_NAMES or low.startswith('~$') or low.startswith('.'):
+        return True
+    return os.path.splitext(low)[1] in IGNORED_EXTS
+
+# ── File kind → lets the UI pick an icon/colour ──────────────────────────────
+KIND_BY_EXT = {
+    '.pdf': 'pdf',
+    '.doc': 'doc', '.docx': 'doc', '.odt': 'doc', '.rtf': 'doc',
+    '.ppt': 'slides', '.pptx': 'slides', '.odp': 'slides',
+    '.xls': 'sheet', '.xlsx': 'sheet', '.csv': 'sheet', '.ods': 'sheet',
+    '.png': 'image', '.jpg': 'image', '.jpeg': 'image', '.gif': 'image',
+    '.webp': 'image', '.svg': 'image', '.bmp': 'image',
+    '.zip': 'archive', '.rar': 'archive', '.7z': 'archive', '.tar': 'archive', '.gz': 'archive',
+    '.mp4': 'video', '.mov': 'video', '.mkv': 'video', '.webm': 'video',
+    '.mp3': 'audio', '.wav': 'audio', '.m4a': 'audio',
+    '.txt': 'text', '.md': 'text',
+    '.html': 'web', '.htm': 'web',
+    '.py': 'code', '.js': 'code', '.java': 'code', '.cpp': 'code', '.c': 'code',
+    '.epub': 'book', '.mobi': 'book',
+}
+
+def kind_of(name):
+    return KIND_BY_EXT.get(os.path.splitext(name.lower())[1], 'file')
+
+def human_size(n):
+    if n < 1024:
+        return f"{n} B"
+    if n < 1024 * 1024:
+        return f"{round(n / 1024, 1)} KB"
+    return f"{round(n / (1024 * 1024), 2)} MB"
+
 def build_tree(dir_path):
     tree = []
     try:
-        # Get all items in the folder and sort them alphabetically
         items = sorted(os.listdir(dir_path))
     except PermissionError:
         return tree
 
     for item in items:
-        # Ignore hidden system files (like .DS_Store on Mac)
-        if item.startswith('.'):
+        if is_ignored(item):
             continue
 
         item_path = os.path.join(dir_path, item)
-        
-        # Create a web-friendly URL path for React (e.g., /library/9618/book.pdf)
-        # We replace backslashes to ensure it works perfectly if you are on Windows
+        # Web path for React, e.g. /library/9618/book.pdf  (Windows-safe)
         web_path = item_path.replace("./public", "").replace("\\", "/")
 
         if os.path.isdir(item_path):
-            # If it's a folder, run this function again inside that folder (Recursion)
-            children = build_tree(item_path)
             tree.append({
                 "name": item,
                 "type": "folder",
-                "children": children
+                "children": build_tree(item_path),
             })
         else:
-            # If it's a file, grab its size and add it to the list
-            # You can add more file types here if you want to support word docs, etc.
-            if item.lower().endswith(('.pdf', '.html', '.txt')):
-                size_bytes = os.path.getsize(item_path)
-                size_mb = round(size_bytes / (1024 * 1024), 2)
-                
-                tree.append({
-                    "name": item,
-                    "type": "file",
-                    "path": web_path,
-                    "size": f"{size_mb} MB"
-                })
-    
-    # Sort the final list so Folders always appear at the top, and Files at the bottom
+            tree.append({
+                "name": item,
+                "type": "file",
+                "path": web_path,
+                "size": human_size(os.path.getsize(item_path)),
+                "kind": kind_of(item),
+            })
+
+    # Folders first, then files, each alphabetical
     tree.sort(key=lambda x: (x['type'] == 'file', x['name'].lower()))
     return tree
 
+def count_items(nodes):
+    files = folders = 0
+    for n in nodes:
+        if n['type'] == 'folder':
+            folders += 1
+            f, d = count_items(n.get('children', []))
+            files += f; folders += d
+        else:
+            files += 1
+    return files, folders
+
 def generate_database():
     print("Scanning Library Directory...\n")
-    
+
     if not os.path.exists(LIBRARY_DIR):
         print(f"Error: Directory not found -> {LIBRARY_DIR}")
-        print("Creating the empty library folder structure for you now...")
         os.makedirs(LIBRARY_DIR)
-        print("Please drag some PDFs into /public/library/ and run this script again.")
+        print("Created ./public/library — drop your files in and run this again.")
         return
 
-    # Build the massive JSON tree
     database = build_tree(LIBRARY_DIR)
 
-    # Save it to the public folder so React can fetch it
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(database, f, indent=2)
+        json.dump(database, f, indent=4)
 
-    # Count everything up to show you a nice summary in the terminal
-    def count_items(node_list):
-        files = sum(1 for item in node_list if item['type'] == 'file')
-        folders = sum(1 for item in node_list if item['type'] == 'folder')
-        for item in node_list:
-            if item['type'] == 'folder':
-                f, fol = count_items(item['children'])
-                files += f
-                folders += fol
-        return files, folders
-    
-    tot_files, tot_folders = count_items(database)
-    print(f"Success! Indexed {tot_files} files across {tot_folders} folders.")
+    files, folders = count_items(database)
+    print(f"Success! Indexed {files} files across {folders} folders.")
+
+    kinds = {}
+    def tally(nodes):
+        for n in nodes:
+            if n['type'] == 'folder':
+                tally(n.get('children', []))
+            else:
+                kinds[n['kind']] = kinds.get(n['kind'], 0) + 1
+    tally(database)
+    if kinds:
+        print("  by type: " + ", ".join(f"{v} {k}" for k, v in sorted(kinds.items(), key=lambda x: -x[1])))
     print(f"Library database saved to {OUTPUT_JSON}")
 
     if UPLOAD_R2:

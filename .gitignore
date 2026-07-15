@@ -29,3 +29,11 @@ dist-ssr
 !.dev.vars.example
 .env*
 !.env.example
+# Binaries live in R2 — never in Git
+public/papers/
+public/topicals/
+public/library/
+
+# but DO keep the JSON indexes (text, tiny, the app needs them)
+!public/library_db.json
+!public/topicals_db.json

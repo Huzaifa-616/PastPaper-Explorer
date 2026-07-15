@@ -1,6 +1,23 @@
 import React, { useState, useMemo } from 'react';
-import { ChevronDown, ChevronRight, FileText, Folder, Library, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, FileText, Folder, Library, X, FileText, FileType2, Presentation, Table2, Image, FileArchive, Video, Music, Code2, BookOpen, Globe, File } from 'lucide-react';
 import { subjectName } from '../config/constants';
+
+// Icon + colour per file kind (the indexer now tags every file).
+const KIND_ICON = {
+  pdf:     { icon: FileText,    color: 'var(--rose)' },
+  doc:     { icon: FileType2,   color: 'var(--accent)' },
+  slides:  { icon: Presentation,color: 'var(--amber)' },
+  sheet:   { icon: Table2,      color: 'var(--green)' },
+  image:   { icon: Image,       color: 'var(--violet, #a78bfa)' },
+  archive: { icon: FileArchive, color: 'var(--text2)' },
+  video:   { icon: Video,       color: 'var(--rose)' },
+  audio:   { icon: Music,       color: 'var(--teal)' },
+  code:    { icon: Code2,       color: 'var(--teal)' },
+  book:    { icon: BookOpen,    color: 'var(--amber)' },
+  text:    { icon: FileText,    color: 'var(--text2)' },
+  web:     { icon: Globe,       color: 'var(--accent)' },
+  file:    { icon: File,        color: 'var(--text3)' },
+};
 import { libraryUrl } from '../config/assets';
 
 const LibrarySidebar = ({ subjectCode, libraryDb, onClose }) => {
