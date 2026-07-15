@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { ChevronDown, ChevronRight, FileText, Folder, Library, X, FileText, FileType2, Presentation, Table2, Image, FileArchive, Video, Music, Code2, BookOpen, Globe, File } from 'lucide-react';
+import { ChevronDown, ChevronRight, FileText, Folder, Library, X, FileType2, Presentation, Table2, Image, FileArchive, Video, Music, Code2, BookOpen, Globe, File } from 'lucide-react';
 import { subjectName } from '../config/constants';
 
 // Icon + colour per file kind (the indexer now tags every file).
