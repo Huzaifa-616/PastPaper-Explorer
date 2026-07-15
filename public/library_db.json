@@ -41,87 +41,6 @@
                 "type": "folder",
                 "children": [
                     {
-                        "name": "9618_s25_sf_42",
-                        "type": "folder",
-                        "children": [
-                            {
-                                "name": "Blue.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/9618_s25_sf_42/Blue.txt",
-                                "size": "0 B",
-                                "kind": "text"
-                            },
-                            {
-                                "name": "Green.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/9618_s25_sf_42/Green.txt",
-                                "size": "0 B",
-                                "kind": "text"
-                            },
-                            {
-                                "name": "Orange.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/9618_s25_sf_42/Orange.txt",
-                                "size": "0 B",
-                                "kind": "text"
-                            },
-                            {
-                                "name": "Pink.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/9618_s25_sf_42/Pink.txt",
-                                "size": "0 B",
-                                "kind": "text"
-                            },
-                            {
-                                "name": "Red.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/9618_s25_sf_42/Red.txt",
-                                "size": "0 B",
-                                "kind": "text"
-                            },
-                            {
-                                "name": "TheData.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/9618_s25_sf_42/TheData.txt",
-                                "size": "674 B",
-                                "kind": "text"
-                            },
-                            {
-                                "name": "Yellow.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/9618_s25_sf_42/Yellow.txt",
-                                "size": "0 B",
-                                "kind": "text"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "9618_s25_sf_43",
-                        "type": "folder",
-                        "children": [
-                            {
-                                "name": "QueueData.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/9618_s25_sf_43/QueueData.txt",
-                                "size": "174 B",
-                                "kind": "text"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "9618_w24_sf41",
-                        "type": "folder",
-                        "children": [
-                            {
-                                "name": "Data.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/9618_w24_sf41/Data.txt",
-                                "size": "333 B",
-                                "kind": "text"
-                            }
-                        ]
-                    },
-                    {
                         "name": "binarytree",
                         "type": "folder",
                         "children": [
@@ -207,48 +126,6 @@
                         "type": "folder",
                         "children": [
                             {
-                                "name": "Easy.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/pp/Easy.txt",
-                                "size": "79 B",
-                                "kind": "text"
-                            },
-                            {
-                                "name": "evidence.doc",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/pp/evidence.doc",
-                                "size": "67.5 KB",
-                                "kind": "doc"
-                            },
-                            {
-                                "name": "Hard.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/pp/Hard.txt",
-                                "size": "570 B",
-                                "kind": "text"
-                            },
-                            {
-                                "name": "HashTableData.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/pp/HashTableData.txt",
-                                "size": "2.5 KB",
-                                "kind": "text"
-                            },
-                            {
-                                "name": "HighScoreTable.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/pp/HighScoreTable.txt",
-                                "size": "89 B",
-                                "kind": "text"
-                            },
-                            {
-                                "name": "Medium.txt",
-                                "type": "file",
-                                "path": "/library/9618/P4 Notes/pp/Medium.txt",
-                                "size": "273 B",
-                                "kind": "text"
-                            },
-                            {
                                 "name": "s21p41q03.py",
                                 "type": "file",
                                 "path": "/library/9618/P4 Notes/pp/s21p41q03.py",
@@ -266,14 +143,14 @@
                                 "name": "s24qp41.py",
                                 "type": "file",
                                 "path": "/library/9618/P4 Notes/pp/s24qp41.py",
-                                "size": "1.3 KB",
+                                "size": "5.6 KB",
                                 "kind": "code"
                             },
                             {
                                 "name": "s24qp42.py",
                                 "type": "file",
                                 "path": "/library/9618/P4 Notes/pp/s24qp42.py",
-                                "size": "3.4 KB",
+                                "size": "5.4 KB",
                                 "kind": "code"
                             },
                             {
@@ -294,22 +171,22 @@
                                 "name": "s25qp41.py",
                                 "type": "file",
                                 "path": "/library/9618/P4 Notes/pp/s25qp41.py",
-                                "size": "1.1 KB",
+                                "size": "4.2 KB",
                                 "kind": "code"
                             },
                             {
-                                "name": "SecondStack.txt",
+                                "name": "s25qp43.py",
                                 "type": "file",
-                                "path": "/library/9618/P4 Notes/pp/SecondStack.txt",
-                                "size": "26 B",
-                                "kind": "text"
+                                "path": "/library/9618/P4 Notes/pp/s25qp43.py",
+                                "size": "4.5 KB",
+                                "kind": "code"
                             },
                             {
-                                "name": "Trees.txt",
+                                "name": "w22qp41.py",
                                 "type": "file",
-                                "path": "/library/9618/P4 Notes/pp/Trees.txt",
-                                "size": "224 B",
-                                "kind": "text"
+                                "path": "/library/9618/P4 Notes/pp/w22qp41.py",
+                                "size": "3.3 KB",
+                                "kind": "code"
                             },
                             {
                                 "name": "w22qp42.py",
@@ -326,6 +203,20 @@
                                 "kind": "code"
                             },
                             {
+                                "name": "w24qp41.py",
+                                "type": "file",
+                                "path": "/library/9618/P4 Notes/pp/w24qp41.py",
+                                "size": "6.2 KB",
+                                "kind": "code"
+                            },
+                            {
+                                "name": "w24qp41Q3.py",
+                                "type": "file",
+                                "path": "/library/9618/P4 Notes/pp/w24qp41Q3.py",
+                                "size": "1.7 KB",
+                                "kind": "code"
+                            },
+                            {
                                 "name": "w24qp42q1.py",
                                 "type": "file",
                                 "path": "/library/9618/P4 Notes/pp/w24qp42q1.py",
@@ -337,6 +228,20 @@
                                 "type": "file",
                                 "path": "/library/9618/P4 Notes/pp/w25qp41.py",
                                 "size": "4.1 KB",
+                                "kind": "code"
+                            },
+                            {
+                                "name": "w25qp42.py",
+                                "type": "file",
+                                "path": "/library/9618/P4 Notes/pp/w25qp42.py",
+                                "size": "5.3 KB",
+                                "kind": "code"
+                            },
+                            {
+                                "name": "w25qp43.py",
+                                "type": "file",
+                                "path": "/library/9618/P4 Notes/pp/w25qp43.py",
+                                "size": "4.0 KB",
                                 "kind": "code"
                             }
                         ]
@@ -435,20 +340,6 @@
                         ]
                     },
                     {
-                        "name": "BinaryData.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/BinaryData.txt",
-                        "size": "67 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "Blue.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Blue.txt",
-                        "size": "80 B",
-                        "kind": "text"
-                    },
-                    {
                         "name": "combied_codes2.py",
                         "type": "file",
                         "path": "/library/9618/P4 Notes/combied_codes2.py",
@@ -456,11 +347,11 @@
                         "kind": "code"
                     },
                     {
-                        "name": "combined_codes",
+                        "name": "combined_codes.py",
                         "type": "file",
-                        "path": "/library/9618/P4 Notes/combined_codes",
+                        "path": "/library/9618/P4 Notes/combined_codes.py",
                         "size": "11.8 KB",
-                        "kind": "file"
+                        "kind": "code"
                     },
                     {
                         "name": "combined_codes_final.py",
@@ -470,11 +361,11 @@
                         "kind": "code"
                     },
                     {
-                        "name": "combined_codessssssssss",
+                        "name": "combined_codessssssssss.py",
                         "type": "file",
-                        "path": "/library/9618/P4 Notes/combined_codessssssssss",
+                        "path": "/library/9618/P4 Notes/combined_codessssssssss.py",
                         "size": "7.0 KB",
-                        "kind": "file"
+                        "kind": "code"
                     },
                     {
                         "name": "combinedcodes final.docx",
@@ -482,209 +373,6 @@
                         "path": "/library/9618/P4 Notes/combinedcodes final.docx",
                         "size": "23.5 KB",
                         "kind": "doc"
-                    },
-                    {
-                        "name": "Data.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Data.txt",
-                        "size": "333 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "Easy.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Easy.txt",
-                        "size": "79 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "evidence.doc",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/evidence.doc",
-                        "size": "69.5 KB",
-                        "kind": "doc"
-                    },
-                    {
-                        "name": "Green.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Green.txt",
-                        "size": "76 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "Hard.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Hard.txt",
-                        "size": "570 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "HashData.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/HashData.txt",
-                        "size": "2.3 KB",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "HashTableData.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/HashTableData.txt",
-                        "size": "2.5 KB",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "IntegerData.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/IntegerData.txt",
-                        "size": "391 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "Medium.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Medium.txt",
-                        "size": "273 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "Orange.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Orange.txt",
-                        "size": "60 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "Pink.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Pink.txt",
-                        "size": "82 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "QueueData.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/QueueData.txt",
-                        "size": "174 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "Red.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Red.txt",
-                        "size": "68 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "s24qp41.py",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/s24qp41.py",
-                        "size": "5.6 KB",
-                        "kind": "code"
-                    },
-                    {
-                        "name": "s24qp42.py",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/s24qp42.py",
-                        "size": "5.4 KB",
-                        "kind": "code"
-                    },
-                    {
-                        "name": "s25qp41.py",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/s25qp41.py",
-                        "size": "4.2 KB",
-                        "kind": "code"
-                    },
-                    {
-                        "name": "s25qp43.py",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/s25qp43.py",
-                        "size": "4.5 KB",
-                        "kind": "code"
-                    },
-                    {
-                        "name": "StackData.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/StackData.txt",
-                        "size": "26 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "TheData.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/TheData.txt",
-                        "size": "674 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "Tree.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Tree.txt",
-                        "size": "484 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "TreeData.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/TreeData.txt",
-                        "size": "142 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "Trees.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Trees.txt",
-                        "size": "224 B",
-                        "kind": "text"
-                    },
-                    {
-                        "name": "w22qp41.py",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/w22qp41.py",
-                        "size": "3.3 KB",
-                        "kind": "code"
-                    },
-                    {
-                        "name": "w24qp41.py",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/w24qp41.py",
-                        "size": "6.2 KB",
-                        "kind": "code"
-                    },
-                    {
-                        "name": "w24qp41Q3.py",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/w24qp41Q3.py",
-                        "size": "1.7 KB",
-                        "kind": "code"
-                    },
-                    {
-                        "name": "w25qp41.py",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/w25qp41.py",
-                        "size": "4.1 KB",
-                        "kind": "code"
-                    },
-                    {
-                        "name": "w25qp42.py",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/w25qp42.py",
-                        "size": "5.3 KB",
-                        "kind": "code"
-                    },
-                    {
-                        "name": "w25qp43.py",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/w25qp43.py",
-                        "size": "4.0 KB",
-                        "kind": "code"
-                    },
-                    {
-                        "name": "Yellow.txt",
-                        "type": "file",
-                        "path": "/library/9618/P4 Notes/Yellow.txt",
-                        "size": "46 B",
-                        "kind": "text"
                     }
                 ]
             },
