@@ -57,22 +57,35 @@ const SourceFileViewer = ({ file, onClose }) => {
 
   return (
     <div className="sf-viewer" style={{
-      position: 'absolute', top: 0, right: 0, bottom: 0, width: 'min(420px, 100%)',
+      /* A SIBLING of the PDF, not a child — so flexbox gives it its own
+         column and the question stays readable beside its data. That's the
+         whole point: you can't solve P4 while the data covers the question.
+         (This is exactly how MCQSolver already does it.) */
+      width: 380, flexShrink: 0,
       background: 'var(--bg)', borderLeft: '1px solid var(--line2)',
       display: 'flex', flexDirection: 'column', zIndex: 40,
-      boxShadow: '-10px 0 40px rgba(0,0,0,0.4)',
       animation: 'sfIn 0.28s cubic-bezier(0.16,1,0.3,1) both',
     }}>
       <style>{`
         @keyframes sfIn { from { transform: translateX(24px); opacity: 0 } to { transform: none; opacity: 1 } }
+        @keyframes sfUp { from { transform: translateY(100%) } to { transform: none } }
         .sf-body::-webkit-scrollbar { width: 6px }
         .sf-btn { display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:9px;
                   border:1px solid var(--line2); background:var(--surface2); color:var(--text2);
                   font-size:12.5px; font-weight:600; cursor:pointer; transition:.16s; font-family:inherit; }
         @media (hover: hover) { .sf-btn:hover { color:var(--text); border-color:var(--text3) } }
         .sf-btn.done { color:var(--green); border-color:var(--green) }
-        @media (max-width: 700px) {
-          .sf-viewer { width: 100% !important; }
+        /* No room for two columns on a phone — become a bottom sheet over the
+           paper instead, same as the MCQ solver does. */
+        @media (max-width: 820px) {
+          .sf-viewer {
+            position: absolute !important; left: 0; right: 0; bottom: 0; top: auto;
+            width: 100% !important; height: 55%;
+            border-left: none !important; border-top: 1px solid var(--line2);
+            border-radius: 18px 18px 0 0;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+            animation: sfUp 0.28s cubic-bezier(0.16,1,0.3,1) both !important;
+          }
         }
       `}</style>
 
