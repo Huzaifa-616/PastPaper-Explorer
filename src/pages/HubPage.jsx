@@ -3,6 +3,7 @@ import { SYLLABUS_STRUCTURE } from '../config/syllabus';
 import { Activity, ArrowRight, Beaker, Code2, Compass, Github, Layers, Library, Moon, Omega, Search, Sun, Terminal, Zap } from 'lucide-react';
 import { GITHUB_REPO_URL } from '../config/constants';
 import DynamicLogo from '../components/DynamicLogo';
+import SymbolField from '../components/SymbolField';
 
 const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, toggleTheme, dark, onOpenIndexer }) => {
   const [activeTab, setActiveTab] = useState(() => {
@@ -23,6 +24,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
 
   return (
     <div style={{ minHeight:'var(--app-h)', display:'flex', flexDirection:'column', position:'relative', overflow:'hidden' }}>
+      <SymbolField />
       <div style={{ position:'absolute', top:'-20%', left:'50%', transform:'translateX(-50%)', width:'80vw', height:'60vh', background:`radial-gradient(ellipse at top, ${currentBrand.hex} 0%, transparent 60%)`, opacity: dark ? 0.12 : 0.08, pointerEvents:'none', zIndex: 0, transition:'background 0.5s ease' }}/>
       <div className="bg-grid" />
 

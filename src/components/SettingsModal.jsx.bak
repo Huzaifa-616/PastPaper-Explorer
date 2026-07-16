@@ -95,33 +95,6 @@ const SettingsModal = ({ isOpen, onClose, settings, setSetting, resetSettings })
           </p>
         </Section>
 
-        <Section label="Dashboard backdrop">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            {[
-              { id: 'off',     name: 'Off',      desc: 'A still page.' },
-              { id: 'falling', name: 'Symbols',  desc: 'Notation drifting down.' },
-              { id: 'torch',   name: 'Torchlight', desc: 'Revealed by your cursor.' },
-              { id: 'papers',  name: 'Paper wall', desc: 'A grid of paper codes.' },
-            ].map(o => {
-              const on = (settings.backdrop || 'falling') === o.id;
-              return (
-                <button key={o.id} onClick={() => setSetting('backdrop', o.id)}
-                  style={{
-                    textAlign: 'left', padding: '10px 12px', borderRadius: 10, cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    background: on ? 'var(--surface3)' : 'transparent',
-                    border: on ? '1px solid var(--accent)' : '1px solid var(--line2)',
-                    transition: 'all .15s',
-                  }}>
-                  <span style={{ display: 'block', fontSize: 12.5, fontWeight: 700,
-                                 color: on ? 'var(--text)' : 'var(--text2)' }}>{o.name}</span>
-                  <span style={{ display: 'block', fontSize: 10.5, color: 'var(--text3)', marginTop: 2 }}>{o.desc}</span>
-                </button>
-              );
-            })}
-          </div>
-        </Section>
-
         {/* Default subject */}
         <Section label="Default subject">
           <select

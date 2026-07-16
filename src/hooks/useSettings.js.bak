@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { THEMES } from '../config/themes';
 
 const KEY = 'nexusSettings';
-const DEFAULTS = { themeId: 'midnight', lastDarkId: 'midnight', fontScale: 1, defaultSubject: '' , symbolField: true , backdrop: 'falling' };
+const DEFAULTS = { themeId: 'midnight', lastDarkId: 'midnight', fontScale: 1, defaultSubject: '' };
 
 function load() {
   try {
@@ -28,7 +28,6 @@ export function useSettings() {
 
   useEffect(() => {
     try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch { /* ignore */ }
-    window.dispatchEvent(new CustomEvent('nexus-settings', { detail: settings }));
   }, [settings]);
 
   const setSetting = useCallback((key, value) => {
