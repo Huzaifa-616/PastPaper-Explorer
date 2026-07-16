@@ -14,7 +14,6 @@ import { useDatabases } from '../hooks/useDatabases';
 import { paperUrl } from '../config/assets';
 import { useMcqSession } from '../hooks/useMcqSession';
 import { getSetting } from '../hooks/useSettings';
-import SourceFileViewer from '../components/SourceFileViewer';
 
 // ─── URL helpers ──────────────────────────────────────────────────────────────
 // Deep-link format:  /papers/9702/s23/qp/12?page=5
@@ -49,7 +48,7 @@ const ExplorerPage = ({ toggleTheme, dark }) => {
   const targetPage = parseInt(searchParams.get('page') || '1', 10) || 1;
   const initialSubject = searchParams.get('subject') || getSetting('defaultSubject') || '';
 
-  const { topicalDb, libraryDb, sfDb } = useDatabases();
+  const { topicalDb, libraryDb } = useDatabases();
 
   const [showContact, setShowContact] = useState(false);
   const [showNav, setShowNav] = useState(true);
@@ -87,18 +86,6 @@ const ExplorerPage = ({ toggleTheme, dark }) => {
 
   const paperKey = `${subject}_${season}${year ? year.slice(2) : ''}_${paper}_${variant}`;
   const { mcqState, updateMcqState } = useMcqSession(paperKey);
-
-  /* ── CS Paper 4 source files ──────────────────────────────────────────
-     The nav already knows subject/season/year/paper/variant, and that IS the
-     folder name (9618_s25_sf_42). So we never ask the student which folder —
-     only which file. The dropdown is absent for everything else. */
-  const [openSf, setOpenSf] = useState(null);
-  const sfFiles = useMemo(() => {
-    if (!sfDb || subject !== '9618' || paper !== '4') return [];
-    const key = `${subject}_${season}${year.slice(2)}_sf_${paper}${variant}`;
-    return sfDb[key]?.files || [];
-  }, [sfDb, subject, season, year, paper, variant]);
-  useEffect(() => { setOpenSf(null); }, [subject, season, year, paper, variant]);
 
   const activeFileUrl = useMemo(() => {
     if (!isViewing) return '';
@@ -190,17 +177,6 @@ const ExplorerPage = ({ toggleTheme, dark }) => {
                   </div>
 
                   <div className="nav-tools-wrap" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {sfFiles.length > 0 && (
-                <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                  <span style={{ fontSize:10, fontWeight:600, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--text3)', paddingLeft:4 }}>Source Files</span>
-                  <select className="nexus-select" value={openSf?.name || ''}
-                    onChange={(e) => setOpenSf(sfFiles.find(f => f.name === e.target.value) || null)}>
-                    <option value="">{sfFiles.length} file{sfFiles.length === 1 ? '' : 's'}…</option>
-                    {sfFiles.map(f => <option key={f.name} value={f.name}>{f.name}</option>)}
-                  </select>
-                </div>
-              )}
-
                     <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text3)', paddingLeft: 4 }}>Tools</span>
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button onClick={() => { setShowTopicals(s => !s); setShowLibrary(false); setShowMCQ(false); }}
@@ -300,7 +276,6 @@ const ExplorerPage = ({ toggleTheme, dark }) => {
               <div className="anim-fade" style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
                 <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: 'var(--surface3)' }}>
                   <iframe src={viewerSrc} style={{ width: '100%', height: '100%', border: 'none' }} title="PDF Viewer" allowFullScreen />
-                  {openSf && <SourceFileViewer file={openSf} onClose={() => setOpenSf(null)} />}
                 </div>
 
                 {showMCQ && canShowMCQ && (

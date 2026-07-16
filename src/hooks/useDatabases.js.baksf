@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 // Fetches the generated JSON databases once per session (module-level cache),
 // so navigating between pages never re-downloads them.
-const cache = { topicals: undefined, library: undefined, sf: undefined };
+const cache = { topicals: undefined, library: undefined };
 
 async function load(key, url) {
   if (cache[key] !== undefined) return cache[key];
@@ -19,15 +19,13 @@ async function load(key, url) {
 export function useDatabases() {
   const [topicalDb, setTopicalDb] = useState(cache.topicals ?? null);
   const [libraryDb, setLibraryDb] = useState(cache.library ?? []);
-  const [sfDb, setSfDb] = useState(cache.sf ?? null);
 
   useEffect(() => {
     let alive = true;
     load('topicals', '/topicals_db.json').then(d => { if (alive && d) setTopicalDb(d); });
     load('library', '/library_db.json').then(d => { if (alive && d) setLibraryDb(d); });
-    load('sf', '/sf_db.json').then(d => { if (alive) setSfDb(d); });
     return () => { alive = false; };
   }, []);
 
-  return { topicalDb, libraryDb, sfDb };
+  return { topicalDb, libraryDb };
 }

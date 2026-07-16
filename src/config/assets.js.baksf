@@ -48,10 +48,3 @@ export const libraryUrl = (filePath) => {
 };
 
 export const R2_BASE = R2;
-
-/** CS Paper 4 source files (Blue.txt, TheData.txt...). Same R2 base as
- *  everything else — paths come straight out of sf_db.json. */
-export const sfUrl = (filePath) => {
-  if (!filePath) return '';
-  return `${R2}/${encodeURI(filePath.replace(/^\//, ''))}`;
-};
