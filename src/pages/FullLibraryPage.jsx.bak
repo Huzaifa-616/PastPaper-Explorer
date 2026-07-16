@@ -271,7 +271,7 @@ const FullLibraryPage = ({ initialSubject, libraryDb, onBackToHub, toggleTheme, 
   return (
     <div className="nx-lib">
       <style>{`
-        .nx-lib{ min-height:var(--app-h); display:flex; flex-direction:column; position:relative;
+        .nx-lib{ min-height:100vh; display:flex; flex-direction:column; position:relative;
           background:var(--bg); color:var(--text); overflow-x:hidden; }
         .nx-lib-stage{ position:fixed; inset:0; z-index:0; pointer-events:none; }
         .nx-lib-grid-bg{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;

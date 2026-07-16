@@ -71,7 +71,7 @@ const TopicalIndexer = ({ syllabusDb, onClose }) => {
   // --- LOGIN SCREEN ---
   if (!isAuthenticated) {
     return (
-      <div style={{ display: 'flex', height: 'var(--app-h)', background: '#05050A', color: '#f8fafc', alignItems: 'center', justifyContent: 'center', fontFamily: 'Outfit, sans-serif' }}>
+      <div style={{ display: 'flex', height: '100vh', background: '#05050A', color: '#f8fafc', alignItems: 'center', justifyContent: 'center', fontFamily: 'Outfit, sans-serif' }}>
         <form onSubmit={handleLogin} style={{ background: '#0a0a14', padding: '40px', borderRadius: '24px', border: '1px solid #1e293b', width: '100%', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
             <div style={{ width:56, height:56, borderRadius:16, background:'rgba(99, 102, 241, 0.1)', border: '1px solid #6366f1', display:'flex', alignItems:'center', justifyContent:'center', color:'#6366f1' }}>
@@ -95,7 +95,7 @@ const TopicalIndexer = ({ syllabusDb, onClose }) => {
 
   // --- MAIN INDEXER WORKSPACE ---
   return (
-    <div style={{ display: 'flex', height: 'var(--app-h)', background: '#05050A', color: '#f8fafc', fontFamily: 'Outfit, sans-serif', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', height: '100vh', background: '#05050A', color: '#f8fafc', fontFamily: 'Outfit, sans-serif', overflow: 'hidden' }}>
       
       {/* LEFT PANEL: PDF Viewer */}
       <div style={{ flex: 1, borderRight: '1px solid #1e293b', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -117,7 +117,7 @@ const TopicalIndexer = ({ syllabusDb, onClose }) => {
       </div>
 
       {/* RIGHT PANEL: Rapid Indexer Engine */}
-      <div style={{ width: '420px', display: 'flex', flexDirection: 'column', height: 'var(--app-h)', background: '#0a0a14' }}>
+      <div style={{ width: '420px', display: 'flex', flexDirection: 'column', height: '100vh', background: '#0a0a14' }}>
         
         {/* Top Section (Fixed Header & Inputs) */}
         <div style={{ padding: '24px 24px 16px 24px', flexShrink: 0 }}>

@@ -72,7 +72,7 @@ const FullTopicalsPage = ({ initialSubject, topicalDb, onBackToHub, toggleTheme,
   const ac = selectedPaper ? pColor(selectedPaper) : pColor('1');
 
   return (
-    <div style={{ minHeight:'var(--app-h)', display:'flex', flexDirection:'column', position:'relative', overflow:'hidden', background:'var(--bg)' }}>
+    <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', position:'relative', overflow:'hidden', background:'var(--bg)' }}>
       
       <div style={{ position:'absolute', top:'-20%', left:'50%', transform:'translateX(-50%)', width:'80vw', height:'60vh', background:`radial-gradient(ellipse at top, ${currentBrand.hex} 0%, transparent 60%)`, opacity: dark ? 0.08 : 0.05, pointerEvents:'none', zIndex: 0, transition:'background 0.5s ease' }}/>
       <div className="bg-grid" />

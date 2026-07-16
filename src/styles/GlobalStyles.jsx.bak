@@ -43,20 +43,6 @@ const GlobalStyles = ({ dark, theme, fontScale = 1 }) => {
     }
 
     /* UI scale (Settings → Font size). zoom scales px-based layouts cleanly. */
-    /* Viewport units that survive the #root zoom.
-       CSS zoom scales rendering, but vh is measured against the raw viewport
-       and ignores zoom -- so height:100vh inside a zoomed #root renders at
-       100vh * fontScale, leaving a gap (or overflowing). Dividing by the
-       scale first makes it land exactly. The dvh variant also fixes the
-       mobile URL-bar gap. Use var(--app-h) instead of 100vh everywhere. */
-    :root {
-      --app-h: calc(100vh / ${fontScale});
-      --app-w: calc(100vw / ${fontScale});
-    }
-    @supports (height: 100dvh) {
-      :root { --app-h: calc(100dvh / ${fontScale}); }
-    }
-
     #root { zoom: ${fontScale}; }
 
     html, body, #root { height: 100%; background: var(--bg); }
