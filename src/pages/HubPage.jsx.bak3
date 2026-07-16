@@ -47,7 +47,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
         </div>
       </header>
 
-      <main style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'32px 20px', zIndex:10, position:'relative' }}>
+      <main style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'0 20px', zIndex:10, position:'relative' }}>
         
 
         
@@ -60,7 +60,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
           </p>
         </div>
 
-        <div className="anim-1" style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:8, background:'var(--surface2)', padding:6, borderRadius:100, border:'1px solid var(--line2)', marginBottom:60, backdropFilter:'blur(20px)' }}>
+        <div className="anim-1" style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:8, background:'var(--surface2)', padding:6, borderRadius:100, border:'1px solid var(--line2)', marginBottom:48, backdropFilter:'blur(20px)' }}>
           {Object.entries(brandColors).map(([code, data]) => {
             const isActive = activeTab === code;
             return (
@@ -81,7 +81,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
         <div className="anim-3 tools-grid">
           
           {/* PastPaper Explorer */}
-          <div className="glass-panel" style={{ padding:32, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
+          <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
                onClick={() => onSelectExplorer(activeTab)}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; }}>
@@ -98,7 +98,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
           </div>
 
           {/* IDE */}
-          <div className="glass-panel" style={{ padding:32, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
+          <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
                onClick={()=>window.open('https://coding-engine-9618.pages.dev/','_blank')}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; }}>
@@ -117,7 +117,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
           </div>
 
           {/* Resource Library */}
-          <div className="glass-panel" style={{ padding:32, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
+          <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
                onClick={() => onSelectLibrary(activeTab)}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; }}>
@@ -185,9 +185,9 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
       </main>
       {/* SEO & Context Block (Hidden elegantly but readable by Google) */}
       <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 20px 40px 20px', zIndex: 10, position: 'relative' }}>
-        <div style={{ padding: '20px 4px', borderTop: '1px solid var(--line)', opacity: 0.72 }}>
-          <h2 style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--text3)', marginBottom: 10, letterSpacing: '0.04em' }}>About The Nexus: Cambridge A-Level Workspace</h2>
-          <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginBottom: 12, maxWidth: 760 }}>
+        <div style={{ padding: 24, borderRadius: 20, background: 'var(--surface2)', border: '1px solid var(--line2)' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 12 }}>About The Nexus: Cambridge A-Level Workspace</h2>
+          <p style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6, marginBottom: 12 }}>
             The Nexus is an advanced, high-performance study environment specifically engineered for CAIE A-Level and AS-Level students. Designed to eliminate the friction of traditional study methods, it provides instant, zero-latency access to past papers, marking schemes, and an interactive Resource Library.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginTop: 16 }}>

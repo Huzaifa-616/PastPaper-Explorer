@@ -59,6 +59,25 @@ const PAPER_SIZE         = 14;
    and opacity first. Perf isn't the limit: 90 glyphs is ~0.5ms of a 16.7ms frame.
 */
 
+/* ── COLOUR ──────────────────────────────────────────────────────────────
+   MONOCHROME = true   every glyph is one colour (--text). Restrained, and
+                       the thing that most separates "designed" from "toy":
+                       six colours drifting at once reads as a sticker sheet.
+   MONOCHROME = false  colour-coded per subject (teal CS, amber Physics,
+                       rose Chemistry, green Biology, indigo Maths, violet FM).
+
+   Uses your theme's --text, NOT #fff — hard-coded white would be invisible on
+   the Daylight and Sepia themes. This stays legible on all six.
+   ───────────────────────────────────────────────────────────────────────── */
+const MONOCHROME = true;
+const INK_VAR    = '--text';
+/* --text is the theme's own text colour, so the glyphs match it exactly:
+     midnight #f8fafc white    daylight #0f172a black
+     amoled   #fafafa white    sepia    #3d2f1e dark brown
+     ocean    #f0f9ff white    forest   #f0fdf4 white
+   Never hard-code #fff — it would be invisible on Daylight and Sepia.
+   Softer alternatives: '--text2' (muted), '--text3' (very faint). */
+
 const DEFAULT_MODE = 'falling';
 
 const SymbolField = () => {
@@ -74,10 +93,18 @@ const SymbolField = () => {
     return getSetting('symbolField') === false ? 'off' : DEFAULT_MODE;  // migrate old boolean
   });
 
+  /* Canvas can't read CSS variables, so it resolves --text to a real colour
+     once. But GlobalStyles applies a theme by re-rendering a <style> tag — it
+     never touches documentElement's attributes — so a MutationObserver there
+     never fires and the glyphs kept the OLD theme's colour until a reload.
+     Tracking themeId and keying the effect on it fixes that properly. */
+  const [themeId, setThemeId] = useState(() => getSetting('themeId') || 'midnight');
+
   useEffect(() => {
     const onChange = (e) => {
       const d = e.detail || {};
       if (d.backdrop) setMode(d.backdrop);
+      if (d.themeId) setThemeId(d.themeId);
     };
     window.addEventListener('nexus-settings', onChange);
     return () => window.removeEventListener('nexus-settings', onChange);
@@ -106,7 +133,7 @@ const SymbolField = () => {
           return [k, (name ? cs.getPropertyValue(name).trim() : '') || fb || '#94a3b8'];
         })
       );
-      ink = cs.getPropertyValue('--text2').trim() || '#94a3b8';
+      ink = cs.getPropertyValue(INK_VAR).trim() || '#f8fafc';
     };
     readPalette();
 
@@ -220,7 +247,7 @@ const SymbolField = () => {
         const a = p.base + p.glow;
         if (a <= 0.004) continue;
         ctx.globalAlpha = a;
-        ctx.fillStyle = ink;
+        ctx.fillStyle = MONOCHROME ? ink : (palette[p.subject] || ink);
         ctx.font = `500 ${p.size}px "Outfit", system-ui, sans-serif`;
         ctx.fillText(p.glyph, p.x + p.ox, p.y + p.oy);
       }
@@ -247,9 +274,10 @@ const SymbolField = () => {
         const a = REVEAL_REST + p.glow;
         if (a <= 0.004) continue;
         ctx.globalAlpha = a;
-        // Monochrome at rest; blooms into the subject colour when lit.
-        // Restraint first, colour as a reward for looking.
-        ctx.fillStyle = p.glow > 0.06 ? (palette[p.subject] || ink) : ink;
+        // In colour mode: monochrome at rest, blooming into the subject's
+        // colour only when the beam hits it — colour as a reward for looking.
+        ctx.fillStyle = MONOCHROME ? ink
+          : (p.glow > 0.06 ? (palette[p.subject] || ink) : ink);
         ctx.font = isPapers
           ? `500 ${p.size}px "Roboto Mono", ui-monospace, monospace`
           : `500 ${p.size}px "Outfit", system-ui, sans-serif`;
@@ -296,8 +324,6 @@ const SymbolField = () => {
     document.addEventListener('visibilitychange', onVis);
     addEventListener('resize', resize);
 
-    const obs = new MutationObserver(() => { readPalette(); needsDraw = true; });
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['style', 'class'] });
 
     return () => {
       running = false;
@@ -306,9 +332,8 @@ const SymbolField = () => {
       removeEventListener('pointerleave', onLeave);
       removeEventListener('resize', resize);
       document.removeEventListener('visibilitychange', onVis);
-      obs.disconnect();
     };
-  }, [mode]);
+  }, [mode, themeId]);   // re-resolve colours whenever the theme changes
 
   if (mode === 'off') return null;
 

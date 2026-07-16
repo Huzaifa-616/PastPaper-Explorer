@@ -5,10 +5,8 @@ import { GITHUB_REPO_URL } from '../config/constants';
 import DynamicLogo from '../components/DynamicLogo';
 import SymbolField from '../components/SymbolField';
 import ContinueStrip from '../components/ContinueStrip';
-import { hasStudyHistory } from '../utils/performance';
 
 const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, toggleTheme, dark, onOpenIndexer }) => {
-  const returning = hasStudyHistory();
   const [activeTab, setActiveTab] = useState(() => {
     try { const s = JSON.parse(localStorage.getItem('nexusSettings')); if (s?.defaultSubject) return s.defaultSubject; } catch { /* ignore */ }
     return '9618';
@@ -47,20 +45,20 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
         </div>
       </header>
 
-      <main style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'32px 20px', zIndex:10, position:'relative' }}>
+      <main style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'0 20px', zIndex:10, position:'relative' }}>
         
 
         
-        <div className="anim-0" style={{ textAlign:'center', marginBottom:56, maxWidth:680 }}>
+        <div className="anim-0" style={{ textAlign:'center', marginBottom:48 }}>
           <h2 className="shimmer-text" style={{ fontSize:'clamp(48px, 8vw, 80px)', fontWeight:800, lineHeight:1, letterSpacing:'-0.03em', marginBottom:24 }}>
-            {returning ? 'Welcome back.' : 'Everything for your A-Levels.'}
+            From Prep to Perfection
           </h2>
           <p style={{ fontSize:18, color:'var(--text2)', fontWeight:400, maxWidth:600, margin:'0 auto', lineHeight:1.5 }}>
-            {returning ? 'Pick up where you left off — or start something new.' : 'Past papers, topical questions, notes and a code lab. Free, no account, no ads — built by a student who needed it too.'}
+            A high-performance workspace engineered for Cambridge A-Level students. Search topics, extract papers, and access notes.
           </p>
         </div>
 
-        <div className="anim-1" style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:8, background:'var(--surface2)', padding:6, borderRadius:100, border:'1px solid var(--line2)', marginBottom:60, backdropFilter:'blur(20px)' }}>
+        <div className="anim-1" style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:8, background:'var(--surface2)', padding:6, borderRadius:100, border:'1px solid var(--line2)', marginBottom:48, backdropFilter:'blur(20px)' }}>
           {Object.entries(brandColors).map(([code, data]) => {
             const isActive = activeTab === code;
             return (
@@ -81,7 +79,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
         <div className="anim-3 tools-grid">
           
           {/* PastPaper Explorer */}
-          <div className="glass-panel" style={{ padding:32, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
+          <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
                onClick={() => onSelectExplorer(activeTab)}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; }}>
@@ -90,7 +88,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
                 <Layers size={20} color="var(--text)"/>
               </div>
               <h3 style={{ fontSize:20, fontWeight:700, marginBottom:8 }}>PastPaper Explorer</h3>
-              <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Every paper with its mark scheme, side by side. Opens in a second — and works offline.</p>
+              <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Search, filter, and load papers instantly with a built-in fast PDF engine.</p>
             </div>
             <div style={{ marginTop:24, display:'flex', flexWrap:'wrap', gap:8 }}>
               {['QP & MS', '16 Years', 'File Attachments'].map(p => <span key={p} style={{ fontSize:11, fontWeight:500, padding:'4px 10px', background:'var(--surface2)', borderRadius:100, border:'1px solid var(--line2)', color:'var(--text3)' }}>{p}</span>)}
@@ -98,7 +96,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
           </div>
 
           {/* IDE */}
-          <div className="glass-panel" style={{ padding:32, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
+          <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
                onClick={()=>window.open('https://coding-engine-9618.pages.dev/','_blank')}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; }}>
@@ -108,8 +106,9 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
               </div>
               <h3 style={{ fontSize:20, fontWeight:700, marginBottom:8, display:'flex', alignItems:'center' }}>
                   Programming IDE
+                  <span style={{ fontSize:10, fontWeight:700, padding:'3px 8px', background:'rgba(251, 191, 36, 0.1)', color:'var(--amber)', border:'1px solid var(--amber)', borderRadius:6, marginLeft:10, letterSpacing:'0.05em', textTransform:'uppercase' }}>In Development</span>
               </h3>
-              <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Python and Cambridge pseudocode that really run, with a debugger that shows you every variable, step by step.</p>
+              <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Write, compile, and run code entirely in your browser. Built for 9618.</p>
             </div>
              <div style={{ marginTop:24, display:'flex', flexWrap:'wrap', gap:8 }}>
               {['Python', 'Pseudocode'].map(p => <span key={p} style={{ fontSize:11, fontWeight:500, padding:'4px 10px', background:'var(--surface2)', borderRadius:100, border:'1px solid var(--line2)', color:'var(--text3)' }}>{p}</span>)}
@@ -117,7 +116,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
           </div>
 
           {/* Resource Library */}
-          <div className="glass-panel" style={{ padding:32, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
+          <div className="glass-panel" style={{ padding:28, borderRadius:24, cursor:'pointer', transition:'all 0.3s', display:'flex', flexDirection:'column', justifyContent:'space-between' }}
                onClick={() => onSelectLibrary(activeTab)}
                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--text2)'; }}
                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--line2)'; }}>
@@ -126,7 +125,7 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
                 <Library size={20} color="var(--text)"/>
               </div>
               <h3 style={{ fontSize:20, fontWeight:700, marginBottom:8 }}>Resource Library</h3>
-              <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Textbooks, your teachers' notes, formula sheets — all in one place, all free.</p>
+              <p style={{ fontSize:14, color:'var(--text2)', lineHeight:1.5 }}>Access textbooks, revision notes, and formula sheets directly from your repository.</p>
             </div>
             <div style={{ marginTop:24, display:'flex', flexWrap:'wrap', gap:8, alignItems:'center', justifyContent:'space-between' }}>
               <div style={{ display:'flex', gap:8 }}>
@@ -153,9 +152,10 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
               </div>
               <h3 style={{ fontSize:24, fontWeight:700, marginBottom:8, display:'flex', alignItems:'center' }}>
                 Topical Database
+                <span style={{ fontSize:10, fontWeight:700, padding:'3px 8px', background:'rgba(251, 191, 36, 0.1)', color:'var(--amber)', border:'1px solid var(--amber)', borderRadius:6, marginLeft:12, letterSpacing:'0.05em', textTransform:'uppercase' }}>In Development</span>
               </h3>
               <p style={{ fontSize:15, color:'var(--text2)', lineHeight:1.6, maxWidth:400, marginBottom: 24 }}>
-                Tap a topic and see every question ever asked on it — cut from the real papers and sorted by the official syllabus. Stop scanning whole years for the one thing you're stuck on.
+                Don't just scan years—target your weaknesses. Dive into a massive database of past paper questions strictly indexed by the official syllabus structure.
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
                 <span style={{ fontSize:13, fontWeight: 600, padding:'8px 16px', background:'var(--text)', borderRadius:10, color:'var(--bg)', display:'inline-flex', alignItems:'center' }}>
@@ -185,9 +185,9 @@ const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, to
       </main>
       {/* SEO & Context Block (Hidden elegantly but readable by Google) */}
       <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 20px 40px 20px', zIndex: 10, position: 'relative' }}>
-        <div style={{ padding: '20px 4px', borderTop: '1px solid var(--line)', opacity: 0.72 }}>
-          <h2 style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--text3)', marginBottom: 10, letterSpacing: '0.04em' }}>About The Nexus: Cambridge A-Level Workspace</h2>
-          <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginBottom: 12, maxWidth: 760 }}>
+        <div style={{ padding: 24, borderRadius: 20, background: 'var(--surface2)', border: '1px solid var(--line2)' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 12 }}>About The Nexus: Cambridge A-Level Workspace</h2>
+          <p style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6, marginBottom: 12 }}>
             The Nexus is an advanced, high-performance study environment specifically engineered for CAIE A-Level and AS-Level students. Designed to eliminate the friction of traditional study methods, it provides instant, zero-latency access to past papers, marking schemes, and an interactive Resource Library.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginTop: 16 }}>

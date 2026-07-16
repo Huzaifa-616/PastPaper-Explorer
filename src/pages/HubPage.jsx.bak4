@@ -5,12 +5,15 @@ import { GITHUB_REPO_URL } from '../config/constants';
 import DynamicLogo from '../components/DynamicLogo';
 import SymbolField from '../components/SymbolField';
 import ContinueStrip from '../components/ContinueStrip';
-import { hasStudyHistory } from '../utils/performance';
+import { hasStudyHistory, mostStudiedSubject } from '../utils/performance';
 
 const StartupScreen = ({ onSelectExplorer, onSelectTopicals, onSelectLibrary, toggleTheme, dark, onOpenIndexer }) => {
   const returning = hasStudyHistory();
   const [activeTab, setActiveTab] = useState(() => {
     try { const s = JSON.parse(localStorage.getItem('nexusSettings')); if (s?.defaultSubject) return s.defaultSubject; } catch { /* ignore */ }
+    // Nobody opens Settings. Infer it from what they actually answer.
+    const studied = mostStudiedSubject();
+    if (studied) return studied;
     return '9618';
   });
 

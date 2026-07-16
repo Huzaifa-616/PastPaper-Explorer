@@ -161,22 +161,3 @@ export function hasStudyHistory() {
     return Object.values(s).some(x => Array.isArray(x?.choices) && x.choices.some(Boolean));
   } catch { return false; }
 }
-
-
-/** The subject this student actually studies, inferred from their own answers.
- *  `settings.defaultSubject` only helps students who opened Settings — almost
- *  nobody does. This asks nothing and is right for anyone who's used the app:
- *  40 bubbled Physics answers means the hub should open on Physics. */
-export function mostStudiedSubject() {
-  try {
-    const sessions = JSON.parse(localStorage.getItem(SESSIONS_KEY)) || {};
-    const counts = {};
-    for (const [key, sess] of Object.entries(sessions)) {
-      const subject = key.split('_')[0];
-      const n = Array.isArray(sess?.choices) ? sess.choices.filter(Boolean).length : 0;
-      if (n > 0) counts[subject] = (counts[subject] || 0) + n;
-    }
-    const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
-    return best ? best[0] : null;
-  } catch { return null; }
-}

@@ -7,7 +7,7 @@ export const THEMES = {
   midnight: {
     name: 'Midnight', isDark: true,
     bg: '#05050A', bg2: '#0a0a14',
-    surface: 'rgba(15, 15, 25, 0.12)', surface2: 'rgba(25, 25, 40, 0.12)', surface3: 'rgba(35, 35, 55, 0.26)',
+    surface: 'rgba(15, 15, 25, 0.5)', surface2: 'rgba(25, 25, 40, 0.8)', surface3: 'rgba(35, 35, 55, 0.9)',
     line: 'rgba(255,255,255,0.05)', line2: 'rgba(255,255,255,0.1)',
     text: '#f8fafc', text2: '#94a3b8', text3: '#475569',
     accent: '#6366f1', teal: '#2dd4bf', amber: '#fbbf24', rose: '#fb7185',
@@ -17,7 +17,7 @@ export const THEMES = {
   daylight: {
     name: 'Daylight', isDark: false,
     bg: '#f8fafc', bg2: '#ffffff',
-    surface: 'rgba(255, 255, 255, 0.12)', surface2: 'rgba(241, 245, 249, 0.12)', surface3: 'rgba(226, 232, 240, 0.26)',
+    surface: 'rgba(255, 255, 255, 0.5)', surface2: 'rgba(241, 245, 249, 0.9)', surface3: 'rgba(226, 232, 240, 0.9)',
     line: 'rgba(0,0,0,0.06)', line2: 'rgba(0,0,0,0.12)',
     text: '#0f172a', text2: '#64748b', text3: '#94a3b8',
     accent: '#4f46e5', teal: '#0d9488', amber: '#d97706', rose: '#e11d48',
@@ -27,7 +27,7 @@ export const THEMES = {
   amoled: {
     name: 'AMOLED', isDark: true,
     bg: '#000000', bg2: '#050505',
-    surface: 'rgba(12, 12, 12, 0.12)', surface2: 'rgba(22, 22, 22, 0.12)', surface3: 'rgba(34, 34, 34, 0.26)',
+    surface: 'rgba(12, 12, 12, 0.5)', surface2: 'rgba(22, 22, 22, 0.9)', surface3: 'rgba(34, 34, 34, 0.95)',
     line: 'rgba(255,255,255,0.06)', line2: 'rgba(255,255,255,0.12)',
     text: '#fafafa', text2: '#9ca3af', text3: '#4b5563',
     accent: '#818cf8', teal: '#2dd4bf', amber: '#fbbf24', rose: '#fb7185',
@@ -37,7 +37,7 @@ export const THEMES = {
   ocean: {
     name: 'Ocean', isDark: true,
     bg: '#040d14', bg2: '#081720',
-    surface: 'rgba(10, 25, 36, 0.12)', surface2: 'rgba(16, 38, 53, 0.12)', surface3: 'rgba(24, 52, 71, 0.26)',
+    surface: 'rgba(10, 25, 36, 0.5)', surface2: 'rgba(16, 38, 53, 0.85)', surface3: 'rgba(24, 52, 71, 0.9)',
     line: 'rgba(125,211,252,0.06)', line2: 'rgba(125,211,252,0.13)',
     text: '#f0f9ff', text2: '#7dd3fc99', text3: '#38536b',
     accent: '#38bdf8', teal: '#2dd4bf', amber: '#fbbf24', rose: '#fb7185',
@@ -47,7 +47,7 @@ export const THEMES = {
   forest: {
     name: 'Forest', isDark: true,
     bg: '#060b07', bg2: '#0a130c',
-    surface: 'rgba(14, 26, 17, 0.12)', surface2: 'rgba(21, 38, 25, 0.12)', surface3: 'rgba(30, 52, 35, 0.26)',
+    surface: 'rgba(14, 26, 17, 0.5)', surface2: 'rgba(21, 38, 25, 0.85)', surface3: 'rgba(30, 52, 35, 0.9)',
     line: 'rgba(134,239,172,0.06)', line2: 'rgba(134,239,172,0.12)',
     text: '#f0fdf4', text2: '#86efac99', text3: '#3f5c47',
     accent: '#4ade80', teal: '#2dd4bf', amber: '#fbbf24', rose: '#fb7185',
@@ -57,7 +57,7 @@ export const THEMES = {
   sepia: {
     name: 'Sepia', isDark: false,
     bg: '#f7f1e3', bg2: '#fffbf0',
-    surface: 'rgba(255, 251, 240, 0.12)', surface2: 'rgba(240, 230, 210, 0.12)', surface3: 'rgba(228, 215, 189, 0.26)',
+    surface: 'rgba(255, 251, 240, 0.5)', surface2: 'rgba(240, 230, 210, 0.9)', surface3: 'rgba(228, 215, 189, 0.9)',
     line: 'rgba(120,80,20,0.08)', line2: 'rgba(120,80,20,0.16)',
     text: '#3d2f1e', text2: '#7a6a52', text3: '#a89a82',
     accent: '#b45309', teal: '#0f766e', amber: '#b45309', rose: '#be123c',

@@ -91,6 +91,13 @@ const GlobalStyles = ({ dark, theme, fontScale = 1 }) => {
       -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
     }
 
+    .glass-panel {
+      background: var(--surface);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--line2);
+    }
+
     .icon-btn { display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;border:1px solid var(--line2);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all 0.2s; }
     .icon-btn:hover { color:var(--text);background:var(--surface3); transform: translateY(-1px); }
 
@@ -253,119 +260,7 @@ const GlobalStyles = ({ dark, theme, fontScale = 1 }) => {
       .full-lib-main { padding: 16px !important; }
       .full-lib-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
     }
-
-    /* Small chrome gets a lighter version of the same material. */
-    .icon-btn, .nexus-select, .seg-btn {
-      backdrop-filter: blur(8px) saturate(140%);
-      -webkit-backdrop-filter: blur(8px) saturate(140%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.042);
-    }
-
-    /* The nav is a sheet of glass the page slides under. */
-    header.nav-bar {
-      backdrop-filter: blur(18px) saturate(150%);
-      -webkit-backdrop-filter: blur(18px) saturate(150%);
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.04);
-    }
-
-    /* backdrop-filter is GPU work. A mid-range phone with a dozen of them
-       stutters, and our students are ON mid-range phones — so the small
-       chrome drops its blur there and keeps only the big surfaces. */
-    @media (max-width: 700px), (pointer: coarse) {
-      .icon-btn, .nexus-select, .seg-btn {
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-      }
-    }
-
-    /* The buttons — same material, lighter. These are the ones that were
-       stuck opaque: they're painted with --surface2. */
-    .icon-btn, .nexus-select, .seg-btn {
-      backdrop-filter: blur(8px) saturate(140%);
-      -webkit-backdrop-filter: blur(8px) saturate(140%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.042);
-    }
-
-    header.nav-bar {
-      backdrop-filter: blur(18px) saturate(150%);
-      -webkit-backdrop-filter: blur(18px) saturate(150%);
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.04);
-    }
-
-    /* backdrop-filter is GPU work, and our students are on mid-range phones.
-       A dozen blurred layers stutters, so mobile keeps only the big surfaces. */
-    @media (max-width: 700px), (pointer: coarse) {
-      .icon-btn, .nexus-select, .seg-btn {
-        backdrop-filter: none; -webkit-backdrop-filter: none;
-      }
-    }
-
-    /* The buttons — same material, lighter. These are the ones that were
-       stuck opaque: they're painted with --surface2. */
-    .icon-btn, .nexus-select, .seg-btn {
-      backdrop-filter: blur(4px) saturate(140%);
-      -webkit-backdrop-filter: blur(4px) saturate(140%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.042);
-    }
-
-    header.nav-bar {
-      backdrop-filter: blur(8px) saturate(160%);
-      -webkit-backdrop-filter: blur(8px) saturate(160%);
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.04);
-    }
-
-    /* backdrop-filter is GPU work, and our students are on mid-range phones.
-       A dozen blurred layers stutters, so mobile keeps only the big surfaces. */
-    @media (max-width: 700px), (pointer: coarse) {
-      .icon-btn, .nexus-select, .seg-btn {
-        backdrop-filter: none; -webkit-backdrop-filter: none;
-      }
-    }
-
-    /* ══════════════════════════════════════════════════════════════════════
-       LIQUID GLASS
-       Blur alone is fog. Blur + SATURATE is glass — colours behind come
-       through richer than reality, which is what the eye reads as a real
-       pane. The inset highlight is its lit top rim, the inset shade gives it
-       thickness, the outer shadow lifts it off the page.
-       ══════════════════════════════════════════════════════════════════════ */
-    .glass-panel {
-      background: var(--surface);
-      backdrop-filter: saturate(160%);
-      -webkit-backdrop-filter: saturate(160%);
-      border: 1px solid var(--line2);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.06),
-        inset 0 -1px 0 rgba(0,0,0,0.18),
-        0 10px 34px -14px rgba(0,0,0,0.45);
-    }
-
-    /* The buttons — same material, lighter. These are the ones that were
-       stuck opaque: they're painted with --surface2. */
-    .icon-btn, .nexus-select, .seg-btn {
-      backdrop-filter: saturate(160%);
-      -webkit-backdrop-filter: saturate(160%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.042);
-    }
-
-    header.nav-bar {
-      backdrop-filter: saturate(160%);
-      -webkit-backdrop-filter: saturate(160%);
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.04);
-    }
-
-    /* backdrop-filter is GPU work, and our students are on mid-range phones.
-       A dozen blurred layers stutters, so mobile keeps only the big surfaces. */
-    @media (max-width: 700px), (pointer: coarse) {
-      .icon-btn, .nexus-select, .seg-btn {
-        backdrop-filter: none; -webkit-backdrop-filter: none;
-      }
-      .glass-panel {
-        backdrop-filter: saturate(160%);
-        -webkit-backdrop-filter: saturate(160%);
-      }
-    }
-`}</style>
+  `}</style>
 );
 };
 
