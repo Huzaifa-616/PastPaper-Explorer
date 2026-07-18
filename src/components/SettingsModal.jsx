@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings as SettingsIcon, RotateCcw, Check } from 'lucide-react';
+import { X, Settings as SettingsIcon, RotateCcw, Check, Droplets } from 'lucide-react';
 import { THEMES, FONT_SCALES } from '../config/themes';
 import { SUBJECTS } from '../config/constants';
 
@@ -32,9 +32,15 @@ const ThemeSwatch = ({ id, theme, active, onPick }) => (
   </button>
 );
 
-const Section = ({ label, children }) => (
+const Section = ({ label, badge, children }) => (
   <div style={{ marginBottom: 24 }}>
-    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 10 }}>{label}</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+      <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text3)' }}>{label}</span>
+      {badge && (
+        <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--accent)',
+                       border: '1px solid var(--accent)', borderRadius: 999, padding: '2px 8px' }}>ACTIVE</span>
+      )}
+    </div>
     {children}
   </div>
 );
@@ -63,13 +69,57 @@ const SettingsModal = ({ isOpen, onClose, settings, setSetting, resetSettings })
           <button className="icon-btn" onClick={onClose}><X size={16} /></button>
         </div>
 
-        {/* Theme gallery */}
-        <Section label="Theme">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-            {Object.entries(THEMES).map(([id, t]) => (
-              <ThemeSwatch key={id} id={id} theme={t} active={settings.themeId === id} onPick={v => setSetting('themeId', v)} />
-            ))}
-          </div>
+        {/* Theme galleries — dark and light chosen separately; the Sun/Moon
+            toggle flips between YOUR two picks. The tick marks each side's
+            remembered choice; ACTIVE marks the side you're on right now. */}
+        {(() => {
+          const activeDark = THEMES[settings.themeId]?.isDark;
+          const darkPick = settings.lastDarkId || 'midnight';
+          const lightPick = settings.lastLightId || 'daylight';
+          return (
+            <>
+              <Section label="Dark theme" badge={activeDark}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 10 }}>
+                  {Object.entries(THEMES).filter(([, t]) => t.isDark).map(([id, t]) => (
+                    <ThemeSwatch key={id} id={id} theme={t} active={darkPick === id} onPick={v => setSetting('themeId', v)} />
+                  ))}
+                </div>
+              </Section>
+              <Section label="Light theme" badge={!activeDark}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 10 }}>
+                  {Object.entries(THEMES).filter(([, t]) => !t.isDark).map(([id, t]) => (
+                    <ThemeSwatch key={id} id={id} theme={t} active={lightPick === id} onPick={v => setSetting('themeId', v)} />
+                  ))}
+                </div>
+              </Section>
+            </>
+          );
+        })()}
+
+        {/* Appearance — Liquid Glass on/off */}
+        <Section label="Appearance">
+          <button
+            onClick={() => setSetting('glass', !(settings.glass !== false))}
+            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px',
+                     borderRadius: 12, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
+                     background: 'var(--surface2)', border: '1px solid var(--line2)', transition: 'all .15s' }}>
+            <Droplets size={17} color="var(--accent)" style={{ flexShrink: 0 }} />
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>Liquid Glass</span>
+              <span style={{ display: 'block', fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>Frosted, translucent panels</span>
+            </span>
+            <span aria-hidden style={{
+              width: 42, height: 24, borderRadius: 999, flexShrink: 0, position: 'relative', transition: 'background .18s',
+              background: settings.glass !== false ? 'var(--accent)' : 'var(--surface3)',
+              border: '1px solid var(--line2)',
+            }}>
+              <span style={{
+                position: 'absolute', top: 2, left: settings.glass !== false ? 20 : 2,
+                width: 18, height: 18, borderRadius: '50%', background: '#fff',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.35)', transition: 'left .18s',
+              }} />
+            </span>
+          </button>
         </Section>
 
         {/* Font size */}

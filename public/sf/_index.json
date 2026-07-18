@@ -1,0 +1,774 @@
+{
+  "9618_s21_sf_41": {
+    "subject": "9618",
+    "session": "s21",
+    "paper": "4",
+    "variant": "1",
+    "folder": "9618_s21_sf_41",
+    "files": [
+      {
+        "name": "TreasureChestData.txt",
+        "path": "/sf/9618_s21_sf_41/TreasureChestData.txt",
+        "size": "80 B",
+        "lines": 15,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s21_sf_41/evidence.doc",
+        "size": "54.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s21_sf_42": {
+    "subject": "9618",
+    "session": "s21",
+    "paper": "4",
+    "variant": "2",
+    "folder": "9618_s21_sf_42",
+    "files": [
+      {
+        "name": "TreasureChestData.txt",
+        "path": "/sf/9618_s21_sf_42/TreasureChestData.txt",
+        "size": "80 B",
+        "lines": 15,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s21_sf_42/evidence.doc",
+        "size": "54.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s21_sf_43": {
+    "subject": "9618",
+    "session": "s21",
+    "paper": "4",
+    "variant": "3",
+    "folder": "9618_s21_sf_43",
+    "files": [
+      {
+        "name": "TreasureChestData.txt",
+        "path": "/sf/9618_s21_sf_43/TreasureChestData.txt",
+        "size": "80 B",
+        "lines": 15,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s21_sf_43/evidence.doc",
+        "size": "54.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s22_sf_41": {
+    "subject": "9618",
+    "session": "s22",
+    "paper": "4",
+    "variant": "1",
+    "folder": "9618_s22_sf_41",
+    "files": [
+      {
+        "name": "HighScore.txt",
+        "path": "/sf/9618_s22_sf_41/HighScore.txt",
+        "size": "109 B",
+        "lines": 20,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s22_sf_41/evidence.doc",
+        "size": "59.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s22_sf_42": {
+    "subject": "9618",
+    "session": "s22",
+    "paper": "4",
+    "variant": "2",
+    "folder": "9618_s22_sf_42",
+    "files": [
+      {
+        "name": "CardValues.txt",
+        "path": "/sf/9618_s22_sf_42/CardValues.txt",
+        "size": "296 B",
+        "lines": 60,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s22_sf_42/evidence.doc",
+        "size": "55.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s22_sf_43": {
+    "subject": "9618",
+    "session": "s22",
+    "paper": "4",
+    "variant": "3",
+    "folder": "9618_s22_sf_43",
+    "files": [
+      {
+        "name": "HighScore.txt",
+        "path": "/sf/9618_s22_sf_43/HighScore.txt",
+        "size": "109 B",
+        "lines": 20,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s22_sf_43/evidence.doc",
+        "size": "60.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s23_sf_41": {
+    "subject": "9618",
+    "session": "s23",
+    "paper": "4",
+    "variant": "1",
+    "folder": "9618_s23_sf_41",
+    "files": [
+      {
+        "name": "AnimalData.txt",
+        "path": "/sf/9618_s23_sf_41/AnimalData.txt",
+        "size": "60 B",
+        "lines": 8,
+        "text": true
+      },
+      {
+        "name": "ColourData.txt",
+        "path": "/sf/9618_s23_sf_41/ColourData.txt",
+        "size": "66 B",
+        "lines": 10,
+        "text": true
+      },
+      {
+        "name": "Data.txt",
+        "path": "/sf/9618_s23_sf_41/Data.txt",
+        "size": "89 B",
+        "lines": 25,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s23_sf_41/evidence.doc",
+        "size": "70.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s23_sf_42": {
+    "subject": "9618",
+    "session": "s23",
+    "paper": "4",
+    "variant": "2",
+    "folder": "9618_s23_sf_42",
+    "files": [
+      {
+        "name": "Employees.txt",
+        "path": "/sf/9618_s23_sf_42/Employees.txt",
+        "size": "267 B",
+        "lines": 28,
+        "text": true
+      },
+      {
+        "name": "HoursWeek1.txt",
+        "path": "/sf/9618_s23_sf_42/HoursWeek1.txt",
+        "size": "102 B",
+        "lines": 16,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s23_sf_42/evidence.doc",
+        "size": "62.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s23_sf_43": {
+    "subject": "9618",
+    "session": "s23",
+    "paper": "4",
+    "variant": "3",
+    "folder": "9618_s23_sf_43",
+    "files": [
+      {
+        "name": "AnimalData.txt",
+        "path": "/sf/9618_s23_sf_43/AnimalData.txt",
+        "size": "60 B",
+        "lines": 8,
+        "text": true
+      },
+      {
+        "name": "ColourData.txt",
+        "path": "/sf/9618_s23_sf_43/ColourData.txt",
+        "size": "66 B",
+        "lines": 10,
+        "text": true
+      },
+      {
+        "name": "Data.txt",
+        "path": "/sf/9618_s23_sf_43/Data.txt",
+        "size": "89 B",
+        "lines": 25,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s23_sf_43/evidence.doc",
+        "size": "71.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s24_sf_41": {
+    "subject": "9618",
+    "session": "s24",
+    "paper": "4",
+    "variant": "1",
+    "folder": "9618_s24_sf_41",
+    "files": [
+      {
+        "name": "Trees.txt",
+        "path": "/sf/9618_s24_sf_41/Trees.txt",
+        "size": "224 B",
+        "lines": 9,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s24_sf_41/evidence.doc",
+        "size": "69.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s24_sf_42": {
+    "subject": "9618",
+    "session": "s24",
+    "paper": "4",
+    "variant": "2",
+    "folder": "9618_s24_sf_42",
+    "files": [
+      {
+        "name": "Easy.txt",
+        "path": "/sf/9618_s24_sf_42/Easy.txt",
+        "size": "79 B",
+        "lines": 15,
+        "text": true
+      },
+      {
+        "name": "Hard.txt",
+        "path": "/sf/9618_s24_sf_42/Hard.txt",
+        "size": "570 B",
+        "lines": 98,
+        "text": true
+      },
+      {
+        "name": "Medium.txt",
+        "path": "/sf/9618_s24_sf_42/Medium.txt",
+        "size": "273 B",
+        "lines": 45,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s24_sf_42/evidence.doc",
+        "size": "70.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s24_sf_43": {
+    "subject": "9618",
+    "session": "s24",
+    "paper": "4",
+    "variant": "3",
+    "folder": "9618_s24_sf_43",
+    "files": [
+      {
+        "name": "Trees.txt",
+        "path": "/sf/9618_s24_sf_43/Trees.txt",
+        "size": "224 B",
+        "lines": 9,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s24_sf_43/evidence.doc",
+        "size": "69.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s25_sf_41": {
+    "subject": "9618",
+    "session": "s25",
+    "paper": "4",
+    "variant": "1",
+    "folder": "9618_s25_sf_41",
+    "files": [
+      {
+        "name": "Blue.txt",
+        "path": "/sf/9618_s25_sf_41/Blue.txt",
+        "size": "0 B",
+        "lines": 0,
+        "text": true
+      },
+      {
+        "name": "Green.txt",
+        "path": "/sf/9618_s25_sf_41/Green.txt",
+        "size": "0 B",
+        "lines": 0,
+        "text": true
+      },
+      {
+        "name": "Orange.txt",
+        "path": "/sf/9618_s25_sf_41/Orange.txt",
+        "size": "0 B",
+        "lines": 0,
+        "text": true
+      },
+      {
+        "name": "Pink.txt",
+        "path": "/sf/9618_s25_sf_41/Pink.txt",
+        "size": "0 B",
+        "lines": 0,
+        "text": true
+      },
+      {
+        "name": "Red.txt",
+        "path": "/sf/9618_s25_sf_41/Red.txt",
+        "size": "0 B",
+        "lines": 0,
+        "text": true
+      },
+      {
+        "name": "TheData.txt",
+        "path": "/sf/9618_s25_sf_41/TheData.txt",
+        "size": "674 B",
+        "lines": 72,
+        "text": true
+      },
+      {
+        "name": "Yellow.txt",
+        "path": "/sf/9618_s25_sf_41/Yellow.txt",
+        "size": "0 B",
+        "lines": 0,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s25_sf_41/evidence.doc",
+        "size": "62.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s25_sf_42": {
+    "subject": "9618",
+    "session": "s25",
+    "paper": "4",
+    "variant": "2",
+    "folder": "9618_s25_sf_42",
+    "files": [
+      {
+        "name": "HashData.txt",
+        "path": "/sf/9618_s25_sf_42/HashData.txt",
+        "size": "2.3 KB",
+        "lines": 199,
+        "text": true
+      },
+      {
+        "name": "SecondStack.txt",
+        "path": "/sf/9618_s25_sf_42/SecondStack.txt",
+        "size": "26 B",
+        "lines": 9,
+        "text": true
+      },
+      {
+        "name": "StackData.txt",
+        "path": "/sf/9618_s25_sf_42/StackData.txt",
+        "size": "26 B",
+        "lines": 9,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s25_sf_42/evidence.doc",
+        "size": "70.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_s25_sf_43": {
+    "subject": "9618",
+    "session": "s25",
+    "paper": "4",
+    "variant": "3",
+    "folder": "9618_s25_sf_43",
+    "files": [
+      {
+        "name": "QueueData.txt",
+        "path": "/sf/9618_s25_sf_43/QueueData.txt",
+        "size": "174 B",
+        "lines": 46,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_s25_sf_43/evidence.doc",
+        "size": "64.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w21_sf_41": {
+    "subject": "9618",
+    "session": "w21",
+    "paper": "4",
+    "variant": "1",
+    "folder": "9618_w21_sf_41",
+    "files": [
+      {
+        "name": "Pictures.txt",
+        "path": "/sf/9618_w21_sf_41/Pictures.txt",
+        "size": "512 B",
+        "lines": 84,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w21_sf_41/evidence.doc",
+        "size": "56.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w21_sf_42": {
+    "subject": "9618",
+    "session": "w21",
+    "paper": "4",
+    "variant": "2",
+    "folder": "9618_w21_sf_42",
+    "files": [
+      {
+        "name": "Pictures.txt",
+        "path": "/sf/9618_w21_sf_42/Pictures.txt",
+        "size": "512 B",
+        "lines": 84,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w21_sf_42/evidence.doc",
+        "size": "55.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w22_sf_41": {
+    "subject": "9618",
+    "session": "w22",
+    "paper": "4",
+    "variant": "1",
+    "folder": "9618_w22_sf_41",
+    "files": [
+      {
+        "name": "IntegerData.txt",
+        "path": "/sf/9618_w22_sf_41/IntegerData.txt",
+        "size": "391 B",
+        "lines": 100,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w22_sf_41/evidence.doc",
+        "size": "56.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w22_sf_42": {
+    "subject": "9618",
+    "session": "w22",
+    "paper": "4",
+    "variant": "2",
+    "folder": "9618_w22_sf_42",
+    "files": [
+      {
+        "name": "Characters.txt",
+        "path": "/sf/9618_w22_sf_42/Characters.txt",
+        "size": "140 B",
+        "lines": 30,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w22_sf_42/evidence.doc",
+        "size": "59.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w22_sf_43": {
+    "subject": "9618",
+    "session": "w22",
+    "paper": "4",
+    "variant": "3",
+    "folder": "9618_w22_sf_43",
+    "files": [
+      {
+        "name": "IntegerData.txt",
+        "path": "/sf/9618_w22_sf_43/IntegerData.txt",
+        "size": "391 B",
+        "lines": 100,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w22_sf_43/evidence.doc",
+        "size": "56.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w23_sf_41": {
+    "subject": "9618",
+    "session": "w23",
+    "paper": "4",
+    "variant": "1",
+    "folder": "9618_w23_sf_41",
+    "files": [
+      {
+        "name": "QueueData.txt",
+        "path": "/sf/9618_w23_sf_41/QueueData.txt",
+        "size": "136 B",
+        "lines": 23,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w23_sf_41/evidence.doc",
+        "size": "72.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w23_sf_42": {
+    "subject": "9618",
+    "session": "w23",
+    "paper": "4",
+    "variant": "2",
+    "folder": "9618_w23_sf_42",
+    "files": [
+      {
+        "name": "StackData.txt",
+        "path": "/sf/9618_w23_sf_42/StackData.txt",
+        "size": "298 B",
+        "lines": 100,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w23_sf_42/evidence.doc",
+        "size": "71.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w23_sf_43": {
+    "subject": "9618",
+    "session": "w23",
+    "paper": "4",
+    "variant": "3",
+    "folder": "9618_w23_sf_43",
+    "files": [
+      {
+        "name": "QueueData.txt",
+        "path": "/sf/9618_w23_sf_43/QueueData.txt",
+        "size": "136 B",
+        "lines": 23,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w23_sf_43/evidence.doc",
+        "size": "72.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w24_sf_41": {
+    "subject": "9618",
+    "session": "w24",
+    "paper": "4",
+    "variant": "1",
+    "folder": "9618_w24_sf_41",
+    "files": [
+      {
+        "name": "Data.txt",
+        "path": "/sf/9618_w24_sf_41/Data.txt",
+        "size": "333 B",
+        "lines": 45,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w24_sf_41/evidence.doc",
+        "size": "72.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w24_sf_42": {
+    "subject": "9618",
+    "session": "w24",
+    "paper": "4",
+    "variant": "2",
+    "folder": "9618_w24_sf_42",
+    "files": [
+      {
+        "name": "HighScoreTable.txt",
+        "path": "/sf/9618_w24_sf_42/HighScoreTable.txt",
+        "size": "89 B",
+        "lines": 21,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w24_sf_42/evidence.doc",
+        "size": "70.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w24_sf_43": {
+    "subject": "9618",
+    "session": "w24",
+    "paper": "4",
+    "variant": "3",
+    "folder": "9618_w24_sf_43",
+    "files": [
+      {
+        "name": "Data.txt",
+        "path": "/sf/9618_w24_sf_43/Data.txt",
+        "size": "333 B",
+        "lines": 45,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w24_sf_43/evidence.doc",
+        "size": "72.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w25_sf_41": {
+    "subject": "9618",
+    "session": "w25",
+    "paper": "4",
+    "variant": "1",
+    "folder": "9618_w25_sf_41",
+    "files": [
+      {
+        "name": "HashTableData.txt",
+        "path": "/sf/9618_w25_sf_41/HashTableData.txt",
+        "size": "2.5 KB",
+        "lines": 200,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w25_sf_41/evidence.doc",
+        "size": "67.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w25_sf_42": {
+    "subject": "9618",
+    "session": "w25",
+    "paper": "4",
+    "variant": "2",
+    "folder": "9618_w25_sf_42",
+    "files": [
+      {
+        "name": "TreeData.txt",
+        "path": "/sf/9618_w25_sf_42/TreeData.txt",
+        "size": "142 B",
+        "lines": 50,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w25_sf_42/evidence.doc",
+        "size": "62.0 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  },
+  "9618_w25_sf_43": {
+    "subject": "9618",
+    "session": "w25",
+    "paper": "4",
+    "variant": "3",
+    "folder": "9618_w25_sf_43",
+    "files": [
+      {
+        "name": "BinaryData.txt",
+        "path": "/sf/9618_w25_sf_43/BinaryData.txt",
+        "size": "67 B",
+        "lines": 23,
+        "text": true
+      },
+      {
+        "name": "evidence.doc",
+        "path": "/sf/9618_w25_sf_43/evidence.doc",
+        "size": "68.5 KB",
+        "lines": null,
+        "text": false
+      }
+    ]
+  }
+}

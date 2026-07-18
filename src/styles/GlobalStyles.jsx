@@ -8,8 +8,25 @@ const rgba = (hex, a) => {
   return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
 };
 
-const GlobalStyles = ({ dark, theme, fontScale = 1 }) => {
+/* Composite a translucent rgba() surface over the theme background → the
+   solid colour it *looks* like. Used when Liquid Glass is off, so "off"
+   means truly opaque panels, not just blur removed. */
+const flatten = (rgbaStr, bgHex) => {
+  const m = String(rgbaStr).match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\s/]+([\d.]+))?\s*\)/);
+  if (!m) return rgbaStr;
+  const a = m[4] !== undefined ? +m[4] : 1;
+  const h = bgHex.replace('#','');
+  const n = parseInt(h.length === 3 ? h.split('').map(c=>c+c).join('') : h, 16);
+  const mix = (c, b) => Math.round(+c * a + b * (1 - a));
+  return `rgb(${mix(m[1], (n>>16)&255)}, ${mix(m[2], (n>>8)&255)}, ${mix(m[3], n&255)})`;
+};
+
+const GlobalStyles = ({ dark, theme, fontScale = 1, glass = true }) => {
   const t = theme || (dark ? THEMES.midnight : THEMES.daylight);
+  const flatSurface  = flatten(t.surface,  t.bg);
+  const flatSurface2 = flatten(t.surface2, t.bg);
+  const flatSurface3 = flatten(t.surface3, t.bg);
+  const flatNav      = flatten(t.navBg,    t.bg);
   return (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap');
@@ -254,117 +271,102 @@ const GlobalStyles = ({ dark, theme, fontScale = 1 }) => {
       .full-lib-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
     }
 
-    /* Small chrome gets a lighter version of the same material. */
-    .icon-btn, .nexus-select, .seg-btn {
-      backdrop-filter: blur(8px) saturate(140%);
-      -webkit-backdrop-filter: blur(8px) saturate(140%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.042);
-    }
-
-    /* The nav is a sheet of glass the page slides under. */
-    header.nav-bar {
-      backdrop-filter: blur(18px) saturate(150%);
-      -webkit-backdrop-filter: blur(18px) saturate(150%);
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.04);
-    }
-
-    /* backdrop-filter is GPU work. A mid-range phone with a dozen of them
-       stutters, and our students are ON mid-range phones — so the small
-       chrome drops its blur there and keeps only the big surfaces. */
-    @media (max-width: 700px), (pointer: coarse) {
-      .icon-btn, .nexus-select, .seg-btn {
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-      }
-    }
-
-    /* The buttons — same material, lighter. These are the ones that were
-       stuck opaque: they're painted with --surface2. */
-    .icon-btn, .nexus-select, .seg-btn {
-      backdrop-filter: blur(8px) saturate(140%);
-      -webkit-backdrop-filter: blur(8px) saturate(140%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.042);
-    }
-
-    header.nav-bar {
-      backdrop-filter: blur(18px) saturate(150%);
-      -webkit-backdrop-filter: blur(18px) saturate(150%);
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.04);
-    }
-
-    /* backdrop-filter is GPU work, and our students are on mid-range phones.
-       A dozen blurred layers stutters, so mobile keeps only the big surfaces. */
-    @media (max-width: 700px), (pointer: coarse) {
-      .icon-btn, .nexus-select, .seg-btn {
-        backdrop-filter: none; -webkit-backdrop-filter: none;
-      }
-    }
-
-    /* The buttons — same material, lighter. These are the ones that were
-       stuck opaque: they're painted with --surface2. */
-    .icon-btn, .nexus-select, .seg-btn {
-      backdrop-filter: blur(4px) saturate(140%);
-      -webkit-backdrop-filter: blur(4px) saturate(140%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.042);
-    }
-
-    header.nav-bar {
-      backdrop-filter: blur(8px) saturate(160%);
-      -webkit-backdrop-filter: blur(8px) saturate(160%);
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.04);
-    }
-
-    /* backdrop-filter is GPU work, and our students are on mid-range phones.
-       A dozen blurred layers stutters, so mobile keeps only the big surfaces. */
-    @media (max-width: 700px), (pointer: coarse) {
-      .icon-btn, .nexus-select, .seg-btn {
-        backdrop-filter: none; -webkit-backdrop-filter: none;
-      }
-    }
-
     /* ══════════════════════════════════════════════════════════════════════
-       LIQUID GLASS
-       Blur alone is fog. Blur + SATURATE is glass — colours behind come
-       through richer than reality, which is what the eye reads as a real
-       pane. The inset highlight is its lit top rim, the inset shade gives it
+       LIQUID GLASS — one system, toggleable in Settings (Appearance).
+       Blur alone is fog; blur + SATURATE is glass — colours behind come
+       through richer than reality. The sheen gradient is light sliding down
+       the pane, the inset highlight its lit top rim, the inset shade its
        thickness, the outer shadow lifts it off the page.
+       When OFF, every translucent surface is flattened to a solid colour —
+       truly opaque panels, not just blur removed.
        ══════════════════════════════════════════════════════════════════════ */
+${glass ? `
     .glass-panel {
-      background: var(--surface);
-      backdrop-filter: saturate(160%);
-      -webkit-backdrop-filter: saturate(160%);
+      background:
+        linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0) 62%),
+        var(--surface);
+      backdrop-filter: blur(22px) saturate(185%);
+      -webkit-backdrop-filter: blur(22px) saturate(185%);
       border: 1px solid var(--line2);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.06),
-        inset 0 -1px 0 rgba(0,0,0,0.18),
-        0 10px 34px -14px rgba(0,0,0,0.45);
-    }
-
-    /* The buttons — same material, lighter. These are the ones that were
-       stuck opaque: they're painted with --surface2. */
-    .icon-btn, .nexus-select, .seg-btn {
-      backdrop-filter: saturate(160%);
-      -webkit-backdrop-filter: saturate(160%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.042);
+        inset 0 1px 0 rgba(255,255,255,0.09),
+        inset 0 -1px 0 rgba(0,0,0,0.16),
+        0 12px 40px -14px rgba(0,0,0,0.5);
     }
 
     header.nav-bar {
-      backdrop-filter: saturate(160%);
-      -webkit-backdrop-filter: saturate(160%);
-      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.04);
+      backdrop-filter: blur(18px) saturate(170%);
+      -webkit-backdrop-filter: blur(18px) saturate(170%);
+      box-shadow: inset 0 -1px 0 rgba(255,255,255,0.05);
+    }
+
+    .modal-box {
+      background:
+        linear-gradient(160deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0) 55%),
+        var(--bg2);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    /* Small chrome — same material, thinner pane. */
+    .icon-btn, .nexus-select, .seg-btn, .pull-tab-pill {
+      backdrop-filter: blur(10px) saturate(160%);
+      -webkit-backdrop-filter: blur(10px) saturate(160%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+    /* The workspace panes — Explorer's library & MCQ sidebars, Topicals'
+       paper rail & question list. These were opaque --bg2, which is why
+       glass never reached those pages: turn them into panes too. */
+    .library-sidebar, .topicals-sidebar, .mcq-sidebar,
+    .topicals-papers, .topicals-questions {
+      background:
+        linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 55%),
+        ${rgba(t.bg2, 0.62)};
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
     }
 
     /* backdrop-filter is GPU work, and our students are on mid-range phones.
-       A dozen blurred layers stutters, so mobile keeps only the big surfaces. */
+       A dozen blurred layers stutters — so mobile drops the small chrome's
+       blur and keeps a lighter pane on the big surfaces only. */
     @media (max-width: 700px), (pointer: coarse) {
-      .icon-btn, .nexus-select, .seg-btn {
+      .icon-btn, .nexus-select, .seg-btn, .pull-tab-pill {
         backdrop-filter: none; -webkit-backdrop-filter: none;
       }
       .glass-panel {
-        backdrop-filter: saturate(160%);
-        -webkit-backdrop-filter: saturate(160%);
+        backdrop-filter: blur(14px) saturate(170%);
+        -webkit-backdrop-filter: blur(14px) saturate(170%);
+      }
+      header.nav-bar {
+        backdrop-filter: blur(12px) saturate(160%);
+        -webkit-backdrop-filter: blur(12px) saturate(160%);
+      }
+      .library-sidebar, .topicals-sidebar, .mcq-sidebar,
+      .topicals-papers, .topicals-questions {
+        backdrop-filter: blur(12px) saturate(160%);
+        -webkit-backdrop-filter: blur(12px) saturate(160%);
       }
     }
+` : `
+    /* FLAT — glass off. Solid surfaces, no blur anywhere. */
+    :root {
+      --surface:  ${flatSurface};
+      --surface2: ${flatSurface2};
+      --surface3: ${flatSurface3};
+    }
+    .glass-panel {
+      background: var(--surface);
+      border: 1px solid var(--line2);
+      box-shadow: 0 8px 24px -12px rgba(0,0,0,0.35);
+    }
+    header.nav-bar {
+      background: ${flatNav};
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+    }
+    .icon-btn, .nexus-select, .seg-btn, .pull-tab-pill, .modal-box {
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+    }
+`}
 `}</style>
 );
 };

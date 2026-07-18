@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { THEMES } from '../config/themes';
 
 const KEY = 'nexusSettings';
-const DEFAULTS = { themeId: 'midnight', lastDarkId: 'midnight', fontScale: 1, defaultSubject: '' , symbolField: true , backdrop: 'falling' };
+const DEFAULTS = { themeId: 'midnight', lastDarkId: 'midnight', lastLightId: 'daylight', fontScale: 1, defaultSubject: '' , symbolField: true , backdrop: 'falling', glass: true };
 
 function load() {
   try {
@@ -34,8 +34,12 @@ export function useSettings() {
   const setSetting = useCallback((key, value) => {
     setSettings(prev => {
       const next = { ...prev, [key]: value };
-      // remember the user's preferred dark theme so toggle returns to it
-      if (key === 'themeId' && THEMES[value]?.isDark) next.lastDarkId = value;
+      // remember the user's preferred dark AND light themes separately, so the
+      // Sun/Moon toggle returns to each side's chosen theme (like the Code Lab)
+      if (key === 'themeId') {
+        if (THEMES[value]?.isDark) next.lastDarkId = value;
+        else if (THEMES[value]) next.lastLightId = value;
+      }
       return next;
     });
   }, []);
@@ -43,12 +47,12 @@ export function useSettings() {
   const theme = THEMES[settings.themeId] || THEMES.midnight;
   const dark = theme.isDark;
 
-  // Sun/Moon button behaviour: dark ⇄ light, returning to the user's chosen
-  // dark theme (not always Midnight).
+  // Sun/Moon button behaviour: dark ⇄ light, each side returning to the
+  // user's own chosen theme (not always Midnight / Daylight).
   const toggleTheme = useCallback(() => {
     setSettings(prev => {
       const isDark = THEMES[prev.themeId]?.isDark;
-      return { ...prev, themeId: isDark ? 'daylight' : (prev.lastDarkId || 'midnight') };
+      return { ...prev, themeId: isDark ? (prev.lastLightId || 'daylight') : (prev.lastDarkId || 'midnight') };
     });
   }, []);
 

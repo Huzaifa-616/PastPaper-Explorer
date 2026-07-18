@@ -200,11 +200,23 @@ const SymbolField = () => {
 
     const resize = () => {
       dpr = Math.min(devicePixelRatio || 1, 2);
-      w = canvas.clientWidth; h = canvas.clientHeight;
+      const nw = canvas.clientWidth, nh = canvas.clientHeight;
+
+      /* MOBILE FIX — scrolling shows/hides the browser URL bar, which fires
+         `resize` with a small height change. Rebuilding there respawns every
+         glyph mid-scroll, which reads as the whole field "refreshing".
+         So: resize the canvas buffer always, but only REBUILD the particles
+         when the width actually changed (rotation / real resize) or the
+         height jumped far more than any URL bar is tall. */
+      const widthChanged = nw !== w;
+      const bigHeightJump = Math.abs(nh - h) > 220;
+      const first = parts.length === 0;
+
+      w = nw; h = nh;
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      rebuild();
+      if (first || widthChanged || bigHeightJump) rebuild();
       needsDraw = true;
     };
 

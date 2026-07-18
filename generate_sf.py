@@ -149,6 +149,14 @@ def main():
     with open(OUTPUT, "w", encoding="utf-8") as f:
         json.dump(db, f, indent=2)
 
+    # A second copy INSIDE public/sf/, so the folder upload carries it to R2.
+    # The Nexus reads /sf_db.json from its own origin, but the Code Lab is a
+    # different site and can't. It reads the R2 copy instead. Costs nothing:
+    # the indexer only walks sub-FOLDERS, so a loose file here is ignored on
+    # the next run.
+    with open(os.path.join(SF_DIR, "_index.json"), "w", encoding="utf-8") as f:
+        json.dump(db, f, indent=2)
+
     total = sum(len(v["files"]) for v in db.values())
     print(f"Indexed {total} files across {len(db)} papers:\n")
     for key, v in db.items():
@@ -156,6 +164,7 @@ def main():
         print(f"  {key}  ({v['subject']} P{v['paper']}/{v['variant']} {v['session']})")
         print(f"      {names}")
     print(f"\nSaved {OUTPUT}")
+    print(f"Saved {SF_DIR}/_index.json  (the Code Lab reads this copy from R2)")
 
     if UPLOAD_R2:
         print("\nUploading to R2...")

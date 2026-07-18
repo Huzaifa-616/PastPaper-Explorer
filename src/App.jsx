@@ -82,7 +82,7 @@ export default function App() {
 
   return (
     <>
-      <GlobalStyles theme={theme} fontScale={settings.fontScale} />
+      <GlobalStyles theme={theme} fontScale={settings.fontScale} glass={settings.glass !== false} />
       <PWAStatus />
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)}
         settings={settings} setSetting={setSetting} resetSettings={resetSettings} />
